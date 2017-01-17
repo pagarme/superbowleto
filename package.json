@@ -1,0 +1,23 @@
+{
+  "name": "superbowleto",
+  "version": "1.0.0",
+  "description": "A simple microservice to issue, register and manage boletos",
+  "main": "index.js",
+  "private": "true",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pagarme/superbowleto.git"
+  },
+  "keywords": [
+    "boleto",
+    "microservice"
+  ],
+  "author": "Pagar.me Pagamentos S/A <@pagarme>",
+  "bugs": {
+    "url": "https://github.com/pagarme/superbowleto/issues"
+  },
+  "homepage": "https://github.com/pagarme/superbowleto#readme"
+}
