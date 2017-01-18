@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": "true",
   "scripts": {
-    "test": "test"
+    "start": "node bin/server.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/pagarme/superbowleto/issues"
   },
-  "homepage": "https://github.com/pagarme/superbowleto#readme"
+  "homepage": "https://github.com/pagarme/superbowleto#readme",
+  "dependencies": {
+    "body-parser": "1.16.0",
+    "express": "4.14.0"
+  }
 }
