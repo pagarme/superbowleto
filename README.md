@@ -1,4 +1,6 @@
 # superbowleto
+[![Build Status](https://travis-ci.org/pagarme/superbowleto.svg?branch=master)](https://travis-ci.org/pagarme/superbowleto)
+
 :football: A microservice to issue, register and manage boletos
 
 ## Install
