@@ -1,10 +1,11 @@
 const express = require('express')
 const { json, urlencoded } = require('body-parser')
+const { createServer } = require('http')
 
 const PORT = 3000
 const environment = process.env.API_ENV
-
 const app = express()
+
 app.use(json())
 app.use(urlencoded({ extended: true }))
 app.set('port', PORT)
@@ -21,5 +22,7 @@ app.get('*', (req, res) => {
   res.sendStatus(404)
 })
 
-module.exports = app
+const server = createServer(app)
+
+server.listen(PORT)
 
