@@ -1,14 +1,36 @@
 version: '2'
 
 services:
-  web:
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_PASSWORD=touchdown1!
+
+  base:
     build: .
-    command: npm run build && node build/web.js
     volumes:
       - .:/superbowleto
       - /superbowleto/node_modules
+
+  web:
+    extends: base
+    command: ash -c "npm run build && node build/web.js"
     ports:
       - 3000:3000
     environment:
       - API_ENV=test
+    links:
+      - postgres
+
+  worker:
+    extends: base
+    command: ash -c "npm run build && node build/worker.js"
+    ports:
+      - 3000:3000
+    environment:
+      - API_ENV=test
+    links:
+      - postgres
 
