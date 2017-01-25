@@ -1,6 +1,6 @@
-const express = require('express')
-const { json, urlencoded } = require('body-parser')
-const { createServer } = require('http')
+import express from 'express'
+import { json, urlencoded } from 'body-parser'
+import { createServer } from 'http'
 
 const PORT = 3000
 const environment = process.env.API_ENV
@@ -22,7 +22,7 @@ app.get('*', (req, res) => {
   res.sendStatus(404)
 })
 
-const server = createServer(app)
+export const server = createServer(app)
 
 server.listen(PORT)
 
