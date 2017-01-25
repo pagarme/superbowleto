@@ -8,6 +8,7 @@ before_install:
 - docker-compose build web
 
 script:
+- docker-compose run web npm run build
 - docker-compose run web npm run lint
 - docker-compose run web npm test
 

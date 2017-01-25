@@ -1,8 +1,4 @@
-const start = () => {
+export const start = () => {
   console.log('Worker started')
-}
-
-module.exports = {
-  start
 }
 
