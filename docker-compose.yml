@@ -1,6 +1,13 @@
 version: '2'
 
 services:
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_PASSWORD=touchdown1!
+
   web:
     build: .
     command: npm run build && node build/web.js
@@ -11,4 +18,6 @@ services:
       - 3000:3000
     environment:
       - API_ENV=test
+    links:
+      - postgres
 
