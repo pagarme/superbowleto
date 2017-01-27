@@ -24,7 +24,7 @@ services:
 
   web:
     extends: base
-    command: sh -c 'npm run build && node build/web.js'
+    command: npm run start-web
     ports:
       - 3000:3000
     environment:
@@ -35,7 +35,7 @@ services:
 
   worker:
     extends: base
-    command: sh -c 'npm run build && node build/worker.js'
+    command: npm run start-worker
     ports:
       - 3000:3000
     environment:
