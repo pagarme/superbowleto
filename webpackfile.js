@@ -10,8 +10,8 @@ const externals = Object.keys(dependencies)
 export default {
   context: join(__dirname, 'src'),
   entry: {
-    web: './web.js',
-    worker: './worker.js'
+    boleto: './handlers/boleto.js',
+    queue: './handlers/queue.js'
   },
   output: {
     path: join(__dirname, 'build'),
@@ -29,4 +29,3 @@ export default {
     ]
   }
 }
-
