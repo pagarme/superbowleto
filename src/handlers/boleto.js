@@ -7,7 +7,7 @@ export const create = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
-export const show = (evenet, context, callback) => {
+export const show = (event, context, callback) => {
   boleto.show()
     .then(data => buildResponse(200, data))
     .then(response => callback(null, response))
