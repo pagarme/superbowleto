@@ -15,4 +15,3 @@ function create (database) {
 }
 
 export default { create }
-
