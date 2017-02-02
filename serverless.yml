@@ -1,0 +1,31 @@
+service: superbowleto
+
+frameworkVersion: ">=1.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  stage: dev
+  region: us-east-1
+
+functions:
+  boleto_show:
+    handler: build/boleto.show
+    events:
+      - http:
+          path: /boletos
+          method: get
+
+  boleto_create:
+    handler: build/boleto.create
+    events:
+      - http:
+          path: /boletos
+          method: post
+
+  queue_create:
+    handler: build/queue.create
+    events:
+      - http:
+          path: /queues
+          method: get
