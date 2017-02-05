@@ -21,4 +21,3 @@ Object.values(rawModels)
 
 export const { models } = database
 export default database
-
