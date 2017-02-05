@@ -16,31 +16,14 @@ services:
     volumes:
       - ./yopa-config.yml:/tmp/yopa-in/config.yml:ro
 
-  base:
+  test:
     build: .
+    command: npm test
+    environment:
+      - API_ENV=test
     volumes:
       - .:/superbowleto
       - /superbowleto/node_modules
-
-  web:
-    extends: base
-    command: npm run start-web
-    ports:
-      - 3000:3000
-    environment:
-      - API_ENV=test
     depends_on:
       - postgres
       - yopa
-
-  worker:
-    extends: base
-    command: npm run start-worker
-    ports:
-      - 3000:3000
-    environment:
-      - API_ENV=test
-    depends_on:
-      - postgres
-      - yopa
-
