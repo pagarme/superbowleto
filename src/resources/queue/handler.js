@@ -1,5 +1,5 @@
-import { buildResponse } from '../lib/response'
-import * as queue from '../services/queue'
+import { buildResponse } from '../../lib/response'
+import * as queue from './service'
 
 export const create = (event, context, callback) => {
   queue.create({ queue_url: 'test-queue' })

@@ -1,5 +1,5 @@
 import test from 'ava'
-import * as queue from '../../src/services/queue'
+import * as queue from '../../../src/resources/queue/service'
 
 test('creates a queue', async (t) => {
   const { id, data, message } = await queue.create()

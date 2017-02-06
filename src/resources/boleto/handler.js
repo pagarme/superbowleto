@@ -1,5 +1,5 @@
-import { buildResponse } from '../lib/response'
-import * as boleto from '../services/boleto'
+import { buildResponse } from '../../lib/response'
+import * as boleto from './service'
 
 export const create = (event, context, callback) => {
   boleto.create({ barcode: 3000123 })
