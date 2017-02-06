@@ -1,6 +1,6 @@
 import test from 'ava'
 import { promisify } from 'bluebird'
-import * as queue from '../../src/handlers/queue'
+import * as queue from '../../../src/resources/queue/handler'
 
 const create = promisify(queue.create)
 

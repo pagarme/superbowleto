@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run webpack",
     "lint": "eslint src/**/*.js test/**/*.js",
-    "test": "ava --verbose test/**/*.js",
+    "test": "ava --verbose 'test/**/*.js'",
     "webpack": "node -r babel-register ./node_modules/.bin/webpack"
   },
   "repository": {

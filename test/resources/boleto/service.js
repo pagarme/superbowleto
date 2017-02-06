@@ -1,5 +1,5 @@
 import test from 'ava'
-import * as boleto from '../../src/services/boleto'
+import * as boleto from '../../../src/resources/boleto/service'
 
 test('creates a boleto', async (t) => {
   const { message, id, data } = await boleto.create({ id: 123 })

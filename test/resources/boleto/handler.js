@@ -1,6 +1,6 @@
 import test from 'ava'
 import { promisify } from 'bluebird'
-import * as boleto from '../../src/handlers/boleto'
+import * as boleto from '../../../src/resources/boleto/handler'
 
 const create = promisify(boleto.create)
 const show = promisify(boleto.show)
