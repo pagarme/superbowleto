@@ -2,7 +2,13 @@ import Sequelize from 'sequelize'
 import config from '../config/database'
 import * as rawModels from '../models'
 
-const database = new Sequelize(config)
+const defaults = {
+  define: {
+    underscored: true
+  }
+}
+
+const database = new Sequelize(Object.assign({}, defaults, config))
 
 const createInstance = model => ({
   model,
