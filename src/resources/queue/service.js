@@ -1,9 +1,5 @@
-export const create = (data = { id: Math.random() }) => new Promise((resolve) => {
-  const { id } = data
+import { models } from '../../lib/database'
 
-  resolve({
-    id: `queue_${id}`,
-    data,
-    message: 'Queue created successfully'
-  })
-})
+const { queue } = models
+
+export const create = data => queue.create(data)
