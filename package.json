@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run webpack",
     "lint": "eslint src/**/*.js test/**/*.js",
-    "test": "ava --verbose 'test/**/*.js'",
+    "test": "ava --verbose 'test/**/*.js' '!test/utils/**/*'",
     "webpack": "node -r babel-register ./node_modules/.bin/webpack"
   },
   "repository": {
@@ -37,6 +37,8 @@
     "babel-preset-env": "1.1.8",
     "babel-preset-es2015": "6.22.0",
     "babel-register": "6.22.0",
+    "chai": "3.5.0",
+    "chai-subset": "1.4.0",
     "concurrently": "3.1.0",
     "eslint": "3.13.1",
     "eslint-config-airbnb-base": "11.0.1",
