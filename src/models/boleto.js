@@ -11,7 +11,7 @@ function create (database) {
     },
 
     queue_id: {
-      type: INTEGER,
+      type: STRING,
       allowNull: false
     },
 
