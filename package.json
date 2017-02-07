@@ -6,7 +6,9 @@
   "private": "true",
   "scripts": {
     "build": "npm run webpack",
-    "lint": "eslint src/**/*.js test/**/*.js",
+    "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
+    "setup": "node -r babel-register ./script/setup",
+    "pretest": "npm run setup",
     "test": "ava --verbose 'test/**/*.js' '!test/utils/**/*'",
     "webpack": "node -r babel-register ./node_modules/.bin/webpack"
   },
