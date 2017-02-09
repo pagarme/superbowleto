@@ -1,5 +1,5 @@
 #!usr/bin/env node
 
-import database from '../src/lib/database'
+import database from '../src/database'
 
 database.sync({ force: true })
