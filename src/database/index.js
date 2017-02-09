@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize'
 import config from '../config/database'
-import * as rawModels from '../models'
+import * as rawModels from './models'
 
 const defaults = {
   define: {
