@@ -1,4 +1,4 @@
-import { models } from '../../lib/database'
+import { models } from '../../database'
 
 const { queue } = models
 
