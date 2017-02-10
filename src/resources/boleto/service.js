@@ -1,12 +1,6 @@
-export const create = (data = { id: Math.random() }) => new Promise((resolve) => {
-  const { id } = data
+import { models } from '../../database'
 
-  resolve({
-    id: `bol_${id}`,
-    data,
-    message: 'Boleto created successfully'
-  })
-})
+export const create = data => models.boleto.create(data)
 
 export const show = (id = Math.random()) => new Promise((resolve) => {
   resolve({
