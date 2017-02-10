@@ -1,6 +1,7 @@
 import test from 'ava'
 import { assert } from '../../utils/chai'
 import { normalizeHandler } from '../../utils/normalizer'
+import { models } from '../../../src/database'
 import * as queue from '../../../src/resources/queue/handler'
 
 const create = normalizeHandler(queue.create)
@@ -25,21 +26,24 @@ test('creates a queue', async (t) => {
 })
 
 test('shows a queue', async (t) => {
-  const createdQueue = await create({
-    body: queueMock
-  })
+  const createdQueue = (await models.queue.create(queueMock)).dataValues
 
   const { body, statusCode } = await show({
     pathParameters: {
-      id: createdQueue.body.id
+      id: createdQueue.id
     }
   })
 
   t.is(statusCode, 200)
-  t.deepEqual(body, createdQueue.body)
+
+  assert.containSubset(body, {
+    id: createdQueue.id,
+    name: 'test-queue',
+    url: 'http://yopa/queue/test'
+  })
 })
 
-test.only('tries to find a queue that does not exist', async (t) => {
+test('tries to find a queue that does not exist', async (t) => {
   const { statusCode } = await show({
     pathParameters: {
       id: 'queue_xxx'
