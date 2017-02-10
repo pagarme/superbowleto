@@ -23,7 +23,7 @@ const boletoMock = {
   payer_document_number: '98154524872'
 }
 
-test.only('creates a boleto', async (t) => {
+test('creates a boleto', async (t) => {
   const queue = (await models.queue.create(queueMock)).dataValues
 
   const { body, statusCode } = await create({
