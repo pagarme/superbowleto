@@ -6,7 +6,7 @@ class BaseError extends Error {
 }
 
 export class NotFoundError extends BaseError {
-  constructor (error) {
+  constructor (error = {}) {
     const { message } = error
     super(message)
     Object.assign(this, error)
