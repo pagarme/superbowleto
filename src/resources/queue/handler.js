@@ -8,8 +8,7 @@ export const create = (event, context, callback) => {
 
   Promise.resolve(body)
     .then(queue.create)
-    .then(data => buildResponse(201, data))
-    .then(response => callback(null, response))
+    .then(data => callback(null, buildResponse(201, data)))
     .catch(err => callback(err))
 }
 
@@ -19,8 +18,7 @@ export const show = (event, context, callback) => {
 
   Promise.resolve(id)
     .then(queue.show)
-    .then(data => buildResponse(200, data))
-    .then(response => callback(null, response))
+    .then(data => callback(null, buildResponse(200, data)))
     .catch(NotFoundError, () => callback(null, buildResponse(404)))
     .catch(err => callback(err))
 }

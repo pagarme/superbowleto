@@ -43,7 +43,7 @@ test('shows a queue', async (t) => {
   })
 })
 
-test('tries to find a queue that does not exist', async (t) => {
+test('tries to show a queue that does not exist', async (t) => {
   const { statusCode } = await show({
     pathParameters: {
       id: 'queue_xxx'
