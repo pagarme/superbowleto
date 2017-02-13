@@ -9,7 +9,7 @@
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
     "pretest": "npm run setup",
-    "test": "nyc ava --verbose 'test/**/*.js' '!test/utils/**/*'",
+    "test": "nyc ava --verbose 'test/{e2e,unit}/**/*.js' '!test/**/test-utils/*'",
     "webpack": "node -r babel-register ./node_modules/.bin/webpack"
   },
   "repository": {
