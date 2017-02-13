@@ -1,5 +1,5 @@
 import test from 'ava'
-import { buildResponse } from '../../src/lib/response'
+import { buildResponse } from '../../../src/lib/response'
 
 test('builds a response', async (t) => {
   const data = { message: 'not found' }
