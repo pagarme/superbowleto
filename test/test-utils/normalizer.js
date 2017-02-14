@@ -8,7 +8,7 @@ const computeHandlerEvent = event => Object.assign({}, event, {
   body: JSON.stringify(event.body)
 })
 
-export const normalizeHandler = fn => (event, context) => {
+export const normalizeHandler = fn => (event = {}, context) => {
   const handler = promisify(fn)
   const computedEvent = computeHandlerEvent(event)
 
