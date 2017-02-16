@@ -1,7 +1,7 @@
 import { mergeAll } from 'ramda'
 import { models } from '../../database'
 import { NotFoundError } from '../errors'
-import { getPaginationQuery } from '../../database/lib/pagination'
+import { getPaginationQuery } from '../../lib/pagination'
 
 export const create = data => models.boleto.create(data)
 
