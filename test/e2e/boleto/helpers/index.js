@@ -1,6 +1,6 @@
 import { prop } from 'ramda'
 import { models } from '../../../../src/database'
-import { createQueue } from '../../queue/test-utils'
+import { createQueue } from '../../queue/helpers'
 
 export const boletoMock = {
   status: 'pending_registration',

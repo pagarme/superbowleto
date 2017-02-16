@@ -1,8 +1,8 @@
 import test from 'ava'
-import { assert } from '../../test-utils/chai'
-import { normalizeHandler } from '../../test-utils/normalizer'
-import { createQueue } from '../queue/test-utils'
-import { boletoMock } from './test-utils'
+import { assert } from '../../helpers/chai'
+import { normalizeHandler } from '../../helpers/normalizer'
+import { createQueue } from '../queue/helpers'
+import { boletoMock } from './helpers'
 import * as boletoHandler from '../../../src/resources/boleto/handler'
 
 const create = normalizeHandler(boletoHandler.create)

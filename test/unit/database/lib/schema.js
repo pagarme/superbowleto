@@ -1,5 +1,5 @@
 import test from 'ava'
-import { defaultCuidValue } from '../../../../src/database/helpers/schema'
+import { defaultCuidValue } from '../../../../src/database/lib/schema'
 
 test('creates a cuid without prefix', async (t) => {
   const createCuid = defaultCuidValue()
