@@ -1,5 +1,5 @@
 import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
-import { defaultCuidValue } from '../helpers/schema'
+import { defaultCuidValue } from '../lib/schema'
 
 function create (database) {
   return database.define('boleto', {
