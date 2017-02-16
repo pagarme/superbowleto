@@ -1,5 +1,5 @@
 import { STRING } from 'sequelize'
-import { defaultCuidValue } from '../lib/schema'
+import { defaultCuidValue } from '../../lib/schema'
 
 function create (database) {
   return database.define('queue', {
