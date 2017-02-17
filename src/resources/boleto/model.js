@@ -1,5 +1,27 @@
+import Promise from 'bluebird'
+import { assoc, pick } from 'ramda'
 import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
-import { defaultCuidValue } from '../../lib/schema'
+import { defaultCuidValue, responseObjectBuilder } from '../../lib/schema'
+
+export const buildResponse = responseObjectBuilder(boleto =>
+  Promise.resolve(boleto)
+    .then(pick([
+      'id',
+      'queue_id',
+      'status',
+      'expiration_date',
+      'amount',
+      'paid_amount',
+      'instructions',
+      'issuer',
+      'issuer_id',
+      'title_id',
+      'payer_name',
+      'payer_document_type',
+      'payer_document_number'
+    ]))
+    .then(assoc('object', 'boleto'))
+)
 
 function create (database) {
   return database.define('boleto', {
@@ -77,7 +99,10 @@ function create (database) {
     indexes: [
       { fields: ['queue_id'] },
       { fields: ['status'] }
-    ]
+    ],
+    classMethods: {
+      buildResponse
+    }
   })
 }
 

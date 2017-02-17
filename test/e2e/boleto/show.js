@@ -16,6 +16,8 @@ test('shows an existing boleto', async (t) => {
   })
 
   t.is(statusCode, 200)
+  t.is(body.id, boleto.id)
+  t.is(body.object, 'boleto')
   assert.containSubset(body, {
     status: 'pending_registration',
     paid_amount: 0,
