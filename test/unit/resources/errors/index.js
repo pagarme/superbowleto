@@ -1,5 +1,5 @@
 import test from 'ava'
-import { NotFoundError } from '../../../src/resources/errors'
+import { NotFoundError } from '../../../../src/resources/errors'
 
 test('is a custom error', async (t) => {
   const error = new NotFoundError({
@@ -8,6 +8,7 @@ test('is a custom error', async (t) => {
   })
 
   t.is(error.name, 'NotFoundError')
+  t.is(error.type, 'not_found')
   t.is(error.message, 'User not found')
   t.is(error.customProperty, 'metadata')
   t.true(error instanceof NotFoundError)
