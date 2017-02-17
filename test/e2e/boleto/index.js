@@ -12,11 +12,12 @@ test.before(async () => {
 
 test('shows all boletos with default pagination', async (t) => {
   const { body, statusCode } = await indexBoleto()
-  const resultSample = body[0]
+  const item = body[0]
 
   t.is(statusCode, 200)
   t.is(body.length, 10, 'should have the default 10 items on the result')
-  assert.containSubset(resultSample, {
+  t.is(item.object, 'boleto')
+  assert.containSubset(item, {
     status: 'pending_registration',
     paid_amount: 0,
     amount: 2000,
@@ -35,11 +36,12 @@ test('shows all boletos with custom pagination', async (t) => {
       count: 2
     }
   })
-  const resultSample = body[0]
+  const item = body[0]
 
   t.is(statusCode, 200)
   t.is(body.length, 2, 'should have 2 items on the result')
-  assert.containSubset(resultSample, {
+  t.is(item.object, 'boleto')
+  assert.containSubset(item, {
     status: 'pending_registration',
     paid_amount: 0,
     amount: 2000,
