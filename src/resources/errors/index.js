@@ -7,8 +7,8 @@ class BaseError extends Error {
 
 export class NotFoundError extends BaseError {
   constructor (error = {}) {
-    const { message } = error
-    super(message)
+    super(error.message)
+    this.type = 'not_found'
     Object.assign(this, error)
   }
 }
