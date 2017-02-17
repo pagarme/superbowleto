@@ -12,5 +12,6 @@ test('creates a queue', async (t) => {
   })
 
   t.is(statusCode, 201)
+  t.is(body.object, 'queue')
   assert.containSubset(body, queueMock)
 })

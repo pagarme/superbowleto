@@ -1,5 +1,19 @@
+import Promise from 'bluebird'
+import { assoc, pick } from 'ramda'
 import { STRING } from 'sequelize'
-import { defaultCuidValue } from '../../lib/schema'
+import { defaultCuidValue, responseObjectBuilder } from '../../lib/schema'
+
+export const buildResponse = responseObjectBuilder(queue =>
+  Promise.resolve(queue)
+    .then(pick([
+      'id',
+      'name',
+      'url',
+      'created_at',
+      'updated_at'
+    ]))
+    .then(assoc('object', 'queue'))
+)
 
 function create (database) {
   return database.define('queue', {
@@ -17,6 +31,10 @@ function create (database) {
     url: {
       type: STRING,
       allowNull: false
+    }
+  }, {
+    classMethods: {
+      buildResponse
     }
   })
 }
