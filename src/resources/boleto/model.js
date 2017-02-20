@@ -18,7 +18,9 @@ export const buildResponse = responseObjectBuilder(boleto =>
       'title_id',
       'payer_name',
       'payer_document_type',
-      'payer_document_number'
+      'payer_document_number',
+      'created_at',
+      'updated_at'
     ]))
     .then(assoc('object', 'boleto'))
 )
