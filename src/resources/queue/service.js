@@ -3,16 +3,18 @@ import { models } from '../../database'
 import { NotFoundError } from '../errors'
 import { getPaginationQuery } from '../../lib/pagination'
 
+const { Queue } = models
+
 export const create = data =>
-  models.queue.create(data)
-    .then(models.queue.buildResponse)
+  Queue.create(data)
+    .then(Queue.buildResponse)
 
 export const index = ({ page, count }) => {
   const paginationQuery = getPaginationQuery({ page, count })
   const query = mergeAll([{}, paginationQuery])
 
-  return models.queue.findAll(query)
-    .then(models.queue.buildResponse)
+  return Queue.findAll(query)
+    .then(Queue.buildResponse)
 }
 
 export const show = (id) => {
@@ -22,7 +24,7 @@ export const show = (id) => {
     }
   }
 
-  return models.queue.findOne(query)
+  return Queue.findOne(query)
     .then((queue) => {
       if (!queue) {
         throw new NotFoundError()
@@ -30,5 +32,5 @@ export const show = (id) => {
 
       return queue
     })
-    .then(models.queue.buildResponse)
+    .then(Queue.buildResponse)
 }

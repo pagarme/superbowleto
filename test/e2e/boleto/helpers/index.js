@@ -1,6 +1,7 @@
-import { prop } from 'ramda'
 import { models } from '../../../../src/database'
 import { createQueue } from '../../queue/helpers'
+
+const { Boleto } = models
 
 export const boletoMock = {
   status: 'pending_registration',
@@ -21,6 +22,6 @@ export const createBoleto = (data = boletoMock) =>
         queue_id: queue.id
       })
 
-      return models.boleto.create(payload)
+      return Boleto.create(payload)
     })
-    .then(prop('dataValues'))
+    .then(Boleto.buildResponse)

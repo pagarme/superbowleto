@@ -24,7 +24,7 @@ export const buildResponse = responseObjectBuilder(boleto =>
 )
 
 function create (database) {
-  return database.define('boleto', {
+  return database.define('Boleto', {
     id: {
       type: STRING,
       primaryKey: true,
@@ -106,8 +106,8 @@ function create (database) {
   })
 }
 
-function associate (boleto, { queue }) {
-  boleto.belongsTo(queue)
+function associate (Boleto, { Queue }) {
+  Boleto.belongsTo(Queue)
 }
 
 export default {
