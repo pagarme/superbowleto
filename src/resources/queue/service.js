@@ -27,7 +27,9 @@ export const show = (id) => {
   return Queue.findOne(query)
     .then((queue) => {
       if (!queue) {
-        throw new NotFoundError()
+        throw new NotFoundError({
+          message: 'Queue not found'
+        })
       }
 
       return queue

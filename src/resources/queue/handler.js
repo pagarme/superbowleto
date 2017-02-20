@@ -1,5 +1,5 @@
 import Promise from 'bluebird'
-import { buildResponse } from '../../lib/response'
+import { buildSuccessResponse, buildFailureResponse } from '../../lib/response'
 import { NotFoundError } from '../errors'
 import * as queue from './service'
 
@@ -8,8 +8,9 @@ export const create = (event, context, callback) => {
 
   Promise.resolve(body)
     .then(queue.create)
-    .then(data => callback(null, buildResponse(201, data)))
-    .catch(err => callback(err))
+    .then(buildSuccessResponse(201))
+    .catch(buildFailureResponse(500))
+    .then(response => callback(null, response))
 }
 
 export const index = (event, context, callback) => {
@@ -18,8 +19,9 @@ export const index = (event, context, callback) => {
 
   Promise.resolve({ page, count })
     .then(queue.index)
-    .then(data => callback(null, buildResponse(200, data)))
-    .catch(err => callback(err))
+    .then(buildSuccessResponse(200))
+    .catch(buildFailureResponse(500))
+    .then(response => callback(null, response))
 }
 
 export const show = (event, context, callback) => {
@@ -28,7 +30,8 @@ export const show = (event, context, callback) => {
 
   Promise.resolve(id)
     .then(queue.show)
-    .then(data => callback(null, buildResponse(200, data)))
-    .catch(NotFoundError, () => callback(null, buildResponse(404)))
-    .catch(err => callback(err))
+    .then(buildSuccessResponse(200))
+    .catch(NotFoundError, buildFailureResponse(404))
+    .catch(buildFailureResponse(500))
+    .then(response => callback(null, response))
 }

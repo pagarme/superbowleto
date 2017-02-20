@@ -27,7 +27,9 @@ export const show = (id) => {
   return Boleto.findOne(query)
     .then((boleto) => {
       if (!boleto) {
-        throw new NotFoundError()
+        throw new NotFoundError({
+          message: 'Boleto not found'
+        })
       }
 
       return boleto
