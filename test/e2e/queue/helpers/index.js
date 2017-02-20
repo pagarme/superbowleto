@@ -1,5 +1,6 @@
-import { prop } from 'ramda'
 import { models } from '../../../../src/database'
+
+const { Queue } = models
 
 export const queueMock = {
   name: 'test',
@@ -7,5 +8,5 @@ export const queueMock = {
 }
 
 export const createQueue = (data = queueMock) =>
-  models.queue.create(data)
-    .then(prop('dataValues'))
+  Queue.create(data)
+    .then(Queue.buildResponse)

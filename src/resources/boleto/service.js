@@ -3,16 +3,18 @@ import { models } from '../../database'
 import { NotFoundError } from '../errors'
 import { getPaginationQuery } from '../../lib/pagination'
 
+const { Boleto } = models
+
 export const create = data =>
-  models.boleto.create(data)
-    .then(models.boleto.buildResponse)
+  Boleto.create(data)
+    .then(Boleto.buildResponse)
 
 export const index = ({ page, count }) => {
   const paginationQuery = getPaginationQuery({ page, count })
   const query = mergeAll([{}, paginationQuery])
 
-  return models.boleto.findAll(query)
-    .then(models.boleto.buildResponse)
+  return Boleto.findAll(query)
+    .then(Boleto.buildResponse)
 }
 
 export const show = (id) => {
@@ -22,7 +24,7 @@ export const show = (id) => {
     }
   }
 
-  return models.boleto.findOne(query)
+  return Boleto.findOne(query)
     .then((boleto) => {
       if (!boleto) {
         throw new NotFoundError()
@@ -30,5 +32,5 @@ export const show = (id) => {
 
       return boleto
     })
-    .then(models.boleto.buildResponse)
+    .then(Boleto.buildResponse)
 }

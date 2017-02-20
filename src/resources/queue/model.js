@@ -16,7 +16,7 @@ export const buildResponse = responseObjectBuilder(queue =>
 )
 
 function create (database) {
-  return database.define('queue', {
+  return database.define('Queue', {
     id: {
       type: STRING,
       primaryKey: true,
@@ -39,8 +39,8 @@ function create (database) {
   })
 }
 
-function associate (queue, { boleto }) {
-  queue.hasMany(boleto)
+function associate (Queue, { Boleto }) {
+  Queue.hasMany(Boleto)
 }
 
 export default {
