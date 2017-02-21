@@ -2,17 +2,31 @@ import {
   compose,
   cond,
   map,
+  merge,
   of,
+  pick,
+  prop,
   T
 } from 'ramda'
 
-export const normalizeSingleError = (error) => {
-  const { type = 'unknown_error', message = '', field = null } = error
+const hasErrors = compose(Array.isArray, prop('errors'))
 
-  return { type, message, field }
-}
+const normalizeSingleError = compose(
+  merge({
+    type: 'unknown_error',
+    message: '',
+    field: null
+  }),
+  pick([
+    'type',
+    'message',
+    'field'
+  ]),
+)
 
-export const normalizeError = cond([
-  [Array.isArray, map(normalizeSingleError)],
-  [T, compose(map(normalizeSingleError), of)]
+const normalizeMultipleErrors = map(normalizeSingleError)
+
+export const normalizeErrors = cond([
+  [hasErrors, compose(normalizeMultipleErrors, prop('errors'))],
+  [T, compose(normalizeMultipleErrors, of)]
 ])
