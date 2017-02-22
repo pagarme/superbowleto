@@ -8,9 +8,12 @@
     "build": "npm run webpack",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
-    "pretest": "npm run setup",
-    "test": "nyc ava --verbose 'test/{e2e,unit}/**/*.js' '!test/**/helpers/*'",
-    "webpack": "node -r babel-register ./node_modules/.bin/webpack"
+    "test": "nyc ava --verbose 'test/{e2e,unit}/**/*.js'",
+    "test-unit": "ava --verbose 'test/unit/**/*.js'",
+    "test-e2e": "ava --verbose 'test/e2e/**/*.js'",
+    "webpack": "node -r babel-register ./node_modules/.bin/webpack",
+    "pretest": " npm run setup",
+    "pretest-e2e": "npm run setup"
   },
   "repository": {
     "type": "git",
