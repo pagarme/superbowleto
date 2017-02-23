@@ -24,7 +24,7 @@ test('shows an existing boleto', async (t) => {
     amount: 2000,
     instructions: 'Please do not accept after expiration_date',
     issuer: 'bradesco',
-    issuer_id: 'ciz04q0oi000001ppjf0lq4pa',
+    issuer_id: null,
     payer_name: 'John Appleseed',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872'
