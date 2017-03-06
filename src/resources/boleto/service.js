@@ -1,6 +1,7 @@
 import { mergeAll } from 'ramda'
 import { models } from '../../database'
 import { NotFoundError } from '../errors'
+import { handleDatabaseErrors } from '../errors/database'
 import { getPaginationQuery } from '../../lib/pagination'
 import { parse } from '../../lib/request'
 import { schema } from './schema'
@@ -11,6 +12,7 @@ export const create = data => Promise.resolve(data)
   .then(parse(schema))
   .then(Boleto.create.bind(Boleto))
   .then(Boleto.buildResponse)
+  .catch(handleDatabaseErrors)
 
 export const index = ({ page, count }) => {
   const paginationQuery = getPaginationQuery({ page, count })
@@ -18,6 +20,7 @@ export const index = ({ page, count }) => {
 
   return Boleto.findAll(query)
     .then(Boleto.buildResponse)
+    .catch(handleDatabaseErrors)
 }
 
 export const show = (id) => {
@@ -38,4 +41,5 @@ export const show = (id) => {
       return boleto
     })
     .then(Boleto.buildResponse)
+    .catch(handleDatabaseErrors)
 }
