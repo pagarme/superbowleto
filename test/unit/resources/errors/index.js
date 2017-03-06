@@ -3,13 +3,11 @@ import { NotFoundError } from '../../../../src/resources/errors'
 
 test('is a custom error', async (t) => {
   const error = new NotFoundError({
-    message: 'User not found',
-    customProperty: 'metadata'
+    message: 'User not found'
   })
 
-  t.is(error.name, 'NotFoundError')
-  t.is(error.type, 'not_found')
-  t.is(error.message, 'User not found')
-  t.is(error.customProperty, 'metadata')
-  t.true(error instanceof NotFoundError)
+  t.is(error.name, 'NotFoundError', 'has a `name` property')
+  t.is(error.type, 'not_found', 'has a `type` property')
+  t.is(error.message, 'User not found', 'has a `message` property')
+  t.true(error instanceof NotFoundError, 'in an instance of an error')
 })
