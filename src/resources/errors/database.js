@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize'
-import { cond } from 'ramda'
-import { InvalidParameterError, ValidationError } from './index'
+import { compose, cond, T } from 'ramda'
+import { DatabaseError, InvalidParameterError, ValidationError } from './index'
 
 const isValidationError = err => err instanceof Sequelize.ValidationError
 
@@ -13,6 +13,15 @@ const handleValidationErrors = (err) => {
   return new ValidationError({ errors })
 }
 
+const handleGenericErrors = err => new DatabaseError({
+  message: err.message
+})
+
+const throwError = (err) => {
+  throw err
+}
+
 export const handleDatabaseErrors = cond([
-  [isValidationError, handleValidationErrors]
+  [isValidationError, compose(throwError, handleValidationErrors)],
+  [T, compose(throwError, handleGenericErrors)]
 ])

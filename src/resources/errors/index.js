@@ -27,3 +27,10 @@ export class ValidationError extends BaseError {
     this.errors = error.errors
   }
 }
+
+export class DatabaseError extends BaseError {
+  constructor (error = {}) {
+    super(error.message)
+    this.type = 'database'
+  }
+}
