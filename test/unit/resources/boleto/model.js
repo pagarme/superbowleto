@@ -7,7 +7,7 @@ test('buildResponse', async (t) => {
   const input = {
     id: 'bol_cizec1xk2000001nyml04gwxp',
     queue_id: 'queue_cizec29zt000001tgv3qnv3ug',
-    status: 'pending_registration',
+    status: 'issued',
     expiration_date: now,
     amount: 2000,
     instructions: 'Please do not accept after expiration_date',
@@ -28,7 +28,7 @@ test('buildResponse', async (t) => {
     object: 'boleto',
     id: 'bol_cizec1xk2000001nyml04gwxp',
     queue_id: 'queue_cizec29zt000001tgv3qnv3ug',
-    status: 'pending_registration',
+    status: 'issued',
     expiration_date: now,
     amount: 2000,
     instructions: 'Please do not accept after expiration_date',
