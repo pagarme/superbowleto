@@ -19,7 +19,7 @@ test('shows an existing boleto', async (t) => {
   t.is(body.id, boleto.id)
   t.is(body.object, 'boleto')
   assert.containSubset(body, {
-    status: 'pending_registration',
+    status: 'issued',
     paid_amount: 0,
     amount: 2000,
     instructions: 'Please do not accept after expiration_date',

@@ -18,7 +18,7 @@ test('shows all boletos with default pagination', async (t) => {
   t.is(body.length, 10, 'should have the default 10 items on the result')
   t.is(item.object, 'boleto')
   assert.containSubset(item, {
-    status: 'pending_registration',
+    status: 'issued',
     paid_amount: 0,
     amount: 2000,
     instructions: 'Please do not accept after expiration_date',
@@ -42,7 +42,7 @@ test('shows all boletos with custom pagination', async (t) => {
   t.is(body.length, 2, 'should have 2 items on the result')
   t.is(item.object, 'boleto')
   assert.containSubset(item, {
-    status: 'pending_registration',
+    status: 'issued',
     paid_amount: 0,
     amount: 2000,
     instructions: 'Please do not accept after expiration_date',

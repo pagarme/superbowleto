@@ -22,7 +22,7 @@ test('creates a boleto', async (t) => {
   t.true(body.title_id != null)
   t.true(typeof body.title_id === 'number')
   assert.containSubset(body, {
-    status: 'pending_registration',
+    status: 'issued',
     paid_amount: 0,
     amount: 2000,
     instructions: 'Please do not accept after expiration_date',

@@ -42,8 +42,13 @@ function create (database) {
     status: {
       type: ENUM,
       allowNull: false,
-      values: ['pending_registration', 'registered'],
-      defaultValue: 'pending_registration'
+      values: [
+        'issued',
+        'pending_registration',
+        'registered',
+        'refused'
+      ],
+      defaultValue: 'issued'
     },
 
     expiration_date: {
