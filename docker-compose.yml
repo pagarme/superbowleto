@@ -28,23 +28,25 @@ services:
       - .:/superbowleto
       - /superbowleto/node_modules
 
-  test:
-    extends: base
-    command: npm test
+  test-dependencies:
+    image: busybox
     depends_on:
       postgres:
         condition: service_started
       yopa:
         condition: service_healthy
 
+  test:
+    extends: base
+    command: npm test
+    depends_on:
+      - test-dependencies
+
   test-e2e:
     extends: base
     command: npm run test-e2e
     depends_on:
-      postgres:
-        condition: service_started
-      yopa:
-        condition: service_healthy
+      - test-dependencies
 
   test-unit:
     extends: base

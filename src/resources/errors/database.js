@@ -3,6 +3,7 @@ import { compose, cond, T } from 'ramda'
 import { DatabaseError, InvalidParameterError, ValidationError } from './index'
 
 const isValidationError = err => err instanceof Sequelize.ValidationError
+const isSequelizeError = err => err instanceof Sequelize.Error
 
 const handleValidationErrors = (err) => {
   const errors = err.errors.map(error => new InvalidParameterError({
@@ -23,5 +24,6 @@ const throwError = (err) => {
 
 export const handleDatabaseErrors = cond([
   [isValidationError, compose(throwError, handleValidationErrors)],
-  [T, compose(throwError, handleGenericErrors)]
+  [isSequelizeError, compose(throwError, handleGenericErrors)],
+  [T, throwError]
 ])
