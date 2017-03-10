@@ -8,4 +8,4 @@ sqs:
 
 messaging:
   - sqs://test
-
+  - sqs://boletos-to-register
