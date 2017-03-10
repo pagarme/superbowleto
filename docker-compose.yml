@@ -16,7 +16,12 @@ services:
     volumes:
       - ./yopa-config.yml:/tmp/yopa-in/config.yml:ro
     healthcheck:
-      test: curl -f 'http://localhost:47195?Action=GetQueueUrl&QueueName=test'
+      test: [
+        "CMD-SHELL",
+        "curl -f 'http://localhost:47195?Action=GetQueueUrl&QueueName=test'",
+        "&&",
+        "curl -f 'http://localhost:47195?Action=GetQueueUrl&QueueName=boletos-to-register'",
+      ]
       interval: 20s
       retries: 10
 
