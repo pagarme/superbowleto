@@ -1,6 +1,6 @@
 import Promise from 'bluebird'
 import { buildSuccessResponse, buildFailureResponse } from '../../lib/response'
-import { ValidationError, NotFoundError } from '../errors'
+import { ValidationError, NotFoundError } from '../../lib/errors'
 import * as boleto from './service'
 
 export const create = (event, context, callback) => {

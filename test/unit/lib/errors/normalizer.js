@@ -1,6 +1,6 @@
 import test from 'ava'
-import { InvalidParameterError } from '../../../../src/resources/errors'
-import { normalizeErrors } from '../../../../src/resources/errors/normalizer'
+import { InvalidParameterError } from '../../../../src/lib/errors'
+import { normalizeErrors } from '../../../../src/lib/errors/normalizer'
 
 test('normalizeErrors: with one single error', async (t) => {
   const errors = normalizeErrors(new InvalidParameterError({

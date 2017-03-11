@@ -1,7 +1,7 @@
 import test from 'ava'
 import Joi from 'joi'
 import { assert } from '../../helpers/chai'
-import { ValidationError } from '../../../src/resources/errors'
+import { ValidationError } from '../../../src/lib/errors'
 import { parse } from '../../../src/lib/request'
 
 const schema = {
