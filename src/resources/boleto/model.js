@@ -1,7 +1,7 @@
 import Promise from 'bluebird'
 import { assoc, pick } from 'ramda'
 import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
-import { defaultCuidValue, responseObjectBuilder } from '../../lib/schema'
+import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 
 export const buildResponse = responseObjectBuilder(boleto =>
   Promise.resolve(boleto)

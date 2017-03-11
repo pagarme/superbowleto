@@ -2,7 +2,7 @@ import { mergeAll } from 'ramda'
 import { models } from '../../database'
 import { NotFoundError } from '../../lib/errors'
 import { handleDatabaseErrors } from '../../lib/errors/database'
-import { getPaginationQuery } from '../../lib/pagination'
+import { getPaginationQuery } from '../../lib/database/pagination'
 import { parse } from '../../lib/http/request'
 import { schema } from './schema'
 
