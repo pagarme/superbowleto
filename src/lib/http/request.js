@@ -1,6 +1,6 @@
 import { curryN } from 'ramda'
 import { validate } from 'joi'
-import { ValidationError, InvalidParameterError } from '../lib/errors'
+import { ValidationError, InvalidParameterError } from '../errors'
 
 export const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
   const options = {

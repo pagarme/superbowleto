@@ -4,7 +4,7 @@ import { models } from '../../database'
 import { NotFoundError } from '../../lib/errors'
 import { handleDatabaseErrors } from '../../lib/errors/database'
 import { getPaginationQuery } from '../../lib/pagination'
-import { parse } from '../../lib/request'
+import { parse } from '../../lib/http/request'
 import { schema } from './schema'
 import { BoletosToRegisterQueue } from './queues'
 

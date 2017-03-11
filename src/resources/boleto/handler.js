@@ -1,5 +1,5 @@
 import Promise from 'bluebird'
-import { buildSuccessResponse, buildFailureResponse } from '../../lib/response'
+import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
 import { ValidationError, NotFoundError } from '../../lib/errors'
 import * as boleto from './service'
 
