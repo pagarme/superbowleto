@@ -1,5 +1,5 @@
 import { curryN, compose, objOf } from 'ramda'
-import { normalizeErrors } from '../resources/errors/normalizer'
+import { normalizeErrors } from '../errors/normalizer'
 
 export const buildErrorPayload = compose(
   objOf('errors'),

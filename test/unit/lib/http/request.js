@@ -1,8 +1,8 @@
 import test from 'ava'
 import Joi from 'joi'
-import { assert } from '../../helpers/chai'
-import { ValidationError } from '../../../src/resources/errors'
-import { parse } from '../../../src/lib/request'
+import { assert } from '../../../helpers/chai'
+import { ValidationError } from '../../../../src/lib/errors'
+import { parse } from '../../../../src/lib/http/request'
 
 const schema = {
   name: Joi

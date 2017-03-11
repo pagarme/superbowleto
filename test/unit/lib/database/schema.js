@@ -1,5 +1,5 @@
 import test from 'ava'
-import { defaultCuidValue, responseObjectBuilder } from '../../../src/lib/schema'
+import { defaultCuidValue, responseObjectBuilder } from '../../../../src/lib/database/schema'
 
 test('creates a cuid without prefix', async (t) => {
   const createCuid = defaultCuidValue()

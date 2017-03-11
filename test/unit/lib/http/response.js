@@ -3,7 +3,7 @@ import {
   buildSuccessResponse,
   buildFailureResponse,
   buildErrorPayload
-} from '../../../src/lib/response'
+} from '../../../../src/lib/http/response'
 
 test('buildSuccessResponse', async (t) => {
   const input = { message: 'This is some useful message' }
