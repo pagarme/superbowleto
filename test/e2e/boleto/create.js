@@ -1,11 +1,17 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
+import { findItemOnQueue, purgeQueue } from '../../helpers/sqs'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createQueue } from '../queue/helpers'
 import { boletoMock } from './helpers'
 import * as boletoHandler from '../../../src/resources/boleto/handler'
+import { BoletosToRegisterQueue } from '../../../src/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
+
+test.before(async () => {
+  await purgeQueue(BoletosToRegisterQueue)
+})
 
 test('creates a boleto', async (t) => {
   const queue = await createQueue()
@@ -32,6 +38,14 @@ test('creates a boleto', async (t) => {
     payer_document_type: 'cpf',
     payer_document_number: '98154524872'
   })
+
+  const sqsItem = await findItemOnQueue(
+    item => item.boleto_id === body.id,
+    BoletosToRegisterQueue
+  )
+
+  t.is(sqsItem.boleto_id, body.id, 'posts an item to `boletos-to-register` sqs queue with a `boleto_id` property`')
+  t.is(sqsItem.issuer, body.issuer, 'posts an item to `boletos-to-register` sqs queue with a `issuer` property`')
 })
 
 test('creates a boleto with invalid data', async (t) => {
