@@ -3,7 +3,7 @@ import { compose, defaultTo, filter, inc, prop } from 'ramda'
 import sqs from '../../src/lib/sqs'
 
 export const purgeQueue = queue => sqs.purgeQueue({
-  QueueUrl: queue.queueUrl
+  QueueUrl: queue.options.endpoint
 }).promise()
 
 export const findItemOnQueue = (where, queue) => {
@@ -11,7 +11,7 @@ export const findItemOnQueue = (where, queue) => {
   let loopCount = 0
 
   const receiveMessage = () => sqs.receiveMessage({
-    QueueUrl: queue.queueUrl,
+    QueueUrl: queue.options.endpoint,
     MaxNumberOfMessages: 10,
     WaitTimeSeconds: 10
   }).promise()

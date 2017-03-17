@@ -11,7 +11,7 @@ import { BoletosToRegisterQueue } from './queues'
 const { Boleto } = models
 
 export const create = (data) => {
-  const sendBoletoToQueue = tap(boleto => BoletosToRegisterQueue.sendMessage({
+  const sendBoletoToQueue = tap(boleto => BoletosToRegisterQueue.push({
     boleto_id: boleto.id,
     issuer: boleto.issuer
   }))
