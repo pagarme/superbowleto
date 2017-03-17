@@ -5,6 +5,7 @@ import { NotFoundError } from '../../lib/errors'
 import { handleDatabaseErrors } from '../../lib/errors/database'
 import { getPaginationQuery } from '../../lib/database/pagination'
 import { parse } from '../../lib/http/request'
+import sqs from '../../lib/sqs'
 import { schema } from './schema'
 import { BoletosToRegisterQueue } from './queues'
 
@@ -52,4 +53,17 @@ export const show = (id) => {
     })
     .then(Boleto.buildResponse)
     .catch(handleDatabaseErrors)
+}
+
+export const processBoletosToRegister = () => {
+  const processBoleto = (item, message) => {
+    const QueueUrl = BoletosToRegisterQueue.options.endpoint
+    const ReceiptHandle = message.ReceiptHandle
+
+    return sqs.deleteMessage({ QueueUrl, ReceiptHandle }).promise()
+  }
+
+  BoletosToRegisterQueue.startProcessing(processBoleto, {
+    keepMessages: true
+  })
 }
