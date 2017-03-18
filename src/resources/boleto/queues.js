@@ -1,11 +1,14 @@
 import { path } from 'ramda'
+import { Queue } from 'sqs-quooler'
+import sqs from '../../lib/sqs'
 import rawConfig from '../../config/queues.json'
-import Queue from '../../lib/sqs/Queue'
 
 const env = process.env.NODE_ENV || 'test'
 const config = path([env, 'boletos-to-register'], rawConfig)
 
 export const BoletosToRegisterQueue = new Queue({
-  queueUrl: config.queueUrl,
+  sqs,
+  endpoint: config.queueUrl,
   concurrency: config.concurrency
 })
+

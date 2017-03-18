@@ -36,3 +36,9 @@ export const show = (event, context, callback) => {
     .catch(buildFailureResponse(500))
     .then(response => callback(null, response))
 }
+
+export const processBoletosToRegister = (event, context, callback) => {
+  Promise.resolve(boleto.processBoletosToRegister)
+    .then(() => callback(null))
+    .catch(err => callback(err))
+}
