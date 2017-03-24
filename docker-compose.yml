@@ -25,14 +25,6 @@ services:
       interval: 20s
       retries: 10
 
-  base:
-    build: .
-    environment:
-      - API_ENV=test
-    volumes:
-      - .:/superbowleto
-      - /superbowleto/node_modules
-
   test-dependencies:
     image: busybox
     depends_on:
@@ -42,17 +34,12 @@ services:
         condition: service_healthy
 
   test:
-    extends: base
+    build: .
     command: npm test
+    environment:
+      - API_ENV=test
+    volumes:
+      - .:/superbowleto
+      - /superbowleto/node_modules
     depends_on:
       - test-dependencies
-
-  test-e2e:
-    extends: base
-    command: npm run test-e2e
-    depends_on:
-      - test-dependencies
-
-  test-unit:
-    extends: base
-    command: npm run test-unit

@@ -1,9 +1,9 @@
 console:
-	@docker-compose run base /bin/sh
+	@docker-compose run test /bin/sh
 .PHONY: console
 
 rebuild:
-	@docker-compose build base
+	@docker-compose build test
 .PHONY: rebuild
 
 teardown:
@@ -11,13 +11,13 @@ teardown:
 .PHONY: teardown
 
 test:
-	@docker-compose up test
+	@docker-compose run test
 .PHONY: test
 
-test-e2e:
-	@docker-compose up test-e2e
-.PHONY: test-e2e
+test-integration:
+	@docker-compose run test-integration
+.PHONY: test-integration
 
 test-unit:
-	@docker-compose up test-unit
+	@docker-compose run test-unit
 .PHONY: test-unit
