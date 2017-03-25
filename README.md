@@ -6,7 +6,7 @@
 ## Developing
 
 In order to develop for this project you must have [Docker](https://docs.docker.com/)
-and [Docker Compose](https://docs.docker.com/compose/) installed. That's it :) 
+and [Docker Compose](https://docs.docker.com/compose/) installed. That's it :)
 no need for Node.js, Postgres, etc.
 
 ### First Install
@@ -20,31 +20,31 @@ If you never developed in this repo before:
 
 2. **Build the base image:**
   ```sh
-  $ docker-compose build base
+  $ docker-compose build test
   ```
 
 ### Running tests
 
-Tests are separate in `e2e` and `unit`. You can either run them separately or run them all. 
+Tests are separate in `integration` and `unit`. You can either run them separately or run them all.
 
 - **Run all tests:**
   ```sh
-  $ docker-compose up test
+  $ docker-compose run test
   ```
 
-- **Run only `e2e` tests:**
+- **Run only `integration` tests:**
   ```sh
-  $ docker-compose up test-e2e
+  $ docker-compose run test npm run test-integration
   ```
 
 - **Run only `unit` tests:**
   ```sh
-  $ docker-compose up test-unit
+  $ docker-compose run test npm run test-unit
   ```
 
 ### Installing new dependencies
 
-We install our dependencies like npm packages on the Docker image (see our [Dockerfile](https://github.com/pagarme/superbowleto/blob/master/Dockerfile) to understand it better). 
+We install our dependencies like npm packages on the Docker image (see our [Dockerfile](https://github.com/pagarme/superbowleto/blob/master/Dockerfile) to understand it better).
 
 This gives us the advantage of caching the dependencies installation process, so when we build the image again, it's already cached by Docker and the image can be easily distributed with all its dependencies installed.
 
@@ -53,7 +53,7 @@ However, **if you need to install any new dependency**, you **must rebuild the i
 **You can rebuild the image with the new dependencies by running:**
 
 ```sh
-$ docker-compose build base
+$ docker-compose build test
 ```
 
 ## Understanding the Data Flow
@@ -68,9 +68,9 @@ The process of creating and registrating boletos has a lot of logical branches a
 
 ### 1. Creating the boleto
 
-At the beginning, we need to create the boleto. There's a lambda function for 
-this that is triggered by an `HTTP` event. The boleto is created in the database 
-and sent to an SQS queue called `boletos-to-register`. 
+At the beginning, we need to create the boleto. There's a lambda function for
+this that is triggered by an `HTTP` event. The boleto is created in the database
+and sent to an SQS queue called `boletos-to-register`.
 
 **Important:** In order to create a boleto, the client must specify a queue url that it's going
 to be later used for notifying an eventual successful attempt of registration.
@@ -135,12 +135,12 @@ The only information the message has is the `boleto_id`, so the following steps
 must are taken to fetch the boleto information and attempting to register it:
 
 1. **Query the database with the `boleto_id`.**
-2. **Check if the status is eligible for a registration attempt:** the only 
+2. **Check if the status is eligible for a registration attempt:** the only
 status ATM is `issued`)
-3. **Attempt to register the boleto within the provider.** Here we have 3 possible 
+3. **Attempt to register the boleto within the provider.** Here we have 3 possible
   outcomes:
-    a. **The registration is successful**: in this case we set the boleto to a 
-    `registered` status and post a message to the boleto's queue url. 
+    a. **The registration is successful**: in this case we set the boleto to a
+    `registered` status and post a message to the boleto's queue url.
     b. **The registration is unsuccessful**: in this case (where the provider
     denied the registration of the boleto), we set the boleto status to `refused`.
     c. **The registration is indeterminate**: in this case (where the provider
@@ -148,7 +148,7 @@ status ATM is `issued`)
 
 ### 4. Checking the status of `pending_registration` boletos.
 
-If the provider can't respond the registration attempt synchronously, we set the 
+If the provider can't respond the registration attempt synchronously, we set the
 boleto status to `pending_registration` and we need to later check the registration
 status within the provider.
 
@@ -157,7 +157,7 @@ does the following:
 
 1. **Find all pending_registration_boletos**: query the database for boletos
   with status `pending_registration`
-2. **Check the status within the provider**: for every `pending_registration` 
+2. **Check the status within the provider**: for every `pending_registration`
   boleto, check the provider API to check the status of the registration.
 
 ### 5. Notifying the registration of a boleto.

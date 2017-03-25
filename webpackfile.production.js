@@ -1,5 +1,5 @@
-import { join } from 'path'
-import { dependencies } from './package.json'
+const join = require('path').join
+const dependencies = require('./package.json').dependencies
 
 const externals = Object.keys(dependencies)
   .reduce((modules, module) =>
@@ -7,7 +7,7 @@ const externals = Object.keys(dependencies)
     {}
   )
 
-export default {
+module.exports = {
   context: join(__dirname, 'src'),
   entry: {
     boleto: './resources/boleto/handler.js',
