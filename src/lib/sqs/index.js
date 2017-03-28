@@ -1,8 +1,7 @@
 import { SQS, Credentials } from 'aws-sdk'
-import rawConfig from '../../config/sqs.json'
+import getConfig from '../../config/sqs'
 
-const env = process.env.NODE_ENV || 'test'
-const config = rawConfig[env]
+const config = getConfig()
 
 const sqs = new SQS({
   region: config.region,
