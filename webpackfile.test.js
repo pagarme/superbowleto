@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 const { join } = require('path')
 const { mkdirSync, writeFileSync } = require('fs')
 const { dependencies } = require('./package.json')
@@ -61,5 +62,10 @@ module.exports = {
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      __TEST__: true
+    })
+  ]
 }
