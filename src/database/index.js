@@ -1,8 +1,8 @@
 import Sequelize from 'sequelize'
-import config from '../config/database.json'
+import getConfig from '../config/database'
 import * as rawModels from './models'
 
-const env = process.env.NODE_ENV || 'test'
+const config = getConfig()
 
 const defaults = {
   define: {
@@ -10,7 +10,7 @@ const defaults = {
   }
 }
 
-const database = new Sequelize(Object.assign({}, defaults, config[env]))
+const database = new Sequelize(Object.assign({}, defaults, config))
 
 const createInstance = model => ({
   model,
