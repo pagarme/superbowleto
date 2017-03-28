@@ -5,13 +5,14 @@
   "main": "index.js",
   "private": "true",
   "scripts": {
-    "build": "webpack --config ./webpackfile.production.js",
+    "build-production": "webpack --config ./webpackfile.production.js",
+    "build-test": "webpack --config ./webpackfile.test.js",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
     "test": "ava --verbose '__tests__/test/**/*.js'",
     "test-integration": "ava --verbose '__tests__/test/integration/**/*.js'",
     "test-unit": "ava --verbose '__tests__/test/unit/**/*.js'",
-    "pretest": " npm run setup && webpack --config ./webpackfile.test.js"
+    "pretest": "npm run setup && npm run build-test"
   },
   "repository": {
     "type": "git",
