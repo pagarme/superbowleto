@@ -1,7 +1,8 @@
-const join = require('path').join
-const dependencies = require('./package.json').dependencies
+const webpack = require('webpack')
+const { join } = require('path')
+const { dependencies } = require('./package.json')
 
-const externals = Object.keys(dependencies)
+const externals = () => Object.keys(dependencies)
   .reduce((modules, module) =>
     Object.assign({}, modules, { [module]: `commonjs ${module}` }),
     {}
@@ -15,10 +16,11 @@ module.exports = {
   },
   output: {
     path: join(__dirname, 'build'),
+    libraryTarget: 'commonjs2',
     filename: '[name].js'
   },
   target: 'node',
-  externals,
+  externals: externals(),
   module: {
     rules: [
       {
@@ -27,5 +29,10 @@ module.exports = {
         loader: 'babel-loader'
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      __TEST__: false
+    })
+  ]
 }
