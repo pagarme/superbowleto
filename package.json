@@ -10,6 +10,7 @@
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
     "test": "ava --verbose '__tests__/test/**/*.js'",
+    "test-functional": "ava --verbose '__tests__/test/functional/**/*.js'",
     "test-integration": "ava --verbose '__tests__/test/integration/**/*.js'",
     "test-unit": "ava --verbose '__tests__/test/unit/**/*.js'",
     "pretest": "npm run setup && npm run build-test"
