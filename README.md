@@ -25,11 +25,16 @@ If you never developed in this repo before:
 
 ### Running tests
 
-Tests are separate in `integration` and `unit`. You can either run them separately or run them all.
+Tests are separate in `functional`, `integration` and `unit`. You can either run them separately or run them all.
 
 - **Run all tests:**
   ```sh
   $ docker-compose run test
+  ```
+
+- **Run only `functional` tests:**
+  ```sh
+  $ docker-compose run test npm run test-functional
   ```
 
 - **Run only `integration` tests:**
