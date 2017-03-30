@@ -14,6 +14,10 @@ test:
 	@docker-compose run test
 .PHONY: test
 
+test-functional:
+	@docker-compose run test-functional
+.PHONY: test-functional
+
 test-integration:
 	@docker-compose run test-integration
 .PHONY: test-integration
