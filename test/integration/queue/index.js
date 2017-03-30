@@ -2,7 +2,7 @@ import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { queueMock, createQueue } from './helpers'
-import * as queueHandler from '../../../src/resources/queue/handler'
+import * as queueHandler from '../../../src/resources/queue'
 
 const indexQueue = normalizeHandler(queueHandler.index)
 

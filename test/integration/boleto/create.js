@@ -4,7 +4,7 @@ import { findItemOnQueue, purgeQueue } from '../../helpers/sqs'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createQueue } from '../queue/helpers'
 import { boletoMock } from './helpers'
-import * as boletoHandler from '../../../src/resources/boleto/handler'
+import * as boletoHandler from '../../../src/resources/boleto'
 import { BoletosToRegisterQueue } from '../../../src/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)

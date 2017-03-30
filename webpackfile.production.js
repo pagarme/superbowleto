@@ -11,8 +11,8 @@ const externals = () => Object.keys(dependencies)
 module.exports = {
   context: join(__dirname, 'src'),
   entry: {
-    boleto: './resources/boleto/handler.js',
-    queue: './resources/queue/handler.js',
+    boleto: './resources/boleto/index.js',
+    queue: './resources/queue/index.js',
   },
   output: {
     path: join(__dirname, 'build'),
