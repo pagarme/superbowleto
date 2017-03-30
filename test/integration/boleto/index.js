@@ -2,7 +2,7 @@ import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createBoleto } from './helpers'
-import * as boletoHandler from '../../../src/resources/boleto/handler'
+import * as boletoHandler from '../../../src/resources/boleto'
 
 const indexBoleto = normalizeHandler(boletoHandler.index)
 
