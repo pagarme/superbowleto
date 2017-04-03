@@ -29,29 +29,29 @@
   },
   "homepage": "https://github.com/pagarme/superbowleto#readme",
   "dependencies": {
-    "aws-sdk": "2.25.0",
-    "bluebird": "3.4.7",
+    "aws-sdk": "2.36.0",
+    "bluebird": "3.5.0",
     "cuid": "1.3.8",
-    "joi": "10.2.2",
-    "pg": "6.1.2",
+    "joi": "10.4.1",
+    "pg": "6.1.5",
     "ramda": "0.23.0",
-    "sequelize": "3.30.0",
-    "serverless": "1.6.1",
-    "sqs-quooler": "1.1.2"
+    "sequelize": "3.30.4",
+    "serverless": "1.10.2",
+    "sqs-quooler": "1.3.0"
   },
   "devDependencies": {
     "@ava/babel-preset-stage-4": "1.0.0",
     "ava": "0.18.2",
     "babel-loader": "6.4.1",
-    "babel-plugin-transform-builtin-extend": "1.1.0",
+    "babel-plugin-transform-builtin-extend": "1.1.2",
     "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-es2015": "6.22.0",
+    "babel-preset-es2015": "6.24.0",
     "chai": "3.5.0",
-    "chai-subset": "1.4.0",
-    "eslint": "3.13.1",
-    "eslint-config-airbnb-base": "11.0.1",
+    "chai-subset": "1.5.0",
+    "eslint": "3.19.0",
+    "eslint-config-airbnb-base": "11.1.2",
     "eslint-plugin-import": "2.2.0",
-    "file-loader": "0.10.1",
-    "webpack": "2.3.1"
+    "file-loader": "0.11.1",
+    "webpack": "2.3.3"
   }
 }
