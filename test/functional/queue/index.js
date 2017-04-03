@@ -1,7 +1,7 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { queueMock, createQueue } from './helpers'
+import { mock, createQueue } from './helpers'
 import * as queueHandler from '../../../src/resources/queue'
 
 const indexQueue = normalizeHandler(queueHandler.index)
@@ -17,7 +17,7 @@ test('shows all queues with default pagination', async (t) => {
   t.is(statusCode, 200)
   t.is(body.length, 10, 'should have the default 10 items on the result')
   t.is(item.object, 'queue')
-  assert.containSubset(item, queueMock)
+  assert.containSubset(item, mock)
 })
 
 test('shows all queues with custom pagination', async (t) => {
@@ -31,5 +31,5 @@ test('shows all queues with custom pagination', async (t) => {
   t.is(statusCode, 200)
   t.is(body.length, 2, 'should have 2 items on the result')
   t.is(item.object, 'queue')
-  assert.containSubset(item, queueMock)
+  assert.containSubset(item, mock)
 })

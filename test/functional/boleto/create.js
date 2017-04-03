@@ -3,7 +3,7 @@ import { assert } from '../../helpers/chai'
 import { findItemOnQueue, purgeQueue } from '../../helpers/sqs'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createQueue } from '../queue/helpers'
-import { boletoMock } from './helpers'
+import { mock } from './helpers'
 import * as boletoHandler from '../../../src/resources/boleto'
 import { BoletosToRegisterQueue } from '../../../src/resources/boleto/queues'
 
@@ -15,7 +15,7 @@ test.before(async () => {
 
 test('creates a boleto', async (t) => {
   const queue = await createQueue()
-  const payload = Object.assign({}, boletoMock, {
+  const payload = Object.assign({}, mock, {
     queue_id: queue.id
   })
 

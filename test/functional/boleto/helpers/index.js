@@ -3,7 +3,7 @@ import { createQueue } from '../../queue/helpers'
 
 const { Boleto } = models
 
-export const boletoMock = {
+export const mock = {
   expiration_date: new Date(),
   amount: 2000,
   instructions: 'Please do not accept after expiration_date',
@@ -13,10 +13,10 @@ export const boletoMock = {
   payer_document_number: '98154524872'
 }
 
-export const createBoleto = (data = boletoMock) =>
+export const createBoleto = (data = {}) =>
   createQueue()
     .then((queue) => {
-      const payload = Object.assign({}, data, {
+      const payload = Object.assign({}, mock, data, {
         queue_id: queue.id
       })
 
