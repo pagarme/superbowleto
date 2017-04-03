@@ -1,19 +1,19 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { queueMock } from './helpers'
+import { mock } from './helpers'
 import * as queueHandler from '../../../src/resources/queue'
 
 const createQueue = normalizeHandler(queueHandler.create)
 
 test('creates a queue with valid data', async (t) => {
   const { body, statusCode } = await createQueue({
-    body: queueMock
+    body: mock
   })
 
   t.is(statusCode, 201)
   t.is(body.object, 'queue')
-  assert.containSubset(body, queueMock)
+  assert.containSubset(body, mock)
 })
 
 test('creates a queue with invalid data', async (t) => {

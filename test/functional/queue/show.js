@@ -1,7 +1,7 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { queueMock, createQueue } from './helpers'
+import { mock, createQueue } from './helpers'
 import * as queueHandler from '../../../src/resources/queue'
 
 const showQueue = normalizeHandler(queueHandler.show)
@@ -18,7 +18,7 @@ test('shows an existing queue', async (t) => {
   t.is(statusCode, 200)
   t.is(body.id, queue.id)
   t.is(body.object, 'queue')
-  assert.containSubset(body, queueMock)
+  assert.containSubset(body, mock)
 })
 
 test('shows a non-existing queue', async (t) => {
