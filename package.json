@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A simple microservice to issue, register and manage boletos",
   "main": "index.js",
-  "private": "true",
+  "private": true,
   "scripts": {
     "build-production": "webpack --config ./webpackfile.production.js",
     "build-test": "webpack --config ./webpackfile.test.js",
