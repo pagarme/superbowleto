@@ -34,17 +34,17 @@ Tests are separate in `functional`, `integration` and `unit`. You can either run
 
 - **Run only `functional` tests:**
   ```sh
-  $ docker-compose run test npm run test-functional
+  $ docker-compose run test yarn run test-functional
   ```
 
 - **Run only `integration` tests:**
   ```sh
-  $ docker-compose run test npm run test-integration
+  $ docker-compose run test yarn run test-integration
   ```
 
 - **Run only `unit` tests:**
   ```sh
-  $ docker-compose run test npm run test-unit
+  $ docker-compose run test yarn run test-unit
   ```
 
 ### Installing new dependencies

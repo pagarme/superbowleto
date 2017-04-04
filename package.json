@@ -13,7 +13,7 @@
     "test-functional": "ava --verbose '__tests__/test/functional/**/*.js'",
     "test-integration": "ava --verbose '__tests__/test/integration/**/*.js'",
     "test-unit": "ava --verbose '__tests__/test/unit/**/*.js'",
-    "pretest": "npm run setup && npm run build-test"
+    "pretest": "yarn run setup && yarn run build-test"
   },
   "repository": {
     "type": "git",
