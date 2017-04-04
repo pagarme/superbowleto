@@ -35,7 +35,7 @@ services:
 
   test:
     build: .
-    command: npm test
+    command: yarn test
     environment:
       - API_ENV=test
     volumes:

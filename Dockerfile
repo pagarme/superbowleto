@@ -1,6 +1,6 @@
-FROM node:7.4.0-alpine
+FROM node:7.8-alpine
 
 COPY package.json /superbowleto/package.json
 WORKDIR /superbowleto
 
-RUN npm install --quiet
+RUN yarn
