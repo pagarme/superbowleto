@@ -1,9 +1,10 @@
+import axios from 'axios'
 import { always, compose, prop } from 'ramda'
 import { format, formatWithTemplate } from './formatter'
 import getConfig from '../../config/providers'
 import { encodeBase64 } from '../../lib/encoding'
 
-const { merchantId, securityKey } = prop('bradesco', getConfig())
+const { endpoint, merchantId, securityKey } = prop('bradesco', getConfig())
 
 export const buildHeaders = () => {
   const authorization = encodeBase64(`${merchantId}:${securityKey}`)
@@ -38,3 +39,15 @@ export const buildPayload = formatWithTemplate({
     }
   }
 })
+
+export const register = (boleto) => {
+  const request = {
+    url: endpoint,
+    method: 'POST',
+    headers: buildHeaders(),
+    data: buildPayload(boleto)
+  }
+
+  return Promise.resolve(request)
+    .then(axios.request)
+}

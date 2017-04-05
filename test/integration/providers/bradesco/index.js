@@ -1,7 +1,7 @@
 import test from 'ava'
 import moment from 'moment'
 import { createBoleto } from '../../../functional/boleto/helpers'
-import { buildHeaders, buildPayload } from '../../../../src/providers/bradesco'
+import { buildHeaders, buildPayload, register } from '../../../../src/providers/bradesco'
 
 let boleto
 
@@ -45,4 +45,12 @@ test('buildPayload', async (t) => {
       }
     }
   })
+})
+
+test('register', async (t) => {
+  const response = await register(boleto)
+
+  t.is(response.status, 200)
+  t.is(response.data.boleto.nosso_numero, boleto.title_id)
+  t.is(response.data.boleto.numero_documento, `${boleto.title_id}`)
 })
