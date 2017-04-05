@@ -15,24 +15,24 @@ const schema = {
 
 test('parse: with valid schema', async (t) => {
   const value = await parse(schema, {
-    name: 'John Appleseed',
+    name: 'David Bowie',
     security_number: 42
   })
 
   t.deepEqual(value, {
-    name: 'John Appleseed',
+    name: 'David Bowie',
     security_number: 42
   }, 'should have the correct parsed parameters and no errors')
 })
 
 test('parse: with valid schema and coercion', async (t) => {
   const value = await parse(schema, {
-    name: 'John Appleseed',
+    name: 'David Bowie',
     security_number: '42'
   })
 
   t.deepEqual(value, {
-    name: 'John Appleseed',
+    name: 'David Bowie',
     security_number: 42
   }, 'should have the correct parsed, coerced parameters and no errors')
 })

@@ -34,7 +34,7 @@ test('creates a boleto', async (t) => {
     instructions: 'Please do not accept after expiration_date',
     issuer: 'bradesco',
     issuer_id: null,
-    payer_name: 'John Appleseed',
+    payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872'
   })
