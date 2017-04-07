@@ -1,37 +1,15 @@
 const webpack = require('webpack')
 const { join } = require('path')
-const { mkdirSync, writeFileSync } = require('fs')
-const { dependencies } = require('./package.json')
-
-const entry = () => {
-  const content = `
-    var sourceFiles = require.context('./src', true, /\.(js|json)$/);
-    sourceFiles.keys().forEach(sourceFiles);
-
-    var testFiles = require.context('./test', true, /\.(js|json)$/);
-    testFiles.keys().forEach(test);
-  `
-
-  const importFile = './.webpack.test.import'
-  writeFileSync(importFile, content)
-
-  return importFile
-}
-
-const externals = () => Object.keys(dependencies)
-  .reduce((modules, module) =>
-    Object.assign({}, modules, { [module]: `commonjs ${module}` }),
-    {}
-  )
+const { externals, requireAll } = require('./webpackfile.base.js')
 
 module.exports = {
-  entry: entry(),
+  entry: requireAll(),
   output: {
     path: join(__dirname, '__tests__'),
     filename: '[name].js'
   },
   target: 'node',
-  externals: externals(),
+  externals: externals({ production: false }),
   module: {
     rules: [
       {
@@ -46,18 +24,6 @@ module.exports = {
           },
           {
             loader: 'babel-loader'
-          }
-        ]
-      },
-      {
-        test: /\.json$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[path][name].json'
-            }
           }
         ]
       }

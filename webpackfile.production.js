@@ -1,12 +1,6 @@
 const webpack = require('webpack')
 const { join } = require('path')
-const { dependencies } = require('./package.json')
-
-const externals = () => Object.keys(dependencies)
-  .reduce((modules, module) =>
-    Object.assign({}, modules, { [module]: `commonjs ${module}` }),
-    {}
-  )
+const { externals } = require('./webpackfile.base.js')
 
 module.exports = {
   context: join(__dirname, 'src'),
@@ -20,11 +14,11 @@ module.exports = {
     filename: '[name].js'
   },
   target: 'node',
-  externals: externals(),
+  externals: externals({ production: true }),
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|ts)$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
       }
