@@ -1,4 +1,4 @@
-const package = require('./package.json')
+const package = require('../package.json')
 const { writeFileSync } = require('fs')
 
 const externals = (options = {}) => {

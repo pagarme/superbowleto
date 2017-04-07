@@ -3,13 +3,13 @@ const { join } = require('path')
 const { externals } = require('./webpackfile.base.js')
 
 module.exports = {
-  context: join(__dirname, 'src'),
+  context: join(__dirname, '../src'),
   entry: {
     boleto: './resources/boleto/index.js',
     queue: './resources/queue/index.js',
   },
   output: {
-    path: join(__dirname, 'dist'),
+    path: join(__dirname, '../dist'),
     libraryTarget: 'commonjs2',
     filename: '[name].js'
   },

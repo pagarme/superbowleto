@@ -8,5 +8,11 @@
  * file's extension is `jsx`: to not conflict with the required extensions.
  */
 
-require.context('./test', true, /\.(ts|js|json)$/)();
-require.context('./src', true, /\.(ts|js|json)$/)();
+const requireContext = (context) => context.keys().forEach(context)
+
+const contexts = [
+  require.context('../test', true, /\.(ts|js|json)$/)
+]
+
+contexts.forEach(requireContext)
+
