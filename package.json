@@ -5,6 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "build-dev": "webpack --config ./webpackfile.dev.js",
     "build-production": "webpack --config ./webpackfile.production.js",
     "build-test": "webpack --config ./webpackfile.test.js",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
