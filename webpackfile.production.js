@@ -15,7 +15,7 @@ module.exports = {
     queue: './resources/queue/index.js',
   },
   output: {
-    path: join(__dirname, 'build'),
+    path: join(__dirname, 'dist'),
     libraryTarget: 'commonjs2',
     filename: '[name].js'
   },

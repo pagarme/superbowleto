@@ -1,8 +1,8 @@
 # Project
 build
+dist
 .serverless
 .webpack.test.import
-__tests__
 
 # Logs
 logs

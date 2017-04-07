@@ -10,21 +10,21 @@ provider:
 
 functions:
   boleto_show:
-    handler: build/boleto.show
+    handler: dist/boleto.show
     events:
       - http:
           path: /boletos
           method: get
 
   boleto_create:
-    handler: build/boleto.create
+    handler: dist/boleto.create
     events:
       - http:
           path: /boletos
           method: post
 
   queue_create:
-    handler: build/queue.create
+    handler: dist/queue.create
     events:
       - http:
           path: /queues
