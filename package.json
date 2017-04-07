@@ -32,7 +32,7 @@
   "homepage": "https://github.com/pagarme/superbowleto#readme",
   "dependencies": {
     "aws-sdk": "2.36.0",
-    "axios": "^0.16.0",
+    "axios": "0.16.0",
     "bluebird": "3.5.0",
     "cuid": "1.3.8",
     "joi": "10.4.1",
@@ -56,6 +56,7 @@
     "eslint-config-airbnb-base": "11.1.2",
     "eslint-plugin-import": "2.2.0",
     "file-loader": "0.11.1",
+    "source-map-support": "0.4.14",
     "webpack": "2.3.3"
   }
 }

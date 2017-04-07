@@ -10,6 +10,7 @@ module.exports = {
   },
   target: 'node',
   externals: externals({ production: false }),
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
@@ -26,6 +27,11 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       __TEST__: true
-    })
+    }),
+    new webpack.BannerPlugin({
+      banner: 'require("source-map-support").install();',
+      raw: true,
+      entryOnly: false
+    }),
   ]
 }
