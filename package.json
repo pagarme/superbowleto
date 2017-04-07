@@ -9,10 +9,10 @@
     "build-test": "webpack --config ./webpackfile.test.js",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
-    "test": "ava --verbose '__tests__/test/**/*.js'",
-    "test-functional": "ava --verbose '__tests__/test/functional/**/*.js'",
-    "test-integration": "ava --verbose '__tests__/test/integration/**/*.js'",
-    "test-unit": "ava --verbose '__tests__/test/unit/**/*.js'",
+    "test": "ava --verbose 'build/test/**/*.js'",
+    "test-functional": "ava --verbose 'build/test/functional/**/*.js'",
+    "test-integration": "ava --verbose 'build/test/integration/**/*.js'",
+    "test-unit": "ava --verbose 'build/test/unit/**/*.js'",
     "pretest": "yarn run setup && yarn run build-test"
   },
   "repository": {

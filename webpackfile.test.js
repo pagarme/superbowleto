@@ -5,7 +5,7 @@ const { externals } = require('./webpackfile.base.js')
 module.exports = {
   entry: './tests.jsx',
   output: {
-    path: join(__dirname, '__tests__'),
+    path: join(__dirname, 'build'),
     filename: '[name].js'
   },
   target: 'node',
