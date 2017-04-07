@@ -1,5 +1,5 @@
 /**
- * This file is used as an entrypoint for `webpackfile.test.js`. It basically
+ * This file is used as an entrypoint for `webpackfile.dev.js`. It basically
  * uses webpack's require.context to recursively requires all files within the
  * defined folders.
  *
