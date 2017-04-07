@@ -15,20 +15,3 @@ const externals = (options = {}) => {
 }
 
 exports.externals = externals
-
-const requireAll = () => {
-  const content = `
-    var sourceFiles = require.context('./src', true, /\.(js|json)$/);
-    sourceFiles.keys().forEach(sourceFiles);
-
-    var testFiles = require.context('./test', true, /\.(js|json)$/);
-    testFiles.keys().forEach(test);
-  `
-
-  const importFile = './.webpack.test.import'
-  writeFileSync(importFile, content)
-
-  return importFile
-}
-
-exports.requireAll = requireAll
