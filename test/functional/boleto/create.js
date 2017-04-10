@@ -40,8 +40,8 @@ test('creates a boleto', async (t) => {
   })
 
   const sqsItem = await findItemOnQueue(
-    item => item.boleto_id === body.id,
-    BoletosToRegisterQueue
+    BoletosToRegisterQueue,
+    item => item.boleto_id === body.id
   )
 
   t.is(sqsItem.boleto_id, body.id, 'posts an item to `boletos-to-register` sqs queue with a `boleto_id` property`')
