@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Promise from 'bluebird'
 import { always, compose, prop } from 'ramda'
 import { format, formatWithTemplate } from './formatter'
 import getConfig from '../../config/providers'
@@ -46,6 +47,21 @@ export const register = (boleto) => {
     method: 'POST',
     headers: buildHeaders(),
     data: buildPayload(boleto)
+  }
+
+  return Promise.resolve(request)
+    .then(axios.request)
+}
+
+export const verifyRegistrationStatus = (boleto) => {
+  const request = {
+    url: `${endpoint}`,
+    headers: buildHeaders(),
+    method: 'GET',
+    params: {
+      nosso_numero: prop('issuer_id', boleto),
+      numero_documento: prop('title_id', boleto)
+    }
   }
 
   return Promise.resolve(request)
