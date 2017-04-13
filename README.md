@@ -73,6 +73,73 @@ However, **if you need to install any new dependency**, you **must rebuild the i
 $ docker-compose build test
 ```
 
+## Testing
+
+Tests are found inside the `test/` directory and are separate by type: `functional`, `integration` and `unit`. It's also common to have some `helpers` folders alongside the tests.
+
+  - `Unit` tests are used to test the smallest units of functionality, typically a method or a function [<sup>ref</sup>](http://stackoverflow.com/questions/4904096/whats-the-difference-between-unit-functional-acceptance-and-integration-test).
+
+    The folder structure of the unit tests tend to mirror the folder structure of the `src` folder. For instance, we generally see the following folder structure:
+
+    ```
+    ├── src
+    │   ├── index.js
+    │   └── lib
+    │       └── http.js
+    └── test
+        └── unit
+            ├── index.js
+            └── lib
+                └── http.js
+    ```
+
+  - `Integration` tests build on unit tests by combining the units of code and testing that the resulting combination functions correctly[<sup>ref</sup>](http://stackoverflow.com/questions/4904096/whats-the-difference-between-unit-functional-acceptance-and-integration-test).
+
+    The folder structure of the unit tests tend to mirror the folder structure of the `src` folder. For instance, we generally see the following folder structure:
+
+    ```
+    ├── src
+    │   ├── index.js
+    │   └── lib
+    │       └── http.js
+    └── test
+        └── unit
+            ├── index.js
+            └── lib
+                └── http.js
+    ```
+
+  - `Functional` tests check a particular feature for correctness by comparing the results for a given input against the specification. Functional tests don't concern themselves with intermediate results or side-effects, just the result[<sup>ref</sup>](http://stackoverflow.com/questions/4904096/whats-the-difference-between-unit-functional-acceptance-and-integration-test).
+
+    The folder structure of functional tests does not need to mirror the source folder, and the files can be organized as they seem fit. One way to organize this files is by `feature` or `user-story`. For instance, take a look at the example below, where `boleto/create.js` and `boleto/register.js` are complete user stories:
+
+    ```
+    ├── test
+        └── integration
+            └── boleto
+                └── create.js
+                └── register.js
+    ```
+
+  - `Helpers` do not test anything, but instead provide tools for the tests. Inside the `helpers` folders one can have `fixtures` (also know as "mocks"), or some util functions.
+
+    For instance, if you need credit card information to perform various tests in many different places, or if you need an util function that is called before your tests are ran, you could place them inside a `helpers` folder in order to not repeat yourself:
+
+    ```javascript
+    export const creditCardMock = {
+      number: 4242424242424242,
+      holder_name: 'David Bowie',
+      expiration_date: 1220,
+      cvv: 123,
+    }
+
+    export const cleanUpBeforeTests = () => {
+      db.reset();
+    }
+    ```
+
+    `Helpers` folders can be created at any level within the `test` folder structure. If some helper is used only for unit tests, it should reside within `test/unit/helpers`. If the helpers is used across all tests, it should reside within `test/helpers`. If there's a helper that is used only for testing the http module on integration tests, then it should reside within `test/integration/http/helpers`.
+
 ## Understanding the Data Flow
 
 The process of creating and registrating boletos has a lot of logical branches and business domain rules. However the main data flow of this process can be summarized into these simple conceptual steps described below:
