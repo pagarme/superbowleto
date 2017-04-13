@@ -3,6 +3,21 @@
 
 :football: A microservice to issue, register and manage boletos
 
+## TOC
+
+- [Technology](#technology)
+- [Developing](#developing)
+	- [First Install](#first-install)
+	- [Running tests](#running-tests)
+	- [Installing new dependencies](#installing-new-dependencies)
+- [Testing](#testing)
+- [Understanding the Data Flow](#understanding-the-data-flow)
+	- [1. Creating the boleto](#1-creating-the-boleto)
+	- [2. Consuming `boletos-to-register-queue`](#2-consuming-boletos-to-register-queue)
+	- [3. Attempting to register boletos](#3-attempting-to-register-boletos)
+	- [4. Checking the status of `pending_registration` boletos.](#4-checking-the-status-of-pendingregistration-boletos)
+	- [5. Notifying the registration of a boleto.](#5-notifying-the-registration-of-a-boleto)
+
 ## Technology
 
 Here's a brief overview of our technology stack:
@@ -143,12 +158,6 @@ Tests are found inside the `test/` directory and are separate by type: `function
 ## Understanding the Data Flow
 
 The process of creating and registrating boletos has a lot of logical branches and business domain rules. However the main data flow of this process can be summarized into these simple conceptual steps described below:
-
-1. [Creating the boleto] (#1-creating-the-boleto)
-2. [Consuming `boletos-to-register-queue`] (#2-consuming-boletos-to-register-queue)
-3. [Attempting to register boletos] (#3-attempting-to-register-boletos)
-4. [Checking the status of `pending_registration` boletos.] (#4-checking-the-status-of-pending_registration-boletos)
-5. [Notifying the registration of a boleto.] (#5-notifying-the-registration-of-a-boleto)
 
 ### 1. Creating the boleto
 
