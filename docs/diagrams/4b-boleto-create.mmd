@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant Client
+    participant API
+    participant Database
+    participant SQS
+    participant Provider
+
+    Client ->>+ API: HTTP POST /boletos
+        Note over Client,API: Lambda triggered by: HTTP
+        Note over Client,API: Body: boleto_info (amount, expiration, ...), queue_id
+    API ->>+ Database: db.create()
+    Database -->>- API: "created"
+    API ->>+ Provider: register()
+        Note over Provider: Could not reach provider, or the provider gave an unkown status
+    Provider -->>- API: status = unknown
+    API ->>+ Database: db.update('pending_registration')
+    Database -->>- API: "updated"
+    API ->> SQS: send('boletos-to-register', boleto)
+        Note over API, SQS: Send boleto to a queue (boletos-to-register) to be later processed
+    API -->>- Client: 201 created

@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant Client
+    participant API
+    participant Database
+
+    Client ->>+ API: HTTP GET /boletos
+        Note over Client,API: Lambda triggered by: HTTP
+    API ->>+ Database: db.findAll()
+    Database -->>- API: boletos
+    API -->>- Client: 200 ok

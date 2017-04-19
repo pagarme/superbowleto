@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant Client
+    participant API
+    participant Database
+    Participant SQS
+    Participant Provider
+    Client -->> API: invoke(boleto, message)
+        Note over Client,API: Lambda invoked by: SQS('boletos-to-register') processor
+    API ->>+ Database: db.findById(boleto.id)
+        Note over API,Database: Find boleto on Database to ensure this boleto has not been processed by another Lambda.
+    Database ->>- API: boleto
+    Note over API: Check status to see if boleto can be registered.
+    API ->>+ Provider: register()
+    Provider -->>- API: status
+    API ->>+ Database: db.update(status)
+    Database -->>- API: "updated"
+    API ->> SQS: send(boleto.queue, status)
+        Note over API,SQS: Send an SQS Message to the boleto's registered queue (to notify the boleto owner of the new boleto status)

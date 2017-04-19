@@ -3,11 +3,42 @@
 
 :football: A microservice to issue, register and manage boletos
 
+## Table of Contents
+
+- [Technology](#technology)
+- [Developing](#developing)
+	- [First Install](#first-install)
+	- [Running tests](#running-tests)
+	- [Installing new dependencies](#installing-new-dependencies)
+- [Testing](#testing)
+- [Lambdas and Data Flow](#lambdas-and-data-flow)
+	- [1. Queue: create](#1-queue-create)
+	- [2. Queue: index](#2-queue-index)
+	- [3. Queue: show](#3-queue-show)
+	- [4. Boleto: create](#4-boleto-create)
+		- [a) Provider **could** process the boleto](#a-provider-could-process-the-boleto)
+		- [b) Provider **could not** process the boleto](#b-provider-could-not-process-the-boleto)
+	- [5. Boleto: index](#5-boleto-index)
+	- [6. Boleto: show](#6-boleto-show)
+	- [7. Boleto: process `boletos-to-register` queue](#7-boleto-process-boletos-to-register-queue)
+	- [8. Boleto: register](#8-boleto-register)
+
+## Technology
+
+Here's a brief overview of our technology stack:
+
+- **[Docker](https://docs.docker.com)** and **[Docker Compose](https://docs.docker.com/compose/)** to create our development and test environments.
+- **[Serverless Framework](https://serverless.com)** to manage and deploy our **[AWS Lambda](https://aws.amazon.com/documentation/lambda/)** functions.
+- **[AWS SQS](https://aws.amazon.com/documentation/sqs/)** as a queue manager to process things like boletos to register.
+- **[Postgres](https://www.postgresql.org)** as to store our data **[Sequelize](http://docs.sequelizejs.com)** as a Node.js ORM.
+- **[Babel](Babel)** to transpile our code written in modern Javascript and we use multiple **[Webpack](http://webpack.js.org)** configurations to bundle our code for production, test and development.
+- **[Ava](https://github.com/avajs/ava)** as a test runner and **[Chai](http://chaijs.com)** to do some more advanced test assertions.
+- **[Yarn](https://yarnpkg.com/en/)** to install npm dependencies.
+
 ## Developing
 
 In order to develop for this project you must have [Docker](https://docs.docker.com/)
-and [Docker Compose](https://docs.docker.com/compose/) installed. That's it :)
-no need for Node.js, Postgres, etc.
+and [Docker Compose](https://docs.docker.com/compose/) installed.
 
 ### First Install
 
@@ -49,129 +80,378 @@ Tests are separate in `functional`, `integration` and `unit`. You can either run
 
 ### Installing new dependencies
 
-We install our dependencies like npm packages on the Docker image (see our [Dockerfile](https://github.com/pagarme/superbowleto/blob/master/Dockerfile) to understand it better).
+We install our dependencies (aka npm dependencies) inside the Docker image (see our [Dockerfile](https://github.com/pagarme/superbowleto/blob/master/Dockerfile) to understand it better).
 
 This gives us the advantage of caching the dependencies installation process, so when we build the image again, it's already cached by Docker and the image can be easily distributed with all its dependencies installed.
 
 However, **if you need to install any new dependency**, you **must rebuild the image**, otherwise, your dependency will not be available inside the container.
 
-**You can rebuild the image with the new dependencies by running:**
+**You can install dependencies and rebuild the image by running:**
 
 ```sh
+$ docker-compose run test yarn add jquery
 $ docker-compose build test
 ```
 
-## Understanding the Data Flow
+## Testing
 
-The process of creating and registrating boletos has a lot of logical branches and business domain rules. However the main data flow of this process can be summarized into these simple conceptual steps described below:
+Tests are found inside the `test/` directory and are separate by type: `functional`, `integration` and `unit`. It's also common to have some `helpers` folders alongside the tests.
 
-1. [Creating the boleto] (#1-creating-the-boleto)
-2. [Consuming `boletos-to-register-queue`] (#2-consuming-boletos-to-register-queue)
-3. [Attempting to register boletos] (#3-attempting-to-register-boletos)
-4. [Checking the status of `pending_registration` boletos.] (#4-checking-the-status-of-pending_registration-boletos)
-5. [Notifying the registration of a boleto.] (#5-notifying-the-registration-of-a-boleto)
+  - `Unit` tests are used to test the smallest units of functionality, typically a method or a function [<sup>ref</sup>](http://stackoverflow.com/questions/4904096/whats-the-difference-between-unit-functional-acceptance-and-integration-test).
 
-### 1. Creating the boleto
+    The folder structure of the unit tests tend to mirror the folder structure of the `src` folder. For instance, we generally see the following folder structure:
 
-At the beginning, we need to create the boleto. There's a lambda function for
-this that is triggered by an `HTTP` event. The boleto is created in the database
-and sent to an SQS queue called `boletos-to-register`.
+    ```
+    ├── src
+    │   ├── index.js
+    │   └── lib
+    │       └── http.js
+    └── test
+        └── unit
+            ├── index.js
+            └── lib
+                └── http.js
+    ```
 
-**Important:** In order to create a boleto, the client must specify a queue url that it's going
-to be later used for notifying an eventual successful attempt of registration.
+  - `Integration` tests build on unit tests by combining the units of code and testing that the resulting combination functions correctly[<sup>ref</sup>](http://stackoverflow.com/questions/4904096/whats-the-difference-between-unit-functional-acceptance-and-integration-test).
 
-The boleto is created with an `issued` status.
+    The folder structure of the unit tests tend to mirror the folder structure of the `src` folder. For instance, we generally see the following folder structure:
 
-```
-+-------+           +---------+             +-----------+      +-----+
-| HTTP  |           | Lambda  |             | Database  |      | SQS |
-+-------+           +---------+             +-----------+      +-----+
-    |                    |                        |               |
-    | POST /boletos      |                        |               |
-    |------------------->|                        |               |
-    |                    |                        |               |
-    |                    | Boleto.create()        |               |
-    |                    |----------------------->|               |
-    |                    |                        |               |
-    |                    |       "Boleto created" |               |
-    |                    |<-----------------------|               |
-    |                    |                        |               |
-    |                    | Post to Queue (boletos-to-register)    |
-    |                    |--------------------------------------->|
-    |                    |                        |               |
-    |        201 created |                        |               |
-    |<-------------------|                        |               |
-    |                    |                        |               |
-```
+    ```
+    ├── src
+    │   ├── index.js
+    │   └── lib
+    │       └── http.js
+    └── test
+        └── unit
+            ├── index.js
+            └── lib
+                └── http.js
+    ```
 
-### 2. Consuming `boletos-to-register-queue`
+  - `Functional` tests check a particular feature for correctness by comparing the results for a given input against the specification. Functional tests don't concern themselves with intermediate results or side-effects, just the result[<sup>ref</sup>](http://stackoverflow.com/questions/4904096/whats-the-difference-between-unit-functional-acceptance-and-integration-test).
 
-There's a lambda function triggered by a `Schedule` event (cronjob) that consume
-the messages from the `boletos-to-register-queue`
+    The folder structure of functional tests does not need to mirror the source folder, and the files can be organized as they seem fit. One way to organize this files is by `feature` or `user-story`. For instance, take a look at the example below, where `boleto/create.js` and `boleto/register.js` are complete user stories:
 
-This function consumes the queue (with it's inside polling logic) and invokes
-another lambda function that attempts to register each boleto.
+    ```
+    ├── test
+        └── integration
+            └── boleto
+                └── create.js
+                └── register.js
+    ```
 
-```
-+-----------+     +-----------------+                           +-----+ +-----------------+
-| Schedule  |     | ConsumerLambda  |                           | SQS | | RegisterLambda  |
-+-----------+     +-----------------+                           +-----+ +-----------------+
-      |                    |                                       |             |
-      | n seconds          |                                       |             |
-      |------------------->|                                       |             |
-      |                    |                                       |             |
-      |                    | ReceiveMessage `boletos-to-create`    |             |
-      |                    |-------------------------------------->|             |
-      |                    |                                       |             |
-      |                    |                    Messages (boletos) |             |
-      |                    |<--------------------------------------|             |
-      |                    |                                       |             |
-      |                    | foreach message invoke()              |             |
-      |                    |---------------------------------------------------->|
-      |                    |                                       |             |
-```
+  - `Helpers` do not test anything, but instead provide tools for the tests. Inside the `helpers` folders one can have `fixtures` (also know as "mocks"), or some util functions.
 
-### 3. Attempting to register boletos
+    For instance, if you need credit card information to perform various tests in many different places, or if you need an util function that is called before your tests are ran, you could place them inside a `helpers` folder in order to not repeat yourself:
 
-For each boleto on `boletos-to-create` queue, the SQS consumer will invoke a
-`RegisterLambda` to attempt to register the boleto on the specified provider.
+    ```javascript
+    export const creditCardMock = {
+      number: 4242424242424242,
+      holder_name: 'David Bowie',
+      expiration_date: 1220,
+      cvv: 123,
+    }
 
-The only information the message has is the `boleto_id`, so the following steps
-must are taken to fetch the boleto information and attempting to register it:
+    export const cleanUpBeforeTests = () => {
+      db.reset();
+    }
+    ```
 
-1. **Query the database with the `boleto_id`.**
-2. **Check if the status is eligible for a registration attempt:** the only
-status ATM is `issued`)
-3. **Attempt to register the boleto within the provider.** Here we have 3 possible
-  outcomes:
-    a. **The registration is successful**: in this case we set the boleto to a
-    `registered` status and post a message to the boleto's queue url.
-    b. **The registration is unsuccessful**: in this case (where the provider
-    denied the registration of the boleto), we set the boleto status to `refused`.
-    c. **The registration is indeterminate**: in this case (where the provider
-    couldn't give a sync response) we set the boleto status to `pending_registration`
+    `Helpers` folders can be created at any level within the `test` folder structure. If some helper is used only for unit tests, it should reside within `test/unit/helpers`. If the helpers is used across all tests, it should reside within `test/helpers`. If there's a helper that is used only for testing the http module on integration tests, then it should reside within `test/integration/http/helpers`.
 
-### 4. Checking the status of `pending_registration` boletos.
+## Lambdas and Data Flow
 
-If the provider can't respond the registration attempt synchronously, we set the
-boleto status to `pending_registration` and we need to later check the registration
-status within the provider.
+This project is designed in AWS Lambda functions and has some logical branches and business domain rules that can be hard to understand. This section documents what every Lambda function does how it fits in the entire project.
 
-We have a lambda function triggered by a `Schedule` event (every n minutes) that
-does the following:
+### 1. Queue: create
 
-1. **Find all pending_registration_boletos**: query the database for boletos
-  with status `pending_registration`
-2. **Check the status within the provider**: for every `pending_registration`
-  boleto, check the provider API to check the status of the registration.
+Create a new queue.
 
-### 5. Notifying the registration of a boleto.
+In order to create a boleto, the owner must pass in a `queue_id`, that represents an SQS Queue which will be used to notify the owner when a boleto is updated (e.g. registered) in the async flow. When a boleto is updated, a message will be sent to the provided SQS Queue, and it's up to the owner to handle the messages sent to the queue.
 
-When creating a boleto, the client must specify a queue on which it wants to be
-notified. For instance, we could create a boleto with a queue_url: `http://sqs.my-queue/boletos`.
+![](https://cloud.githubusercontent.com/assets/7416751/25156827/8e3af2a0-2473-11e7-8a71-1c64eef4ff29.png)
 
-When a boleto is registered successfully (either sync or asynchronously), a message
-will be posted to this specified queue.
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
 
-So in order for the client to keep track of registered boletos, it must keep polling
-the specified queue (in this case: `http://sqs.my-queue/boletos`) for messages.
+**Example:**
+
+  > `POST /queues`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "name": "gateway",
+    "url": "https://queue.amazonaws.com/918du2d81/GatewayQueue"
+  }
+  ```
+
+  > `201 Created`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "id": "queue_cj1o29mru000001nigxky48a8",
+    "pan_token": "pt_cizsl7bhi000001p9oz5i4bmw",
+    "cvv_token": "ct_cizsl9j0e000001mr6x6mnhdk"
+  }
+  ```
+
+### 2. Queue: index
+
+Retrieve all queues.
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156831/8f07a0ca-2473-11e7-805d-a38607d353e1.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+
+**Example:**
+
+  > `GET /queues`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "count": "10",
+    "page": "1"
+  }
+  ```
+
+  > `200 Ok`
+
+  ```json
+  Content-Type: application/json
+
+  [{
+    "id": "queue_cj1o29mru000001nigxky48a8",
+    "pan_token": "pt_cizsl7bhi000001p9oz5i4bmw",
+    "cvv_token": "ct_cizsl9j0e000001mr6x6mnhdk"
+  }]
+  ```
+
+### 3. Queue: show
+
+Find one queue by id.
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156833/8f09bcde-2473-11e7-95c0-95de76c63eec.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+
+**Example:**
+
+  > `GET /queues/:id`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "id": "queue_cj1o29mru000001nigxky48a8"
+  }
+  ```
+
+  > `200 Ok`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "id": "queue_cj1o29mru000001nigxky48a8",
+    "pan_token": "pt_cizsl7bhi000001p9oz5i4bmw",
+    "cvv_token": "ct_cizsl9j0e000001mr6x6mnhdk"
+  }
+  ```
+
+### 4. Boleto: create
+
+Create a new boleto.
+
+After creating the boleto (on our database), we will try to register the boleto withing the provider. Here, there's two possible outcomes: a) the provider could be reached, could process the boleto and gave us a status (either `registered` or `refused`); or b) the provider could not be reached or could not process the boleto (giving us an `unknown`/`undefined`/`try_later` status).
+
+#### a) Provider **could** process the boleto
+
+The following steps illustrate the case where the provider **could** be reached and it could process the boleto.
+
+1. The `Client` makes an HTTP request to create a boleto.
+1. We create the boleto in the `Database` with status `issued`.
+1. We try to register the boleto within the Provider.
+1. The provider returns an answer (either `registered` or `refused`).
+1. We update the boleto status in the `Database`.
+1. We return the response to the `Client` (HTTP response).
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156832/8f07ae62-2473-11e7-9dd1-663df65860d3.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+
+#### b) Provider **could not** process the boleto
+
+The following steps illustrate the case where the provider **could** be reached and it could process the boleto.
+
+1. The `Client` makes an HTTP request to create a boleto.
+1. We create the boleto in the `Database` with status `issued`.
+1. We try to register the boleto within the Provider.
+1. The provider could not be reached or could not process the boleto.
+1. We update the boleto status in the `Database` to `pending_registration`.
+1. We send the boleto (`boleto_id` and `issuer`) to an SQS queue called `boletos-to-register`. This queue will be processed by another Lambda later.
+1. We return the response to the `Client` (HTTP response) with the `status = pending_registration`.
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156834/8f0a0568-2473-11e7-87f1-6bcbdb4c6a3f.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+
+**Example:**
+
+  > `POST /boletos`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
+    "amount": 2000,
+    "instructions": "Please do not accept after expiration_date",
+    "issuer": "bradesco",
+    "payer_name": "David Bowie",
+    "payer_document_type": "cpf",
+    "payer_document_number": "98154524872"
+  }
+  ```
+
+  > `201 Created`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "status": "issued | registered | refused",
+    "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
+    "amount": 2000,
+    "instructions": "Please do not accept after expiration_date",
+    "issuer": "bradesco",
+    "issuer_id": null,
+    "title_id": "null",
+    "payer_name": "David Bowie",
+    "payer_document_type": "cpf",
+    "payer_document_number": "98154524872"
+  }
+  ```
+
+### 5. Boleto: index
+
+Retrieve all boletos.
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156835/8f0a3376-2473-11e7-92e7-6634c60afddc.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+
+**Example:**
+
+  > `GET /boletos`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "count": "10",
+    "page": "1"
+  }
+  ```
+
+  > `200 Ok`
+
+  ```json
+  Content-Type: application/json
+
+  [{
+    "id": "bol_cj1o33xuu000001qkfmlc6m5c",
+    "status": "issued",
+    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
+    "amount": 2000,
+    "instructions": "Please do not accept after expiration_date",
+    "issuer": "bradesco",
+    "issuer_id": null,
+    "title_id": "null",
+    "payer_name": "David Bowie",
+    "payer_document_type": "cpf",
+    "payer_document_number": "98154524872"
+  }]
+  ```
+
+### 6. Boleto: show
+
+Find one boleto by id.
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156829/8e9d40a4-2473-11e7-9497-3b7a8dcef9e9.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+
+**Example:**
+
+  > `GET /boletos/:id`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "id": "bol_cj1o33xuu000001qkfmlc6m5c"
+  }
+  ```
+
+  > `200 Ok`
+
+  ```json
+  Content-Type: application/json
+
+  {
+    "id": "bol_cj1o33xuu000001qkfmlc6m5c",
+    "status": "issued",
+    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
+    "amount": 2000,
+    "instructions": "Please do not accept after expiration_date",
+    "issuer": "bradesco",
+    "issuer_id": null,
+    "title_id": "null",
+    "payer_name": "David Bowie",
+    "payer_document_type": "cpf",
+    "payer_document_number": "98154524872"
+  }
+  ```
+
+### 7. Boleto: process `boletos-to-register` queue
+
+Process the `boletos-to-regiter-queue`. This Lambda function is triggered by the **Schedule Event** (runs every `n` minutes).
+
+When a boleto can't be registered within the provider at the moment of its creation, it will be posted to a SQS Queue called `boletos-to-register`. This functions is responsible for processing this queue. Here are the steps:
+
+1. This function is triggered by a **Schedule Event** that runs every `n` minutes.
+1. Using `sqs-quooler` we then start to poll items from SQS (`sqs.receiveMessage`)
+1. For each message received we invoke a Lambda function called `register` with the boleto information and the SQS Message as parameters.
+1. `sqs-quooler` package will repeat this `pollItems->receive->invokeRegisterLambda` cycle until this Lambda dies (max 5 minutes).
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156830/8f057f34-2473-11e7-8baa-4617c5c5f1c7.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+
+### 8. Boleto: register
+
+Register a boleto. This Lambda function is invoked by another Lambda function: process `boletos-to-register` queue.
+
+This function registers boletos that went to the `boletos-to-register` queue. Here are the steps of execution:
+
+1. The function is invoked by the queueProcessor and receives `boleto` ({ id, issuer}) and `message` (the raw SQS message from `boletos-to-register` queue).
+1. We use the boleto `id` to find the boleto on `Database`.
+1. We check if the boleto can be registered, i.e. if the status of the boleto is either `issued` or `pending_registration`.
+1. If the boleto can be registered, we try to register it within the provider.
+1. If the provider could not process the boleto, we stop executing here. The SQS Message will then go back to `boletos-to-register` queue and will be later processed.
+1. We update the boleto status with either `registered` or `refused`.
+1. **IMPORTANT:** After the boleto is updated, we notify the boleto owner by sendin an SQS message to the queue the owner specified on the boleto creation (aka: `boleto.queue.url`). The owner will then handle the processing of these SQS Messages. That's the only way we can notify the boleto owner that a boleto that went to `boletos-to-register` queue was updated. That's why it's mandatory to pass a queue at the moment of the boleto creation.
+
+![](https://cloud.githubusercontent.com/assets/7416751/25156837/8f5971de-2473-11e7-918f-f059a5fba408.png)
+
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*

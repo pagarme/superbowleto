@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant Client
+    participant API
+    participant SQS
+    participant Lambda
+
+    Client -->> API: &nbsp;
+        Note over Client,API: Lambda triggered by: Schedule (every n minutes)
+    loop Repeat until Lambda stops
+        API ->>+ SQS: getMessages('boletos-to-register')
+        SQS -->>- API: messages
+        loop foreach message
+            API ->> Lambda: invoke('register')
+            Note over API,Lambda: Invoke Lambda('register'), passing the item ({boleto_id, issuer}) and the SQS message
+        end
+    end
