@@ -9,13 +9,6 @@ provider:
   region: us-east-1
 
 functions:
-  boleto_show:
-    handler: dist/boleto.show
-    events:
-      - http:
-          path: /boletos
-          method: get
-
   boleto_create:
     handler: dist/boleto.create
     events:
@@ -23,9 +16,46 @@ functions:
           path: /boletos
           method: post
 
+  boleto_index:
+    handler: dist/boleto.index
+    events:
+      - http:
+          path: /boletos/
+          method: get
+
+  boleto_show:
+    handler: dist/boleto.show
+    events:
+      - http:
+          path: /boletos/{id}
+          method: get
+
+  boleto_processBoletosToRegister:
+    handler: dist/boleto.processBoletosToRegister
+    events:
+      - schedule: rate(2 minutes)
+
+  boleto_register:
+    handler: dist/boleto.register
+
   queue_create:
     handler: dist/queue.create
     events:
       - http:
           path: /queues
+          method: post
+
+  queue_index:
+    handler: dist/queue.index
+    events:
+      - http:
+          path: /queues/
           method: get
+
+  queue_show:
+    handler: dist/queue.show
+    events:
+      - http:
+          path: /queues/{id}
+          method: get
+
