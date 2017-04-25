@@ -11,7 +11,7 @@
     "setup": "node ./script/setup",
     "test": "npm run prepare-test && nyc ava --verbose --serial 'test/**/*.js'",
     "test-functional": "npm run prepare-test && ava --verbose --serial 'test/functional/**/*.js'",
-    "test-integration": "npm run preapre-test && ava --verbose 'test/integration/**/*.js'",
+    "test-integration": "npm run prepare-test && ava --verbose 'test/integration/**/*.js'",
     "test-unit": "npm run build-test && ava --verbose 'test/unit/**/*.js'",
     "prepare-test": "npm run build-test && npm run setup"
   },

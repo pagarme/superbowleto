@@ -11,12 +11,7 @@ const create = normalizeHandler(boletoHandler.create)
 const register = promisify(boletoHandler.register)
 
 test.before(async () => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'registered' }))
   await purgeQueue(userQueue)
-})
-
-test.after(() => {
-  restoreFunction(provider, 'register')
 })
 
 test('registers a boleto (provider success)', async (t) => {
@@ -27,6 +22,9 @@ test('registers a boleto (provider success)', async (t) => {
     instructions: 'Please do not accept after expiration_date',
     register: false,
     queue_url: userQueueUrl,
+    payer_name: 'David Bowie',
+    payer_document_type: 'cpf',
+    payer_document_number: '98154524872',
     company_name: 'Some Company',
     company_document_number: '98154524872'
   }
