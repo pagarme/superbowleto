@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Promise from 'bluebird'
-import { always, compose, prop } from 'ramda'
-import { format, formatWithTemplate } from './formatter'
+import { always, compose, prop, applySpec } from 'ramda'
+import { format } from './formatter'
 import getConfig from '../../config/providers'
 import { encodeBase64 } from '../../lib/encoding'
 
@@ -15,7 +15,7 @@ export const buildHeaders = () => {
   }
 }
 
-export const buildPayload = formatWithTemplate({
+export const buildPayload = applySpec({
   merchant_id: always(merchantId),
   boleto: {
     carteira: always('25'),
