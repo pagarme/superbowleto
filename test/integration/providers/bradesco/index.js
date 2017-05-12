@@ -29,11 +29,11 @@ test('buildPayload', async (t) => {
         documento: '98154524872',
         tipo_documento: '1',
         endereco: {
-          cep: '05420000',
-          logradouro: 'Avenida Pedroso de Morais',
-          numero: '142',
-          complemento: 'Ap 201',
-          bairro: 'Pinheiros',
+          cep: '04551010',
+          logradouro: 'Rua Fidêncio Ramos',
+          numero: '308',
+          complemento: '9º andar, conjunto 91',
+          bairro: 'Vila Olímpia',
           cidade: 'São Paulo',
           uf: 'SP'
         }

@@ -29,11 +29,11 @@ export const buildPayload = applySpec({
       documento: prop('payer_document_number'),
       tipo_documento: compose(format('documentType'), prop('payer_document_type')),
       endereco: {
-        cep: always('05420000'),
-        logradouro: always('Avenida Pedroso de Morais'),
-        numero: always('142'),
-        complemento: always('Ap 201'),
-        bairro: always('Pinheiros'),
+        cep: always('04551010'),
+        logradouro: always('Rua Fidêncio Ramos'),
+        numero: always('308'),
+        complemento: always('9º andar, conjunto 91'),
+        bairro: always('Vila Olímpia'),
         cidade: always('São Paulo'),
         uf: always('SP')
       }
