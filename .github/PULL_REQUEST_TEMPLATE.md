@@ -1,13 +1,17 @@
 ## Description
 
-Write a brief description of your PR. Good things to cite:
+Write a brief and explicative description of your pull request. 
+
+<!--
+Things to cite on the PR description: 
 
 - Why is the PR needed
 - What the PR does
 - What are possible side effects
 - Additional information (related github issues, links, etc)
 
-Example: This PR implements feature "x" so we can solve our payments problem. This PR closes #98928312874 (github issue)
+  Example: This PR implements feature "x" so we can solve our payments problem. This PR closes #98928312874 (github issue)
+-->
 
 ## Your checklist for this pull request
 
