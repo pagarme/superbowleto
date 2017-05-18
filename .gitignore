@@ -1,9 +1,10 @@
-# Project
+### Project ###
 build
 dist
 .serverless
 .webpack.test.import
 
+### Node ###
 # Logs
 logs
 *.log
@@ -41,3 +42,13 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+### Terraform ###
+# Terraform - https://terraform.io/
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+### Terraform Patch ###
+# End of https://www.gitignore.io/api/terraform
