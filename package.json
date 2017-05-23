@@ -11,10 +11,10 @@
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
     "test": "ava --verbose 'build/test/**/*.js'",
-    "test-all": "ava 'build/main.js'",
-    "test-functional": "ava --verbose 'build/test/functional/**/*.js'",
-    "test-integration": "ava --verbose 'build/test/integration/**/*.js'",
-    "test-unit": "ava --verbose 'build/test/unit/**/*.js'",
+    "test-all": "yarn run pretest && ava 'build/main.js'",
+    "test-functional": "yarn run pretest && ava --verbose 'build/test/functional/**/*.js'",
+    "test-integration": "yarn run pretest && ava --verbose 'build/test/integration/**/*.js'",
+    "test-unit": "yarn run build-test && ava --verbose 'build/test/unit/**/*.js'",
     "pretest": "yarn run setup && yarn run build-test"
   },
   "repository": {
