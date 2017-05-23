@@ -115,7 +115,7 @@ Tests are found inside the `test/` directory and are separate by type: `function
 
   - `Integration` tests build on unit tests by combining the units of code and testing that the resulting combination functions correctly[<sup>ref</sup>](http://stackoverflow.com/questions/4904096/whats-the-difference-between-unit-functional-acceptance-and-integration-test).
 
-    The folder structure of the unit tests tend to mirror the folder structure of the `src` folder. For instance, we generally see the following folder structure:
+    The folder structure of the integration tests tend to mirror the folder structure of the `src` folder. For instance, we generally see the following folder structure:
 
     ```
     ├── src
@@ -123,7 +123,7 @@ Tests are found inside the `test/` directory and are separate by type: `function
     │   └── lib
     │       └── http.js
     └── test
-        └── unit
+        └── integration
             ├── index.js
             └── lib
                 └── http.js
@@ -135,7 +135,7 @@ Tests are found inside the `test/` directory and are separate by type: `function
 
     ```
     ├── test
-        └── integration
+        └── functional
             └── boleto
                 └── create.js
                 └── register.js
@@ -427,7 +427,7 @@ Find one boleto by id.
 
 Process the `boletos-to-regiter-queue`. This Lambda function is triggered by the **Schedule Event** (runs every `n` minutes).
 
-When a boleto can't be registered within the provider at the moment of its creation, it will be posted to a SQS Queue called `boletos-to-register`. This functions is responsible for processing this queue. Here are the steps:
+When a boleto can't be registered within the provider at the moment of its creation, it will be posted to a SQS Queue called `boletos-to-register`. This function is responsible for processing this queue. Here are the steps:
 
 1. This function is triggered by a **Schedule Event** that runs every `n` minutes.
 1. Using `sqs-quooler` we then start to poll items from SQS (`sqs.receiveMessage`)
