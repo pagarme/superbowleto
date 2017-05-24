@@ -1,29 +1,30 @@
 import Promise from 'bluebird'
-import { mergeAll, tap } from 'ramda'
+import { mergeAll } from 'ramda'
 import { models } from '../../database'
 import { NotFoundError } from '../../lib/errors'
 import { handleDatabaseErrors } from '../../lib/errors/database'
 import { getPaginationQuery } from '../../lib/database/pagination'
-import { parse } from '../../lib/http/request'
 import sqs from '../../lib/sqs'
-import { schema } from './schema'
 import { BoletosToRegisterQueue } from './queues'
 
 const { Boleto } = models
 
-export const create = (data) => {
-  const sendBoletoToQueue = tap(boleto => BoletosToRegisterQueue.push({
-    boleto_id: boleto.id,
-    issuer: boleto.issuer
-  }))
-
-  return Promise.resolve(data)
-    .then(parse(schema))
+export const create = data =>
+  Promise.resolve(data)
     .then(Boleto.create.bind(Boleto))
     .then(Boleto.buildResponse)
-    .then(sendBoletoToQueue)
     .catch(handleDatabaseErrors)
-}
+
+export const register = data =>
+  Promise.resolve(data)
+
+export const registerById = id =>
+  Boleto.findOne({
+    where: {
+      id
+    }
+  })
+    .then(register)
 
 export const index = ({ page, count }) => {
   const paginationQuery = getPaginationQuery({ page, count })
