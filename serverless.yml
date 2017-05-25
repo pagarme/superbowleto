@@ -37,25 +37,4 @@ functions:
 
   boleto_register:
     handler: dist/boleto.register
-
-  queue_create:
-    handler: dist/queue.create
-    events:
-      - http:
-          path: /queues
-          method: post
-
-  queue_index:
-    handler: dist/queue.index
-    events:
-      - http:
-          path: /queues/
-          method: get
-
-  queue_show:
-    handler: dist/queue.show
-    events:
-      - http:
-          path: /queues/{id}
-          method: get
-
+ 

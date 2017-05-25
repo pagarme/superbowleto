@@ -1,23 +1,13 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
-import { purgeQueue } from '../../helpers/sqs'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { createQueue } from '../queue/helpers'
 import { mock } from './helpers'
 import * as boletoHandler from '../../../src/resources/boleto'
-import { BoletosToRegisterQueue } from '../../../src/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
 
-test.before(async () => {
-  await purgeQueue(BoletosToRegisterQueue)
-})
-
 test('creates a boleto', async (t) => {
-  const queue = await createQueue()
-  const payload = Object.assign({}, mock, {
-    queue_id: queue.id
-  })
+  const payload = mock
 
   const { body, statusCode } = await create({
     body: payload
@@ -31,13 +21,14 @@ test('creates a boleto', async (t) => {
   assert.containSubset(body, {
     status: 'issued',
     paid_amount: 0,
-    amount: 2000,
-    instructions: 'Please do not accept after expiration_date',
-    issuer: 'bradesco',
+    amount: payload.amount,
+    instructions: payload.instructions,
+    issuer: payload.issuer,
     issuer_id: null,
-    payer_name: 'David Bowie',
-    payer_document_type: 'cpf',
-    payer_document_number: '98154524872'
+    payer_name: payload.payer_name,
+    payer_document_type: payload.payer_document_type,
+    payer_document_number: payload.payer_document_number,
+    queue_url: payload.queue_url
   })
 })
 
@@ -56,8 +47,8 @@ test('creates a boleto with invalid data', async (t) => {
   assert.containSubset(body, {
     errors: [{
       type: 'invalid_parameter',
-      message: '"queue_id" is required',
-      field: 'queue_id'
+      message: '"queue_url" is required',
+      field: 'queue_url'
     }, {
       type: 'invalid_parameter',
       message: '"expiration_date" must be a number of milliseconds or valid date string',
@@ -87,17 +78,14 @@ test('creates a boleto with invalid data', async (t) => {
 })
 
 test('creates a non-registrable boleto', async (t) => {
-  const queue = await createQueue()
-
-  const payload = Object.assign({}, {
+  const payload = {
     expiration_date: new Date(),
     amount: 2000,
     issuer: 'bradesco',
     instructions: 'Please do not accept after expiration_date',
-    register: false
-  }, {
-    queue_id: queue.id
-  })
+    register: false,
+    queue_url: 'http://yopa/queue/test'
+  }
 
   const { body, statusCode } = await create({
     body: payload
@@ -110,12 +98,13 @@ test('creates a non-registrable boleto', async (t) => {
   assert.containSubset(body, {
     status: 'issued',
     paid_amount: 0,
-    amount: 2000,
-    instructions: 'Please do not accept after expiration_date',
-    issuer: 'bradesco',
+    amount: payload.amount,
+    instructions: payload.instructions,
+    issuer: payload.issuer,
     issuer_id: null,
     payer_name: null,
     payer_document_type: null,
-    payer_document_number: null
+    payer_document_number: null,
+    queue_url: payload.queue_url
   })
 })

@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 export const schema = {
-  queue_id: Joi
+  queue_url: Joi
     .string()
     .required(),
 
