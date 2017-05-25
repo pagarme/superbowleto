@@ -26,6 +26,7 @@ test('creates a boleto', async (t) => {
   t.is(statusCode, 201)
   t.is(body.object, 'boleto')
   t.true(body.title_id != null)
+  t.true(body.barcode != null)
   t.true(typeof body.title_id === 'number')
   assert.containSubset(body, {
     status: 'issued',

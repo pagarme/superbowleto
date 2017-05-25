@@ -1,7 +1,21 @@
 import Promise from 'bluebird'
 import { assoc, pick } from 'ramda'
 import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
+import { Boleto as NodeBoleto } from 'node-boleto'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
+
+export const generateBarcode = (boleto) => {
+  const nodeBoleto = new NodeBoleto({
+    banco: boleto.issuer,
+    valor: boleto.amount,
+    nosso_numero: boleto.title_id,
+    agencia: '1229',
+    codigo_cedente: '469',
+    carteira: '25'
+  })
+
+  return nodeBoleto.barcode_data
+}
 
 export const buildResponse = responseObjectBuilder(boleto =>
   Promise.resolve(boleto)
@@ -16,6 +30,7 @@ export const buildResponse = responseObjectBuilder(boleto =>
       'issuer',
       'issuer_id',
       'title_id',
+      'barcode',
       'payer_name',
       'payer_document_type',
       'payer_document_number',
@@ -24,6 +39,11 @@ export const buildResponse = responseObjectBuilder(boleto =>
     ]))
     .then(assoc('object', 'boleto'))
 )
+
+const addBarcode = boleto =>
+  boleto.updateAttributes({
+    barcode: generateBarcode(boleto)
+  })
 
 function create (database) {
   return database.define('Boleto', {
@@ -86,6 +106,10 @@ function create (database) {
       autoIncrement: true
     },
 
+    barcode: {
+      type: STRING
+    },
+
     payer_name: {
       type: STRING
     },
@@ -103,6 +127,9 @@ function create (database) {
       { fields: ['queue_id'] },
       { fields: ['status'] }
     ],
+    hooks: {
+      afterCreate: addBarcode
+    },
     classMethods: {
       buildResponse
     }
