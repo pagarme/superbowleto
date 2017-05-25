@@ -9,10 +9,10 @@ import {
   ValidationError
 } from '../../../../src/lib/errors'
 
-const { Queue } = models
+const { Boleto } = models
 
 test('handleDatabaseErrors: ValidationError', async (t) => {
-  const err = await Queue.create({})
+  const err = await Boleto.create({})
     .catch(handleDatabaseErrors)
     .catch(identity)
 
@@ -21,8 +21,8 @@ test('handleDatabaseErrors: ValidationError', async (t) => {
   t.true(err instanceof ValidationError, 'is a ValidationError')
   t.true(Array.isArray(errors), 'has an array of errors')
   t.true(errors[0] instanceof InvalidParameterError, 'has an InvalidParameterError')
-  t.is(errors[0].message, 'url cannot be null', 'has an error with a `message` property')
-  t.is(errors[0].field, 'url', 'has an error with `field = url`')
+  t.is(errors[0].message, 'queue_url cannot be null', 'has an error with a `message` property')
+  t.is(errors[0].field, 'queue_url', 'has an error with `field = queue_url`')
   t.is(errors[0].type, 'invalid_parameter', 'has an error with `type = invalid_parameter`')
 })
 

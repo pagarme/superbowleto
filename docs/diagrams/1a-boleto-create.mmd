@@ -6,7 +6,7 @@ sequenceDiagram
 
     Client ->>+ API: HTTP POST /boletos
         Note over Client,API: Lambda triggered by: HTTP
-        Note over Client,API: Body: boleto_info (amount, expiration, ...), queue_id
+        Note over Client,API: Body: boleto_info (amount, expiration, ...), queue_url
     API ->>+ Database: db.create()
     Database -->>- API: "created"
     API ->>+ Provider: register()

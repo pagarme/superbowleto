@@ -5,8 +5,7 @@ const { externals } = require('./webpackfile.base.js')
 module.exports = {
   context: join(__dirname, '../src'),
   entry: {
-    boleto: './resources/boleto/index.js',
-    queue: './resources/queue/index.js',
+    boleto: './resources/boleto/index.js'
   },
   output: {
     path: join(__dirname, '../dist'),

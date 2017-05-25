@@ -7,7 +7,7 @@ export const buildResponse = responseObjectBuilder(boleto =>
   Promise.resolve(boleto)
     .then(pick([
       'id',
-      'queue_id',
+      'queue_url',
       'status',
       'expiration_date',
       'amount',
@@ -34,7 +34,7 @@ function create (database) {
       defaultValue: defaultCuidValue('bol_')
     },
 
-    queue_id: {
+    queue_url: {
       type: STRING,
       allowNull: false
     },
@@ -100,7 +100,7 @@ function create (database) {
     }
   }, {
     indexes: [
-      { fields: ['queue_id'] },
+      { fields: ['queue_url'] },
       { fields: ['status'] }
     ],
     classMethods: {
@@ -109,11 +109,6 @@ function create (database) {
   })
 }
 
-function associate (Boleto, { Queue }) {
-  Boleto.belongsTo(Queue)
-}
-
 export default {
-  associate,
   create
 }

@@ -26,7 +26,8 @@ test('shows all boletos with default pagination', async (t) => {
     issuer_id: null,
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
-    payer_document_number: '98154524872'
+    payer_document_number: '98154524872',
+    queue_url: 'http://yopa/queue/test'
   }, 'result must have the shape of a boleto')
 })
 
@@ -50,6 +51,7 @@ test('shows all boletos with custom pagination', async (t) => {
     issuer_id: null,
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
-    payer_document_number: '98154524872'
+    payer_document_number: '98154524872',
+    queue_url: 'http://yopa/queue/test'
   }, 'result must have the shape of a boleto')
 })

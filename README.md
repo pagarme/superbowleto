@@ -12,16 +12,13 @@
 	- [Installing new dependencies](#installing-new-dependencies)
 - [Testing](#testing)
 - [Lambdas and Data Flow](#lambdas-and-data-flow)
-	- [1. Queue: create](#1-queue-create)
-	- [2. Queue: index](#2-queue-index)
-	- [3. Queue: show](#3-queue-show)
-	- [4. Boleto: create](#4-boleto-create)
+	- [1. Boleto: create](#4-boleto-create)
 		- [a) Provider **could** process the boleto](#a-provider-could-process-the-boleto)
 		- [b) Provider **could not** process the boleto](#b-provider-could-not-process-the-boleto)
-	- [5. Boleto: index](#5-boleto-index)
-	- [6. Boleto: show](#6-boleto-show)
-	- [7. Boleto: process `boletos-to-register` queue](#7-boleto-process-boletos-to-register-queue)
-	- [8. Boleto: register](#8-boleto-register)
+	- [2. Boleto: index](#5-boleto-index)
+	- [3. Boleto: show](#6-boleto-show)
+	- [4. Boleto: process `boletos-to-register` queue](#7-boleto-process-boletos-to-register-queue)
+	- [5. Boleto: register](#8-boleto-register)
 
 ## Technology
 
@@ -164,107 +161,7 @@ Tests are found inside the `test/` directory and are separate by type: `function
 
 This project is designed in AWS Lambda functions and has some logical branches and business domain rules that can be hard to understand. This section documents what every Lambda function does how it fits in the entire project.
 
-### 1. Queue: create
-
-Create a new queue.
-
-In order to create a boleto, the owner must pass in a `queue_id`, that represents an SQS Queue which will be used to notify the owner when a boleto is updated (e.g. registered) in the async flow. When a boleto is updated, a message will be sent to the provided SQS Queue, and it's up to the owner to handle the messages sent to the queue.
-
-![](https://cloud.githubusercontent.com/assets/7416751/25156827/8e3af2a0-2473-11e7-8a71-1c64eef4ff29.png)
-
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
-
-**Example:**
-
-  > `POST /queues`
-
-  ```json
-  Content-Type: application/json
-
-  {
-    "name": "gateway",
-    "url": "https://queue.amazonaws.com/918du2d81/GatewayQueue"
-  }
-  ```
-
-  > `201 Created`
-
-  ```json
-  Content-Type: application/json
-
-  {
-    "id": "queue_cj1o29mru000001nigxky48a8",
-    "pan_token": "pt_cizsl7bhi000001p9oz5i4bmw",
-    "cvv_token": "ct_cizsl9j0e000001mr6x6mnhdk"
-  }
-  ```
-
-### 2. Queue: index
-
-Retrieve all queues.
-
-![](https://cloud.githubusercontent.com/assets/7416751/25156831/8f07a0ca-2473-11e7-805d-a38607d353e1.png)
-
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
-
-**Example:**
-
-  > `GET /queues`
-
-  ```json
-  Content-Type: application/json
-
-  {
-    "count": "10",
-    "page": "1"
-  }
-  ```
-
-  > `200 Ok`
-
-  ```json
-  Content-Type: application/json
-
-  [{
-    "id": "queue_cj1o29mru000001nigxky48a8",
-    "pan_token": "pt_cizsl7bhi000001p9oz5i4bmw",
-    "cvv_token": "ct_cizsl9j0e000001mr6x6mnhdk"
-  }]
-  ```
-
-### 3. Queue: show
-
-Find one queue by id.
-
-![](https://cloud.githubusercontent.com/assets/7416751/25156833/8f09bcde-2473-11e7-95c0-95de76c63eec.png)
-
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
-
-**Example:**
-
-  > `GET /queues/:id`
-
-  ```json
-  Content-Type: application/json
-
-  {
-    "id": "queue_cj1o29mru000001nigxky48a8"
-  }
-  ```
-
-  > `200 Ok`
-
-  ```json
-  Content-Type: application/json
-
-  {
-    "id": "queue_cj1o29mru000001nigxky48a8",
-    "pan_token": "pt_cizsl7bhi000001p9oz5i4bmw",
-    "cvv_token": "ct_cizsl9j0e000001mr6x6mnhdk"
-  }
-  ```
-
-### 4. Boleto: create
+### 1. Boleto: create
 
 Create a new boleto.
 
@@ -309,7 +206,7 @@ The following steps illustrate the case where the provider **could** be reached 
   Content-Type: application/json
 
   {
-    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "queue_url": "http://yopa/queue/test",
     "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
     "amount": 2000,
     "instructions": "Please do not accept after expiration_date",
@@ -326,7 +223,7 @@ The following steps illustrate the case where the provider **could** be reached 
   Content-Type: application/json
 
   {
-    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "queue_url": "http://yopa/queue/test",
     "status": "issued | registered | refused",
     "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
     "amount": 2000,
@@ -340,7 +237,7 @@ The following steps illustrate the case where the provider **could** be reached 
   }
   ```
 
-### 5. Boleto: index
+### 2. Boleto: index
 
 Retrieve all boletos.
 
@@ -369,7 +266,7 @@ Retrieve all boletos.
   [{
     "id": "bol_cj1o33xuu000001qkfmlc6m5c",
     "status": "issued",
-    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "queue_url": "http://yopa/queue/test",
     "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
     "amount": 2000,
     "instructions": "Please do not accept after expiration_date",
@@ -382,7 +279,7 @@ Retrieve all boletos.
   }]
   ```
 
-### 6. Boleto: show
+### 3. Boleto: show
 
 Find one boleto by id.
 
@@ -410,7 +307,7 @@ Find one boleto by id.
   {
     "id": "bol_cj1o33xuu000001qkfmlc6m5c",
     "status": "issued",
-    "queue_id": "queue_cj1o29mru000001nigxky48a8",
+    "queue_url": "http://yopa/queue/test",
     "expiration_date": "Tue Apr 18 2017 18:46:59 GMT-0300 (-03)",
     "amount": 2000,
     "instructions": "Please do not accept after expiration_date",
@@ -423,7 +320,7 @@ Find one boleto by id.
   }
   ```
 
-### 7. Boleto: process `boletos-to-register` queue
+### 4. Boleto: process `boletos-to-register` queue
 
 Process the `boletos-to-regiter-queue`. This Lambda function is triggered by the **Schedule Event** (runs every `n` minutes).
 
@@ -438,7 +335,7 @@ When a boleto can't be registered within the provider at the moment of its creat
 
 *Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
 
-### 8. Boleto: register
+### 5. Boleto: register
 
 Register a boleto. This Lambda function is invoked by another Lambda function: process `boletos-to-register` queue.
 
@@ -450,7 +347,7 @@ This function registers boletos that went to the `boletos-to-register` queue. He
 1. If the boleto can be registered, we try to register it within the provider.
 1. If the provider could not process the boleto, we stop executing here. The SQS Message will then go back to `boletos-to-register` queue and will be later processed.
 1. We update the boleto status with either `registered` or `refused`.
-1. **IMPORTANT:** After the boleto is updated, we notify the boleto owner by sendin an SQS message to the queue the owner specified on the boleto creation (aka: `boleto.queue.url`). The owner will then handle the processing of these SQS Messages. That's the only way we can notify the boleto owner that a boleto that went to `boletos-to-register` queue was updated. That's why it's mandatory to pass a queue at the moment of the boleto creation.
+1. **IMPORTANT:** After the boleto is updated, we notify the boleto owner by sendin an SQS message to the queue the owner specified on the boleto creation (aka: `boleto.queue_url`). The owner will then handle the processing of these SQS Messages. That's the only way we can notify the boleto owner that a boleto that went to `boletos-to-register` queue was updated. That's why it's mandatory to pass a queue at the moment of the boleto creation.
 
 ![](https://cloud.githubusercontent.com/assets/7416751/25156837/8f5971de-2473-11e7-918f-f059a5fba408.png)
 

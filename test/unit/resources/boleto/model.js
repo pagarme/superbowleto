@@ -6,7 +6,7 @@ test('buildResponse', async (t) => {
 
   const input = {
     id: 'bol_cizec1xk2000001nyml04gwxp',
-    queue_id: 'queue_cizec29zt000001tgv3qnv3ug',
+    queue_url: 'http://yopa/queue/test',
     status: 'issued',
     expiration_date: now,
     amount: 2000,
@@ -27,7 +27,7 @@ test('buildResponse', async (t) => {
   t.deepEqual(output, {
     object: 'boleto',
     id: 'bol_cizec1xk2000001nyml04gwxp',
-    queue_id: 'queue_cizec29zt000001tgv3qnv3ug',
+    queue_url: 'http://yopa/queue/test',
     status: 'issued',
     expiration_date: now,
     amount: 2000,
