@@ -1,6 +1,6 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
-import { findItemOnQueue, purgeQueue } from '../../helpers/sqs'
+import { purgeQueue } from '../../helpers/sqs'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createQueue } from '../queue/helpers'
 import { mock } from './helpers'
@@ -38,14 +38,6 @@ test('creates a boleto', async (t) => {
     payer_document_type: 'cpf',
     payer_document_number: '98154524872'
   })
-
-  const sqsItem = await findItemOnQueue(
-    BoletosToRegisterQueue,
-    item => item.boleto_id === body.id
-  )
-
-  t.is(sqsItem.boleto_id, body.id, 'posts an item to `boletos-to-register` sqs queue with a `boleto_id` property`')
-  t.is(sqsItem.issuer, body.issuer, 'posts an item to `boletos-to-register` sqs queue with a `issuer` property`')
 })
 
 test('creates a boleto with invalid data', async (t) => {
@@ -90,5 +82,39 @@ test('creates a boleto with invalid data', async (t) => {
       message: '"payer_document_number" is required',
       field: 'payer_document_number'
     }]
+  })
+})
+
+test('creates a non-registrable boleto', async (t) => {
+  const queue = await createQueue()
+
+  const payload = Object.assign({}, {
+    expiration_date: new Date(),
+    amount: 2000,
+    issuer: 'bradesco',
+    instructions: 'Please do not accept after expiration_date',
+    register: false
+  }, {
+    queue_id: queue.id
+  })
+
+  const { body, statusCode } = await create({
+    body: payload
+  })
+
+  t.is(statusCode, 201)
+  t.is(body.object, 'boleto')
+  t.true(body.title_id != null)
+  t.true(typeof body.title_id === 'number')
+  assert.containSubset(body, {
+    status: 'issued',
+    paid_amount: 0,
+    amount: 2000,
+    instructions: 'Please do not accept after expiration_date',
+    issuer: 'bradesco',
+    issuer_id: null,
+    payer_name: null,
+    payer_document_type: null,
+    payer_document_number: null
   })
 })

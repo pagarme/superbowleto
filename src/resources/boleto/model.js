@@ -87,20 +87,16 @@ function create (database) {
     },
 
     payer_name: {
-      type: STRING,
-      allowNull: false
+      type: STRING
     },
 
     payer_document_type: {
       type: ENUM,
-      allowNull: false,
-      values: ['cpf', 'cnpj'],
-      defaultValue: 'cpf'
+      values: ['cpf', 'cnpj']
     },
 
     payer_document_number: {
-      type: STRING,
-      allowNull: false
+      type: STRING
     }
   }, {
     indexes: [

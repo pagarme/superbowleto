@@ -1,16 +1,39 @@
 import Promise from 'bluebird'
 import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
 import { ValidationError, NotFoundError } from '../../lib/errors'
-import * as boleto from './service'
+import * as boletoService from './service'
+import { parse } from '../../lib/http/request'
+import { schema as requestSchema } from './schema'
+
+const handleError = (err) => {
+  if (err instanceof ValidationError) {
+    return buildFailureResponse(400, err)
+  }
+
+  if (err instanceof NotFoundError) {
+    return buildFailureResponse(404, err)
+  }
+
+  return buildFailureResponse(500, err)
+}
 
 export const create = (event, context, callback) => {
   const body = JSON.parse(event.body || JSON.stringify({}))
 
   Promise.resolve(body)
-    .then(boleto.create)
+    .then(parse(requestSchema))
+    .then(boletoService.create)
+    .then((boleto) => {
+      const shouldRegister = body.register
+
+      if (shouldRegister) {
+        return boletoService.register(boleto)
+      }
+
+      return boleto
+    })
     .then(buildSuccessResponse(201))
-    .catch(ValidationError, buildFailureResponse(400))
-    .catch(buildFailureResponse(500))
+    .catch(handleError)
     .then(response => callback(null, response))
 }
 
@@ -19,9 +42,9 @@ export const index = (event, context, callback) => {
   const { page, count } = queryStringParameters
 
   Promise.resolve({ page, count })
-    .then(boleto.index)
+    .then(boletoService.index)
     .then(buildSuccessResponse(200))
-    .catch(buildFailureResponse(500))
+    .catch(handleError)
     .then(response => callback(null, response))
 }
 
@@ -30,15 +53,14 @@ export const show = (event, context, callback) => {
   const { id } = pathParameters
 
   Promise.resolve(id)
-    .then(boleto.show)
+    .then(boletoService.show)
     .then(buildSuccessResponse(200))
-    .catch(NotFoundError, buildFailureResponse(404))
-    .catch(buildFailureResponse(500))
+    .catch(handleError)
     .then(response => callback(null, response))
 }
 
 export const processBoletosToRegister = (event, context, callback) => {
-  Promise.resolve(boleto.processBoletosToRegister)
+  Promise.resolve(boletoService.processBoletosToRegister)
     .then(() => callback(null))
     .catch(err => callback(err))
 }
