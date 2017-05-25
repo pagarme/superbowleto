@@ -4,8 +4,11 @@ import { always, compose, prop, applySpec } from 'ramda'
 import { format } from './formatter'
 import getConfig from '../../config/providers'
 import { encodeBase64 } from '../../lib/encoding'
+import { makeFromLogger } from '../../lib/logger'
 
 const { endpoint, merchantId, securityKey } = prop('bradesco', getConfig())
+
+const makeLogger = makeFromLogger('bradesco/index')
 
 export const buildHeaders = () => {
   const authorization = encodeBase64(`${merchantId}:${securityKey}`)
@@ -49,8 +52,19 @@ export const register = (boleto) => {
     data: buildPayload(boleto)
   }
 
+  const logger = makeLogger({ operation: 'register' })
+
+  logger.info({ status: 'started', metadata: { request } })
+
   return Promise.resolve(request)
     .then(axios.request)
+    .tap((response) => {
+      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
+    })
+    .catch((err) => {
+      logger.error({ status: 'failed', metadata: { err } })
+      throw err
+    })
 }
 
 export const verifyRegistrationStatus = (boleto) => {
@@ -64,6 +78,17 @@ export const verifyRegistrationStatus = (boleto) => {
     }
   }
 
+  const logger = makeLogger({ operation: 'verifyRegistrationStatus' })
+
+  logger.info({ status: 'started', metadata: { request } })
+
   return Promise.resolve(request)
     .then(axios.request)
+    .tap((response) => {
+      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
+    })
+    .catch((err) => {
+      logger.error({ status: 'failed', metadata: { err } })
+      throw err
+    })
 }
