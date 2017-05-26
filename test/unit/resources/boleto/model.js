@@ -46,10 +46,11 @@ test('generateBarcode', (t) => {
   const input = {
     issuer: 'bradesco',
     amount: 2000,
-    title_id: '1'
+    title_id: '1',
+    expiration_date: new Date('2017-05-26')
   }
 
   const barcode = generateBarcode(input)
 
-  t.is(barcode, '23791717500000020001229250000000000100004690')
+  t.is(barcode, '23798717100000020001229250000000000100004690')
 })

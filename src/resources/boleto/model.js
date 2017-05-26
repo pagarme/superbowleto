@@ -9,6 +9,7 @@ export const generateBarcode = (boleto) => {
     banco: boleto.issuer,
     valor: boleto.amount,
     nosso_numero: boleto.title_id,
+    data_vencimento: boleto.expiration_date,
     agencia: '1229',
     codigo_cedente: '469',
     carteira: '25'
