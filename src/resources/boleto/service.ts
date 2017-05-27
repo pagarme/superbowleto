@@ -1,4 +1,4 @@
-import Promise from 'bluebird'
+import * as Promise from 'bluebird'
 import { mergeAll } from 'ramda'
 import { models } from '../../database'
 import { NotFoundError } from '../../lib/errors'
@@ -109,7 +109,7 @@ export const show = (id) => {
 
 export const processBoletosToRegister = () => {
   const processBoleto = (item, message) => {
-    const QueueUrl = BoletosToRegisterQueue.options.endpoint
+    const QueueUrl = BoletosToRegisterQueueUrl
     const ReceiptHandle = message.ReceiptHandle
 
     return sqs.deleteMessage({ QueueUrl, ReceiptHandle }).promise()

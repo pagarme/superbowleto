@@ -1,4 +1,4 @@
-import Promise from 'bluebird'
+import * as Promise from 'bluebird'
 import { assoc, pick } from 'ramda'
 import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
 import { Boleto as NodeBoleto } from 'node-boleto'

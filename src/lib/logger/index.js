@@ -1,5 +1,5 @@
-import log4js from 'log4js'
-import escriba from 'escriba'
+import * as log4js from 'log4js'
+import * as escriba from 'escriba'
 import { getEnv } from '../../config/index'
 
 if (getEnv() === 'test') {

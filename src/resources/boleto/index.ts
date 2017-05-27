@@ -116,7 +116,7 @@ export const register = (event, context, callback) => {
 }
 
 export const index = (event, context, callback) => {
-  const { queryStringParameters = {} } = event
+  const { queryStringParameters = {} }: { queryStringParameters: any } = event
   const { page, count } = queryStringParameters
 
   Promise.resolve({ page, count })
@@ -127,7 +127,7 @@ export const index = (event, context, callback) => {
 }
 
 export const show = (event, context, callback) => {
-  const { pathParameters = {} } = event
+  const { pathParameters = {} }: { pathParameters: any } = event
   const { id } = pathParameters
 
   Promise.resolve(id)

@@ -11,3 +11,5 @@ export const BoletosToRegisterQueue = new Queue({
   concurrency: config.concurrency
 })
 
+export const BoletosToRegisterQueueUrl = config.queueUrl
+
