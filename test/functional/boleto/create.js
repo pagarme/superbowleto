@@ -1,7 +1,8 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import * as boletoHandler from '../../../src/resources/boleto'
+import { mock } from '../../helpers/boleto'
+import * as boletoHandler from '../../../build/resources/boleto'
 
 const create = normalizeHandler(boletoHandler.create)
 

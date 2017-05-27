@@ -1,13 +1,13 @@
 import test from 'ava'
 import Sequelize from 'sequelize'
 import { identity } from 'ramda'
-import { models } from '../../../../src/database'
-import { handleDatabaseErrors } from '../../../../src/lib/errors/database'
+import { models } from '../../../../build/database'
+import { handleDatabaseErrors } from '../../../../build/lib/errors/database'
 import {
   DatabaseError,
   InvalidParameterError,
   ValidationError
-} from '../../../../src/lib/errors'
+} from '../../../../build/lib/errors'
 
 const { Boleto } = models
 

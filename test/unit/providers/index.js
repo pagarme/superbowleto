@@ -1,6 +1,6 @@
 import test from 'ava'
-import { findProvider } from '../../../src/providers'
-import * as bradesco from '../../../src/providers/bradesco'
+import { findProvider } from '../../../build/providers'
+import * as bradesco from '../../../build/providers/bradesco'
 
 test('findProvider: with existing provider', (t) => {
   const provider = findProvider('bradesco')

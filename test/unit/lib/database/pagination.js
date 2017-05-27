@@ -1,5 +1,5 @@
 import test from 'ava'
-import { getPaginationQuery } from '../../../../src/lib/database/pagination'
+import { getPaginationQuery } from '../../../../build/lib/database/pagination'
 
 test('creates a pagination with defaults', async (t) => {
   const pagination = getPaginationQuery()

@@ -4,7 +4,7 @@ import {
   date,
   documentType,
   format
-} from '../../../../src/providers/bradesco/formatter'
+} from '../../../../build/providers/bradesco/formatter'
 
 test('date', (t) => {
   const timestamp = moment('2017-04-03').format()

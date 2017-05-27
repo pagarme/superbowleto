@@ -1,5 +1,5 @@
 import test from 'ava'
-import { getConfig } from '../../../src/config/index'
+import { getConfig } from '../../../build/config/index'
 
 const configMock = {
   development: {

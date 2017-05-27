@@ -1,5 +1,5 @@
 import Promise from 'bluebird'
-import sqs from '../../src/lib/sqs'
+import sqs from '../../build/lib/sqs'
 
 export const purgeQueue = queue => sqs.purgeQueue({
   QueueUrl: queue.options.endpoint
