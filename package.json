@@ -5,15 +5,15 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build-production": "webpack --config ./webpack/webpackfile.production.js",
+    "build-production": "tsc && webpack",
     "build-test": "tsc",
-    "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
-    "setup": "node -r babel-register ./script/setup",
-    "test": "ava --verbose --serial 'test/**/*.js'",
-    "test-functional": "npm run pretest && ava --verbose --serial 'test/functional/**/*.js'",
-    "test-integration": "npm run pretest && ava --verbose 'test/integration/**/*.js'",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.js'",
+    "setup": "node ./script/setup",
+    "test": "npm run prepare-test && nyc ava --verbose --serial 'test/**/*.js'",
+    "test-functional": "npm run prepare-test && ava --verbose --serial 'test/functional/**/*.js'",
+    "test-integration": "npm run preapre-test && ava --verbose 'test/integration/**/*.js'",
     "test-unit": "npm run build-test && ava --verbose 'test/unit/**/*.js'",
-    "pretest": "npm run build-test && npm run setup"
+    "prepare-test": "npm run build-test && npm run setup"
   },
   "repository": {
     "type": "git",
@@ -46,21 +46,17 @@
     "sqs-quooler": "1.3.0"
   },
   "devDependencies": {
-    "@ava/babel-preset-stage-4": "1.0.0",
-    "@types/node": "^7.0.22",
+    "@types/node": "7.0.22",
     "ava": "0.18.2",
-    "babel-loader": "6.4.1",
-    "babel-plugin-transform-builtin-extend": "1.1.2",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-es2015": "6.24.0",
     "chai": "3.5.0",
     "chai-subset": "1.5.0",
     "eslint": "3.19.0",
     "eslint-config-airbnb-base": "11.1.2",
     "eslint-plugin-import": "2.2.0",
-    "file-loader": "0.11.1",
+    "serverless": "1.10.2",
+    "source-map-loader": "0.2.1",
     "source-map-support": "0.4.14",
-    "typescript": "^2.3.3",
+    "typescript": "2.3.3",
     "webpack": "2.3.3"
   }
 }
