@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "allowJs": true,
+    "outDir": "./build",
+    "inlineSourceMap": true,
+    "pretty": true,
+    "lib": ["es2015", "es2017"]
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+

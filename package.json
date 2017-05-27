@@ -5,17 +5,15 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build-dev": "webpack --config ./webpack/webpackfile.dev.js",
     "build-production": "webpack --config ./webpack/webpackfile.production.js",
-    "build-test": "webpack --config ./webpack/webpackfile.test.js",
+    "build-test": "tsc",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
-    "test": "ava --verbose --serial 'build/test/**/*.js'",
-    "test-all": "yarn run pretest && ava 'build/main.js'",
-    "test-functional": "yarn run pretest && ava --verbose --serial 'build/test/functional/**/*.js'",
-    "test-integration": "yarn run pretest && ava --verbose 'build/test/integration/**/*.js'",
-    "test-unit": "yarn run build-test && ava --verbose 'build/test/unit/**/*.js'",
-    "pretest": "yarn run setup && yarn run build-test"
+    "test": "ava --verbose --serial 'test/**/*.js'",
+    "test-functional": "npm run pretest && ava --verbose --serial 'test/functional/**/*.js'",
+    "test-integration": "npm run pretest && ava --verbose 'test/integration/**/*.js'",
+    "test-unit": "npm run build-test && ava --verbose 'test/unit/**/*.js'",
+    "pretest": "npm run build-test && npm run setup"
   },
   "repository": {
     "type": "git",
@@ -49,6 +47,7 @@
   },
   "devDependencies": {
     "@ava/babel-preset-stage-4": "1.0.0",
+    "@types/node": "^7.0.22",
     "ava": "0.18.2",
     "babel-loader": "6.4.1",
     "babel-plugin-transform-builtin-extend": "1.1.2",
@@ -61,6 +60,7 @@
     "eslint-plugin-import": "2.2.0",
     "file-loader": "0.11.1",
     "source-map-support": "0.4.14",
+    "typescript": "^2.3.3",
     "webpack": "2.3.3"
   }
 }
