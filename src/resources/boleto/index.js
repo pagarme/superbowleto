@@ -4,6 +4,10 @@ import { ValidationError, NotFoundError } from '../../lib/errors'
 import * as boletoService from './service'
 import { parse } from '../../lib/http/request'
 import { schema as requestSchema } from './schema'
+import { makeFromLogger } from '../../lib/logger'
+import { defaultCuidValue } from '../../lib/database/schema'
+
+const makeLogger = makeFromLogger('boleto/index')
 
 const handleError = (err) => {
   if (err instanceof ValidationError) {
@@ -20,6 +24,10 @@ const handleError = (err) => {
 export const create = (event, context, callback) => {
   const body = JSON.parse(event.body || JSON.stringify({}))
 
+  const logger = makeLogger({}, { id: defaultCuidValue('req_')() })
+
+  logger.info({ operation: 'create', status: 'started', metadata: { body } })
+
   Promise.resolve(body)
     .then(parse(requestSchema))
     .then(boletoService.create)
@@ -27,13 +35,31 @@ export const create = (event, context, callback) => {
       const shouldRegister = body.register
 
       if (shouldRegister) {
+        logger.info({ operation: 'register', status: 'started' })
+
         return boletoService.register(boleto)
+          .tap(() => {
+            logger.info({ operation: 'register', status: 'succeeded' })
+          })
+          .catch((err) => {
+            logger.error({ operation: 'register', status: 'failed', metadata: { err } })
+          })
       }
 
       return boleto
     })
     .then(buildSuccessResponse(201))
-    .catch(handleError)
+    .tap((response) => {
+      logger.info({
+        operation: 'create',
+        status: 'succeeded',
+        metadata: { body: response.body, statusCode: response.statusCode }
+      })
+    })
+    .catch((err) => {
+      logger.error({ operation: 'create', status: 'failed', metadata: { err } })
+      return handleError(err)
+    })
     .then(response => callback(null, response))
 }
 
