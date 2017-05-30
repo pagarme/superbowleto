@@ -1,3 +1,5 @@
+import sinon from 'sinon'
+
 import { models } from '../../../../src/database'
 
 const { Boleto } = models
@@ -18,4 +20,16 @@ export const createBoleto = (data = {}) => {
 
   return Boleto.create(payload)
     .then(Boleto.buildResponse)
+}
+
+export const restoreFunction = (obj, name) => {
+  if (obj[name].restore) {
+    obj[name].restore()
+  }
+}
+
+// Wrap function if it isn't already wrapped (ava runs concurrently)
+export const mockFunction = (obj, name, fn) => {
+  restoreFunction(obj, name)
+  sinon.stub(obj, name).callsFake(fn)
 }
