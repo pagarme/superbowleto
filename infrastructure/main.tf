@@ -3,6 +3,19 @@ provider "aws" {
   profile = "superbowleto"
 }
 
+module "management" {
+  source = "./management"
+}
+
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-superbowleto-infrastructure-lock"
+    key = "production/terraform.tfstate"
+    region = "us-east-1"
+    lock_table = "terraform-state-superbowleto-infrastructure-lock"
+  }
+}
+
 module "network" {
   source = "./network"
 }
