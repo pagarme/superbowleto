@@ -10,9 +10,9 @@
     "build-test": "webpack --config ./webpack/webpackfile.test.js",
     "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
     "setup": "node -r babel-register ./script/setup",
-    "test": "ava --verbose 'build/test/**/*.js'",
+    "test": "ava --verbose --serial 'build/test/**/*.js'",
     "test-all": "yarn run pretest && ava 'build/main.js'",
-    "test-functional": "yarn run pretest && ava --verbose 'build/test/functional/**/*.js'",
+    "test-functional": "yarn run pretest && ava --verbose --serial 'build/test/functional/**/*.js'",
     "test-integration": "yarn run pretest && ava --verbose 'build/test/integration/**/*.js'",
     "test-unit": "yarn run build-test && ava --verbose 'build/test/unit/**/*.js'",
     "pretest": "yarn run setup && yarn run build-test"
@@ -44,6 +44,7 @@
     "ramda": "0.23.0",
     "sequelize": "3.30.4",
     "serverless": "1.10.2",
+    "sinon": "2.3.2",
     "sqs-quooler": "1.3.0"
   },
   "devDependencies": {

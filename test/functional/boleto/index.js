@@ -3,15 +3,20 @@ import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createBoleto } from './helpers'
 import * as boletoHandler from '../../../src/resources/boleto'
+import { models } from '../../../src/database'
+
+const { Boleto } = models
 
 const indexBoleto = normalizeHandler(boletoHandler.index)
 
 test.before(async () => {
+  await Boleto.destroy({ where: {} })
   await Promise.all([...Array(15)].map(createBoleto))
 })
 
 test('shows all boletos with default pagination', async (t) => {
   const { body, statusCode } = await indexBoleto()
+
   const item = body[0]
 
   t.is(statusCode, 200)
@@ -37,6 +42,7 @@ test('shows all boletos with custom pagination', async (t) => {
       count: 2
     }
   })
+
   const item = body[0]
 
   t.is(statusCode, 200)

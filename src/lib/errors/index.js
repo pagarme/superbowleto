@@ -34,3 +34,10 @@ export class DatabaseError extends BaseError {
     this.type = 'database'
   }
 }
+
+export class InternalServerError extends BaseError {
+  constructor (error = {}) {
+    super(error.message)
+    this.type = 'internal'
+  }
+}

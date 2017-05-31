@@ -1,8 +1,15 @@
 import log4js from 'log4js'
 import escriba from 'escriba'
+import { getEnv } from '../../config/index'
+
+if (getEnv() === 'test') {
+  log4js.setGlobalLogLevel('OFF')
+}
+
+const loggerEngine = log4js.getLogger()
 
 export const { logger } = escriba({
-  loggerEngine: log4js.getLogger(),
+  loggerEngine,
   service: 'superbowleto'
 })
 

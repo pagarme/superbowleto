@@ -44,6 +44,7 @@ test('buildPayload', async (t) => {
 
 test('register', async (t) => {
   const boleto = await createBoleto()
+
   const response = await register(boleto)
 
   t.is(response.status, 200)
@@ -54,6 +55,7 @@ test('register', async (t) => {
 test('verifyRegistrationStatus', async (t) => {
   const boleto = await createBoleto()
   boleto.issuer_id = boleto.title_id
+
   await register(boleto)
 
   const response = await verifyRegistrationStatus(boleto)
