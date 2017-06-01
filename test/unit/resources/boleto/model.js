@@ -16,6 +16,8 @@ test('buildResponse', async (t) => {
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872',
+    company_name: 'Some Company',
+    company_document_number: '98154524872',
     created_at: now,
     updated_at: now,
     secret_field: 'this is secret'
@@ -37,6 +39,8 @@ test('buildResponse', async (t) => {
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872',
+    company_name: 'Some Company',
+    company_document_number: '98154524872',
     created_at: now,
     updated_at: now
   }, 'should be a boleto object')

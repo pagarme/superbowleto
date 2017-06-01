@@ -21,6 +21,14 @@ export const schema = {
     .string()
     .required(),
 
+  company_name: Joi
+    .string()
+    .required(),
+
+  company_document_number: Joi
+    .string()
+    .required(),
+
   payer_name: Joi
     .string()
     .when('register', { is: true, then: Joi.required() }),

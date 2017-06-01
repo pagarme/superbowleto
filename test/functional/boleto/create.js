@@ -36,6 +36,14 @@ test('creates a boleto with invalid data', async (t) => {
       field: 'issuer'
     }, {
       type: 'invalid_parameter',
+      message: '"company_name" is required',
+      field: 'company_name'
+    }, {
+      type: 'invalid_parameter',
+      message: '"company_document_number" is required',
+      field: 'company_document_number'
+    }, {
+      type: 'invalid_parameter',
       message: '"payer_name" is required',
       field: 'payer_name'
     }, {
@@ -57,7 +65,9 @@ test('creates a non-registrable boleto', async (t) => {
     issuer: 'bradesco',
     instructions: 'Please do not accept after expiration_date',
     register: false,
-    queue_url: 'http://yopa/queue/test'
+    queue_url: 'http://yopa/queue/test',
+    company_name: 'Some Company',
+    company_document_number: '98154524872'
   }
 
   const { body, statusCode } = await create({
@@ -78,6 +88,8 @@ test('creates a non-registrable boleto', async (t) => {
     payer_name: null,
     payer_document_type: null,
     payer_document_number: null,
-    queue_url: payload.queue_url
+    queue_url: payload.queue_url,
+    company_name: payload.company_name,
+    company_document_number: payload.company_document_number
   })
 })

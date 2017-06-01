@@ -24,7 +24,9 @@ test('registers a boleto (provider pending)', async (t) => {
     issuer: 'bradesco',
     instructions: 'Please do not accept after expiration_date',
     register: false,
-    queue_url: 'http://yopa/queue/test'
+    queue_url: 'http://yopa/queue/test',
+    company_name: 'Some Company',
+    company_document_number: '98154524872'
   }
 
   const { body } = await create({

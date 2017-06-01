@@ -35,6 +35,8 @@ export const buildResponse = responseObjectBuilder(boleto =>
       'payer_name',
       'payer_document_type',
       'payer_document_number',
+      'company_name',
+      'company_document_number',
       'created_at',
       'updated_at'
     ]))
@@ -121,6 +123,20 @@ function create (database) {
     },
 
     payer_document_number: {
+      type: STRING
+    },
+
+    company_name: {
+      type: STRING,
+      allowNull: false
+    },
+
+    company_document_number: {
+      type: STRING,
+      allowNull: false
+    },
+
+    bank_response_code: {
       type: STRING
     }
   }, {
