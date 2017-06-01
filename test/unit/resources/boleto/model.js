@@ -1,5 +1,5 @@
 import test from 'ava'
-import { buildResponse, generateBarcode } from '../../../../src/resources/boleto/model'
+import { buildResponse, generateBarcode } from '../../../../build/resources/boleto/model'
 
 test('buildResponse', async (t) => {
   const now = new Date()

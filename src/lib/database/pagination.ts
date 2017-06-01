@@ -14,7 +14,7 @@ const getPaginationOffset = ({ count, page }) => {
   return dec(clamp(minValue, maxValue, page)) * count
 }
 
-export const getPaginationQuery = (options = {}) => {
+export const getPaginationQuery = (options: any = {}) => {
   const { page = 1, count = 10 } = options
   const limit = getPaginationLimit(count)
   const offset = getPaginationOffset({ page, count })

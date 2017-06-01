@@ -1,5 +1,5 @@
 import test from 'ava'
-import { NotFoundError } from '../../../../src/lib/errors'
+import { NotFoundError } from '../../../../build/lib/errors'
 
 test('is a custom error', async (t) => {
   const error = new NotFoundError({

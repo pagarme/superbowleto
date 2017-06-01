@@ -1,5 +1,5 @@
 #!usr/bin/env node
 
-import database from '../src/database'
+const database = require('../build/database').default
 
 database.sync({ force: true })

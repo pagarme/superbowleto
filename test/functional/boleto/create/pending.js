@@ -2,11 +2,11 @@ import test from 'ava'
 import Promise from 'bluebird'
 import { assert } from '../../../helpers/chai'
 import { normalizeHandler } from '../../../helpers/normalizer'
-import { mock, mockFunction, restoreFunction } from '../helpers'
-import * as boletoHandler from '../../../../src/resources/boleto'
-import * as provider from '../../../../src/providers/bradesco'
+import { mock, mockFunction, restoreFunction } from '../../../helpers/boleto'
+import * as boletoHandler from '../../../../build/resources/boleto'
+import * as provider from '../../../../build/providers/bradesco'
 import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
-import { BoletosToRegisterQueue } from '../../../../src/resources/boleto/queues'
+import { BoletosToRegisterQueue } from '../../../../build/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
 

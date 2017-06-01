@@ -1,13 +1,20 @@
 {
   "extends": ["airbnb-base"],
+  "parser": "typescript-eslint-parser",
   "env": {
     "node": true
   },
   "rules": {
     "import/prefer-default-export": [0],
+    "import/no-unresolved": [0],
+    "import/extensions": [0],
     "semi": [2, "never"],
     "comma-dangle": [2, "never"],
     "no-confusing-arrow": [0],
-    "space-before-function-paren": [2, "always"]
+    "space-before-function-paren": [2, "always"],
+    "no-undef": [0],
+    "no-unused-vars": [0],
+    "no-useless-constructor": [0],
+    "space-infix-ops": [0]
   }
 }

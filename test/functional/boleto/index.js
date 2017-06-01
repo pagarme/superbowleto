@@ -1,9 +1,9 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { createBoleto } from './helpers'
-import * as boletoHandler from '../../../src/resources/boleto'
-import { models } from '../../../src/database'
+import { createBoleto } from '../../helpers/boleto'
+import * as boletoHandler from '../../../build/resources/boleto'
+import { models } from '../../../build/database'
 
 const { Boleto } = models
 

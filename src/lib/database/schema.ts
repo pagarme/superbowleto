@@ -1,5 +1,5 @@
-import Promise from 'bluebird'
-import cuid from 'cuid'
+import * as Promise from 'bluebird'
+import * as cuid from 'cuid'
 
 export const defaultCuidValue = (prefix = '') => () => `${prefix}${cuid()}`
 

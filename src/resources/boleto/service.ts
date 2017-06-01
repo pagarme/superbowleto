@@ -1,11 +1,11 @@
-import Promise from 'bluebird'
+import * as Promise from 'bluebird'
 import { mergeAll } from 'ramda'
 import { models } from '../../database'
 import { NotFoundError } from '../../lib/errors'
 import { handleDatabaseErrors } from '../../lib/errors/database'
 import { getPaginationQuery } from '../../lib/database/pagination'
 import sqs from '../../lib/sqs'
-import { BoletosToRegisterQueue } from './queues'
+import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
 import { findProvider } from '../../providers'
 import { makeFromLogger } from '../../lib/logger'
 import { defaultCuidValue } from '../../lib/database/schema'
@@ -109,7 +109,7 @@ export const show = (id) => {
 
 export const processBoletosToRegister = () => {
   const processBoleto = (item, message) => {
-    const QueueUrl = BoletosToRegisterQueue.options.endpoint
+    const QueueUrl = BoletosToRegisterQueueUrl
     const ReceiptHandle = message.ReceiptHandle
 
     return sqs.deleteMessage({ QueueUrl, ReceiptHandle }).promise()

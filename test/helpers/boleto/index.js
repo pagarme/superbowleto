@@ -1,6 +1,5 @@
 import sinon from 'sinon'
-
-import { models } from '../../../../src/database'
+import { models } from '../../../build/database'
 
 const { Boleto } = models
 
@@ -30,7 +29,6 @@ export const restoreFunction = (obj, name) => {
   }
 }
 
-// Wrap function if it isn't already wrapped (ava runs concurrently)
 export const mockFunction = (obj, name, fn) => {
   restoreFunction(obj, name)
   sinon.stub(obj, name).callsFake(fn)

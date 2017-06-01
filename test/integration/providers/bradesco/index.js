@@ -1,7 +1,7 @@
 import test from 'ava'
 import moment from 'moment'
-import { createBoleto } from '../../../functional/boleto/helpers'
-import { buildHeaders, buildPayload, register, verifyRegistrationStatus } from '../../../../src/providers/bradesco'
+import { createBoleto } from '../../../helpers/boleto'
+import { buildHeaders, buildPayload, register, verifyRegistrationStatus } from '../../../../build/providers/bradesco'
 
 test('buildHeaders', (t) => {
   const headers = buildHeaders()

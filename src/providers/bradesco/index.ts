@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Promise from 'bluebird'
+import * as Promise from 'bluebird'
 import { always, compose, prop, applySpec } from 'ramda'
 import { format } from './formatter'
 import getConfig from '../../config/providers'
