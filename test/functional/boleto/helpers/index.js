@@ -12,7 +12,9 @@ export const mock = {
   payer_name: 'David Bowie',
   payer_document_type: 'cpf',
   payer_document_number: '98154524872',
-  queue_url: 'http://yopa/queue/test'
+  queue_url: 'http://yopa/queue/test',
+  company_name: 'Some Company',
+  company_document_number: '98154524872'
 }
 
 export const createBoleto = (data = {}) => {

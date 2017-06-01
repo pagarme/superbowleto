@@ -48,6 +48,8 @@ test('creates a boleto (provider unknown)', async (t) => {
     payer_name: payload.payer_name,
     payer_document_type: payload.payer_document_type,
     payer_document_number: payload.payer_document_number,
+    company_name: payload.company_name,
+    company_document_number: payload.company_document_number,
     queue_url: payload.queue_url
   })
 })
