@@ -1,8 +1,8 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { mock } from '../../helpers/boleto'
 import * as boletoHandler from '../../../build/resources/boleto'
+import { userQueueUrl } from '../../helpers/boleto'
 
 const create = normalizeHandler(boletoHandler.create)
 
@@ -66,7 +66,7 @@ test('creates a non-registrable boleto', async (t) => {
     issuer: 'bradesco',
     instructions: 'Please do not accept after expiration_date',
     register: false,
-    queue_url: 'http://yopa/queue/test',
+    queue_url: userQueueUrl,
     company_name: 'Some Company',
     company_document_number: '98154524872'
   }

@@ -1,7 +1,11 @@
 import sinon from 'sinon'
+import { Queue } from 'sqs-quooler'
+import sqs from '../../../build/lib/sqs'
 import { models } from '../../../build/database'
 
 const { Boleto } = models
+
+export const userQueueUrl = `http://${process.env.SQS_HOST || 'yopa'}:47195/queue/test`
 
 export const mock = {
   expiration_date: new Date(),
@@ -11,7 +15,7 @@ export const mock = {
   payer_name: 'David Bowie',
   payer_document_type: 'cpf',
   payer_document_number: '98154524872',
-  queue_url: 'http://yopa/queue/test',
+  queue_url: userQueueUrl,
   company_name: 'Some Company',
   company_document_number: '98154524872'
 }
@@ -33,3 +37,8 @@ export const mockFunction = (obj, name, fn) => {
   restoreFunction(obj, name)
   sinon.stub(obj, name).callsFake(fn)
 }
+
+export const userQueue = new Queue({
+  sqs,
+  endpoint: userQueueUrl
+})
