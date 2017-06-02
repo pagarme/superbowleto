@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird'
+import sqs from '../../lib/sqs'
 import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
 import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
 import * as boletoService from './service'
@@ -98,10 +99,35 @@ export const register = (event, context, callback) => {
     }
   }
 
+  // eslint-disable-next-line
+  const sendMessageToUserQueueConditionally = (boleto) => {
+    if (boleto.status === 'registered' || boleto.status === 'refused') {
+      logger.info({ subOperation: 'sendToUserQueue', status: 'started', metadata: { boleto_id: boleto.id } })
+
+      const params = {
+        MessageBody: JSON.stringify({
+          boleto_id: boleto.id,
+          status: boleto.status
+        }),
+        QueueUrl: boleto.queue_url
+      }
+
+      return sqs.sendMessage(params).promise()
+        .then(() => {
+          logger.info({ subOperation: 'sendToUserQueue', status: 'succeeded', metadata: { boleto_id: boleto.id } })
+        })
+        .catch((err) => {
+          logger.info({ subOperation: 'sendToUserQueue', status: 'failed', metadata: { boleto_id: boleto.id, err } })
+          throw err
+        })
+    }
+  }
+
   logger.info({ status: 'started', metadata: { body } })
 
   boletoService.registerById(boleto_id)
     .tap(removeBoletoFromQueueConditionally)
+    .tap(sendMessageToUserQueueConditionally)
     .tap((response) => {
       logger.info({
         status: 'succeeded',

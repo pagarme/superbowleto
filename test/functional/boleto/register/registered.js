@@ -1,6 +1,7 @@
 import test from 'ava'
 import { Promise, promisify } from 'bluebird'
-import { mock, mockFunction, restoreFunction } from '../../../helpers/boleto'
+import { mock, mockFunction, restoreFunction, userQueueUrl, userQueue } from '../../../helpers/boleto'
+import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
 import { normalizeHandler } from '../../../helpers/normalizer'
 import * as boletoHandler from '../../../../build/resources/boleto'
 import * as provider from '../../../../build/providers/bradesco'
@@ -9,8 +10,9 @@ const create = normalizeHandler(boletoHandler.create)
 
 const register = promisify(boletoHandler.register)
 
-test.before(() => {
+test.before(async () => {
   mockFunction(provider, 'register', () => Promise.resolve({ status: 'registered' }))
+  await purgeQueue(userQueue)
 })
 
 test.after(() => {
@@ -24,7 +26,7 @@ test('registers a boleto (provider success)', async (t) => {
     issuer: 'bradesco',
     instructions: 'Please do not accept after expiration_date',
     register: false,
-    queue_url: 'http://yopa/queue/test',
+    queue_url: userQueueUrl,
     company_name: 'Some Company',
     company_document_number: '98154524872'
   }
@@ -37,6 +39,13 @@ test('registers a boleto (provider success)', async (t) => {
     body: JSON.stringify({ boleto_id: body.id, sqsMessage: { ReceiptHandle: 'abc' } })
   }, {})
 
+  const userSQSItem = await findItemOnQueue(
+    userQueue,
+    item => item.boleto_id === body.id
+  )
+
+  t.true(userSQSItem.boleto_id === body.id)
+  t.true(userSQSItem.status === 'registered')
   t.is(boleto.status, 'registered')
 })
 

@@ -1,7 +1,7 @@
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { createBoleto } from '../../helpers/boleto'
+import { mock, createBoleto } from '../../helpers/boleto'
 import * as boletoHandler from '../../../build/resources/boleto'
 
 const show = normalizeHandler(boletoHandler.show)
@@ -21,16 +21,16 @@ test('shows an existing boleto', async (t) => {
   assert.containSubset(body, {
     status: 'issued',
     paid_amount: 0,
-    amount: 2000,
-    instructions: 'Please do not accept after expiration_date',
-    issuer: 'bradesco',
+    amount: mock.amount,
+    instructions: mock.instructions,
+    issuer: mock.issuer,
     issuer_id: null,
-    payer_name: 'David Bowie',
-    payer_document_type: 'cpf',
-    payer_document_number: '98154524872',
-    queue_url: 'http://yopa/queue/test',
-    company_name: 'Some Company',
-    company_document_number: '98154524872'
+    payer_name: mock.payer_name,
+    payer_document_type: mock.payer_document_type,
+    payer_document_number: mock.payer_document_number,
+    queue_url: mock.queue_url,
+    company_name: mock.company_name,
+    company_document_number: mock.company_document_number
   })
 })
 
