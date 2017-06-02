@@ -37,6 +37,7 @@ export const buildResponse = responseObjectBuilder(boleto =>
       'payer_document_number',
       'company_name',
       'company_document_number',
+      'bank_response_code',
       'created_at',
       'updated_at'
     ]))

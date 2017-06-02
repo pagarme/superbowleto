@@ -4,7 +4,7 @@ import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/respo
 import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
 import * as boletoService from './service'
 import { parse } from '../../lib/http/request'
-import { schema as requestSchema } from './schema'
+import { createSchema, updateSchema } from './schema'
 import { makeFromLogger } from '../../lib/logger'
 import { defaultCuidValue } from '../../lib/database/schema'
 import { BoletosToRegisterQueue } from './queues'
@@ -60,7 +60,7 @@ export const create = (event, context, callback) => {
   logger.info({ status: 'started', metadata: { body } })
 
   Promise.resolve(body)
-    .then(parse(requestSchema))
+    .then(parse(createSchema))
     .then(boletoService.create)
     .tap(registerBoletoConditionally)
     .tap(pushBoletoToQueueConditionally)
@@ -139,6 +139,22 @@ export const register = (event, context, callback) => {
       callback(err)
     })
     .then(boleto => callback(null, boleto))
+}
+
+export const update = (event, context, callback) => {
+  const body = JSON.parse(event.body || JSON.stringify({}))
+  const { pathParameters = {} }: { pathParameters: any } = event
+
+  const { id } = pathParameters
+  const { bank_response_code, paid_amount } = body
+
+  Promise.resolve({ id, bank_response_code, paid_amount })
+    .then(parse(updateSchema))
+    .then(boletoService.update)
+    .then(Boleto.buildResponse)
+    .then(buildSuccessResponse(200))
+    .catch(handleError)
+    .then(response => callback(null, response))
 }
 
 export const index = (event, context, callback) => {

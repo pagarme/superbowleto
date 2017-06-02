@@ -30,6 +30,13 @@ functions:
           path: /boletos/{id}
           method: get
 
+  update-boleto:
+    handler: dist/boleto.update
+    events:
+      - http:
+          path: /boletos/{id}
+          method: patch
+
   process-boletos-to-register:
     handler: dist/boleto.processBoletosToRegister
     events:
