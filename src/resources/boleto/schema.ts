@@ -1,6 +1,6 @@
 import * as Joi from 'joi'
 
-export const schema = {
+export const createSchema = {
   queue_url: Joi
     .string()
     .required(),
@@ -45,4 +45,17 @@ export const schema = {
   register: Joi
     .boolean()
     .default(true)
+}
+
+export const updateSchema = {
+  id: Joi
+    .string()
+    .required(),
+
+  paid_amount: Joi
+    .number()
+    .integer(),
+
+  bank_response_code: Joi
+    .string()
 }

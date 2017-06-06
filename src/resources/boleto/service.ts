@@ -77,6 +77,39 @@ export const registerById = id =>
   })
     .then(register)
 
+export const update = (obj) => {
+  const logger = makeLogger({ operation: 'update' }, { id: defaultCuidValue('req_')() })
+  logger.info({ status: 'started', metadata: { obj } })
+
+  const id = obj.id
+  const bankResponseCode = obj.bank_response_code
+  const paidAmount = obj.paid_amount
+
+  const query = {
+    where: {
+      id
+    }
+  }
+
+  return Boleto.findOne(query)
+    .then((boleto) => {
+      if (!boleto) {
+        throw new NotFoundError({
+          message: 'Boleto not found'
+        })
+      }
+
+      return boleto.update({
+        paid_amount: paidAmount || boleto.paid_amount,
+        bank_response_code: bankResponseCode || boleto.bank_response_code
+      })
+    })
+    .tap((boleto) => {
+      logger.info({ status: 'succeeded', metadata: { boleto } })
+    })
+    .catch(handleDatabaseErrors)
+}
+
 export const index = ({ page, count }) => {
   const paginationQuery = getPaginationQuery({ page, count })
   const query = mergeAll([{}, paginationQuery])
