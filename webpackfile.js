@@ -44,7 +44,10 @@ module.exports = {
       }
     }),
     new Webpack.BannerPlugin({
-      banner: 'require("source-map-support").install();',
+      banner: `
+        require("source-map-support").install();
+        require("core-js");
+      `,
       raw: true,
       entryOnly: false
     })
