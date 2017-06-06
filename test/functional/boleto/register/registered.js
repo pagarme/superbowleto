@@ -44,6 +44,8 @@ test('registers a boleto (provider success)', async (t) => {
     item => item.boleto_id === body.id
   )
 
+  // TODO test whether BoletosToRegisterQueue actually got empty?
+
   t.true(userSQSItem.boleto_id === body.id)
   t.true(userSQSItem.status === 'registered')
   t.is(boleto.status, 'registered')

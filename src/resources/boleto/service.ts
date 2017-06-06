@@ -106,16 +106,3 @@ export const show = (id) => {
     .then(Boleto.buildResponse)
     .catch(handleDatabaseErrors)
 }
-
-export const processBoletosToRegister = () => {
-  const processBoleto = (item, message) => {
-    const QueueUrl = BoletosToRegisterQueueUrl
-    const ReceiptHandle = message.ReceiptHandle
-
-    return sqs.deleteMessage({ QueueUrl, ReceiptHandle }).promise()
-  }
-
-  BoletosToRegisterQueue.startProcessing(processBoleto, {
-    keepMessages: true
-  })
-}
