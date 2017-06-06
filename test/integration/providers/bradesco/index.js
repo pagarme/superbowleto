@@ -47,7 +47,7 @@ test('register', async (t) => {
 
   const response = await register(boleto)
 
-  t.is(response.status, 200)
+  t.is(response.status, 201)
   t.is(response.data.boleto.nosso_numero, boleto.title_id)
   t.is(response.data.boleto.numero_documento, `${boleto.title_id}`)
 })
