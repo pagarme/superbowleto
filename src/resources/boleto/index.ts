@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird'
+import { path } from 'ramda'
 import sqs from '../../lib/sqs'
 import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
 import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
@@ -143,10 +144,8 @@ export const register = (event, context, callback) => {
 
 export const update = (event, context, callback) => {
   const body = JSON.parse(event.body || JSON.stringify({}))
-  const { pathParameters = {} }: { pathParameters: any } = event
-
-  const { id } = pathParameters
   const { bank_response_code, paid_amount } = body
+  const id = path(['pathParameters', 'id'], event)
 
   Promise.resolve({ id, bank_response_code, paid_amount })
     .then(parse(updateSchema))
@@ -158,8 +157,8 @@ export const update = (event, context, callback) => {
 }
 
 export const index = (event, context, callback) => {
-  const { queryStringParameters = {} }: { queryStringParameters: any } = event
-  const { page, count } = queryStringParameters
+  const page = path(['queryStringParameters', 'page'], event)
+  const count = path(['queryStringParameters', 'count'], event)
 
   Promise.resolve({ page, count })
     .then(boletoService.index)
@@ -169,8 +168,7 @@ export const index = (event, context, callback) => {
 }
 
 export const show = (event, context, callback) => {
-  const { pathParameters = {} }: { pathParameters: any } = event
-  const { id } = pathParameters
+  const id = path(['pathParameters', 'id'], event)
 
   Promise.resolve(id)
     .then(boletoService.show)
