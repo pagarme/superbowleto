@@ -1,10 +1,11 @@
 import axios from 'axios'
 import * as Promise from 'bluebird'
-import { always, compose, prop, applySpec } from 'ramda'
+import { always, applySpec, compose, defaultTo, prop } from 'ramda'
 import { format } from './formatter'
 import getConfig from '../../config/providers'
 import { encodeBase64 } from '../../lib/encoding'
 import { makeFromLogger } from '../../lib/logger'
+import responseCodeMap from './response-codes'
 
 const { endpoint, merchantId, securityKey } = prop('bradesco', getConfig())
 
@@ -44,27 +45,15 @@ export const buildPayload = applySpec({
   }
 })
 
-export const register = (boleto) => {
-  const request = {
-    url: endpoint,
-    method: 'POST',
-    headers: buildHeaders(),
-    data: buildPayload(boleto)
+export const translateResponseCode = (response) => {
+  const responseCode = response.data.status.codigo.toString()
+
+  const defaultValue = {
+    message: 'CÓDIGO INEXISTENTE',
+    status: 'unknown'
   }
 
-  const logger = makeLogger({ operation: 'register' })
-
-  logger.info({ status: 'started', metadata: { request } })
-
-  return Promise.resolve(request)
-    .then(axios.request)
-    .tap((response) => {
-      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
-    })
-    .catch((err) => {
-      logger.error({ status: 'failed', metadata: { err } })
-      throw err
-    })
+  return defaultTo(defaultValue, prop(responseCode, responseCodeMap))
 }
 
 export const verifyRegistrationStatus = (boleto) => {
@@ -84,6 +73,38 @@ export const verifyRegistrationStatus = (boleto) => {
 
   return Promise.resolve(request)
     .then(axios.request)
+    .then(translateResponseCode)
+    .tap((response) => {
+      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
+    })
+    .catch((err) => {
+      logger.error({ status: 'failed', metadata: { err } })
+      throw err
+    })
+}
+
+export const register = (boleto) => {
+  const request = {
+    url: endpoint,
+    method: 'POST',
+    headers: buildHeaders(),
+    data: buildPayload(boleto)
+  }
+
+  const logger = makeLogger({ operation: 'register' })
+
+  logger.info({ status: 'started', metadata: { request } })
+
+  return Promise.resolve(request)
+    .then(axios.request)
+    .then(translateResponseCode)
+    .then((translatedResponseCode) => {
+      if (translatedResponseCode.status === 'check_status') {
+        return verifyRegistrationStatus(boleto)
+      }
+
+      return translatedResponseCode
+    })
     .tap((response) => {
       logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
     })
