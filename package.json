@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/pagarme/superbowleto#readme",
   "dependencies": {
-    "aws-sdk": "2.36.0",
+    "aws-sdk": "2.66.0",
     "axios": "0.16.0",
     "bluebird": "3.5.0",
     "core-js": "2.4.1",
@@ -39,6 +39,7 @@
     "log4js": "1.1.1",
     "moment": "2.18.1",
     "node-boleto": "2.0.2",
+    "nodecredstash": "1.1.0",
     "pg": "6.1.5",
     "ramda": "0.23.0",
     "sequelize": "3.30.4",

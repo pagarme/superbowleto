@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird'
 import { mergeAll } from 'ramda'
-import { models } from '../../database'
+import { getModel } from '../../database'
 import { NotFoundError } from '../../lib/errors'
 import { handleDatabaseErrors } from '../../lib/errors/database'
 import { getPaginationQuery } from '../../lib/database/pagination'
@@ -12,22 +12,23 @@ import { defaultCuidValue } from '../../lib/database/schema'
 
 const makeLogger = makeFromLogger('boleto/service')
 
-const { Boleto } = models
-
 export const create = (data) => {
   const logger = makeLogger({ operation: 'create' }, { id: defaultCuidValue('req_')() })
 
   logger.info({ status: 'started', metadata: { data } })
 
-  return Promise.resolve(data)
-    .then(Boleto.create.bind(Boleto))
-    .tap((boleto) => {
-      logger.info({ status: 'succeeded', metadata: { boleto } })
-    })
-    .catch((err) => {
-      logger.error({ status: 'failed', metadata: { err } })
-      return handleDatabaseErrors(err)
-    })
+  return getModel('Boleto')
+    .then(Boleto =>
+      Promise.resolve(data)
+      .then(Boleto.create.bind(Boleto))
+      .tap((boleto) => {
+        logger.info({ status: 'succeeded', metadata: { boleto } })
+      })
+      .catch((err) => {
+        logger.error({ status: 'failed', metadata: { err } })
+        return handleDatabaseErrors(err)
+      })
+    )
 }
 
 export const register = (boleto) => {
@@ -35,8 +36,8 @@ export const register = (boleto) => {
 
   const logger = makeLogger({ operation: 'register' }, { id: defaultCuidValue('req_')() })
 
-  const updateBoletoStatus = (obj) => {
-    const status = obj.status
+  const updateBoletoStatus = (response) => {
+    const status = response.status
 
     let newBoletoStatus
 
@@ -70,20 +71,21 @@ export const register = (boleto) => {
 }
 
 export const registerById = id =>
-  Boleto.findOne({
-    where: {
-      id
-    }
-  })
+  getModel('Boleto')
+    .then(Boleto => Boleto.findOne({
+      where: {
+        id
+      }
+    }))
     .then(register)
 
-export const update = (obj) => {
+export const update = (data) => {
   const logger = makeLogger({ operation: 'update' }, { id: defaultCuidValue('req_')() })
-  logger.info({ status: 'started', metadata: { obj } })
+  logger.info({ status: 'started', metadata: { data } })
 
-  const id = obj.id
-  const bankResponseCode = obj.bank_response_code
-  const paidAmount = obj.paid_amount
+  const id = data.id
+  const bankResponseCode = data.bank_response_code
+  const paidAmount = data.paid_amount
 
   const query = {
     where: {
@@ -91,32 +93,33 @@ export const update = (obj) => {
     }
   }
 
-  return Boleto.findOne(query)
-    .then((boleto) => {
-      if (!boleto) {
-        throw new NotFoundError({
-          message: 'Boleto not found'
-        })
-      }
+  return getModel('Boleto')
+    .then(Boleto => Boleto.findOne(query)
+      .then((boleto) => {
+        if (!boleto) {
+          throw new NotFoundError({
+            message: 'Boleto not found'
+          })
+        }
 
-      return boleto.update({
-        paid_amount: paidAmount || boleto.paid_amount,
-        bank_response_code: bankResponseCode || boleto.bank_response_code
+        return boleto.update({
+          paid_amount: paidAmount || boleto.paid_amount,
+          bank_response_code: bankResponseCode || boleto.bank_response_code
+        })
       })
-    })
-    .tap((boleto) => {
-      logger.info({ status: 'succeeded', metadata: { boleto } })
-    })
-    .catch(handleDatabaseErrors)
+      .tap((boleto) => {
+        logger.info({ status: 'succeeded', metadata: { boleto } })
+      })
+      .catch(handleDatabaseErrors))
 }
 
 export const index = ({ page, count }) => {
   const paginationQuery = getPaginationQuery({ page, count })
   const query = mergeAll([{}, paginationQuery])
 
-  return Boleto.findAll(query)
-    .then(Boleto.buildResponse)
-    .catch(handleDatabaseErrors)
+  return getModel('Boleto')
+    .then(Boleto => Boleto.findAll(query)
+      .catch(handleDatabaseErrors))
 }
 
 export const show = (id) => {
@@ -126,16 +129,16 @@ export const show = (id) => {
     }
   }
 
-  return Boleto.findOne(query)
-    .then((boleto) => {
-      if (!boleto) {
-        throw new NotFoundError({
-          message: 'Boleto not found'
-        })
-      }
+  return getModel('Boleto')
+    .then(Boleto => Boleto.findOne(query)
+      .then((boleto) => {
+        if (!boleto) {
+          throw new NotFoundError({
+            message: 'Boleto not found'
+          })
+        }
 
-      return boleto
-    })
-    .then(Boleto.buildResponse)
-    .catch(handleDatabaseErrors)
+        return boleto
+      })
+      .catch(handleDatabaseErrors))
 }

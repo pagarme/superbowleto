@@ -1,4 +1,4 @@
-import { getConfig } from './index'
+import { getConfig } from './'
 
 const config = getConfig({
   development: {

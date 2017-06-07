@@ -1,5 +1,5 @@
 import test from 'ava'
-import { buildResponse, generateBarcode } from '../../../../build/resources/boleto/model'
+import { buildModelResponse, generateBarcode } from '../../../../build/resources/boleto/model'
 
 test('buildResponse', async (t) => {
   const now = new Date()
@@ -23,7 +23,7 @@ test('buildResponse', async (t) => {
     secret_field: 'this is secret'
   }
 
-  const output = await buildResponse(input)
+  const output = await buildModelResponse(input)
 
   t.true(output.secret_field == null, 'should not have a `secret_field` prop')
   t.deepEqual(output, {

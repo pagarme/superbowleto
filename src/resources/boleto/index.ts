@@ -7,12 +7,10 @@ import * as boletoService from './service'
 import { parse } from '../../lib/http/request'
 import { createSchema, updateSchema } from './schema'
 import { makeFromLogger } from '../../lib/logger'
-import { defaultCuidValue } from '../../lib/database/schema'
 import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
-import { models } from '../../database'
 import lambda from './lambda'
-
-const { Boleto } = models
+import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
+import { buildModelResponse } from './model'
 
 const makeLogger = makeFromLogger('boleto/index')
 
@@ -66,7 +64,7 @@ export const create = (event, context, callback) => {
     .then(boletoService.create)
     .tap(registerBoletoConditionally)
     .tap(pushBoletoToQueueConditionally)
-    .then(Boleto.buildResponse)
+    .then(buildModelResponse)
     .then(buildSuccessResponse(201))
     .tap((response) => {
       logger.info({
@@ -151,7 +149,7 @@ export const update = (event, context, callback) => {
   Promise.resolve({ id, bank_response_code, paid_amount })
     .then(parse(updateSchema))
     .then(boletoService.update)
-    .then(Boleto.buildResponse)
+    .then(buildModelResponse)
     .then(buildSuccessResponse(200))
     .catch(handleError)
     .then(response => callback(null, response))
@@ -163,6 +161,7 @@ export const index = (event, context, callback) => {
 
   Promise.resolve({ page, count })
     .then(boletoService.index)
+    .then(buildModelResponse)
     .then(buildSuccessResponse(200))
     .catch(handleError)
     .then(response => callback(null, response))
@@ -173,6 +172,7 @@ export const show = (event, context, callback) => {
 
   Promise.resolve(id)
     .then(boletoService.show)
+    .then(buildModelResponse)
     .then(buildSuccessResponse(200))
     .catch(handleError)
     .then(response => callback(null, response))
