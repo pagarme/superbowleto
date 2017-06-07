@@ -7,8 +7,9 @@ import { parse } from '../../lib/http/request'
 import { createSchema, updateSchema } from './schema'
 import { makeFromLogger } from '../../lib/logger'
 import { defaultCuidValue } from '../../lib/database/schema'
-import { BoletosToRegisterQueue } from './queues'
+import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
 import { models } from '../../database'
+import lambda from './lambda'
 
 const { Boleto } = models
 
@@ -180,7 +181,42 @@ export const show = (event, context, callback) => {
 }
 
 export const processBoletosToRegister = (event, context, callback) => {
-  Promise.resolve(boletoService.processBoletosToRegister)
-    .then(() => callback(null))
-    .catch(err => callback(err))
+  const logger = makeLogger({ operation: 'processBoletosToRegister' }, { id: defaultCuidValue('req_')() })
+
+  const processBoleto = (item, sqsMessage) => lambda.register({
+    boleto_id: item.boleto_id,
+    sqsMessage
+  })
+
+  BoletosToRegisterQueue.startProcessing(processBoleto, {
+    keepMessages: true
+  })
+
+  function stopQueueWhenIdle () {
+    const params = {
+      QueueUrl: BoletosToRegisterQueueUrl,
+      AttributeNames: ['ApproximateNumberOfMessages']
+    }
+
+    sqs.getQueueAttributes(params, (err, data) => {
+      if (err) {
+        return
+      }
+
+      const { ApproximateNumberOfMessages } = data.Attributes
+
+      if (Number(ApproximateNumberOfMessages) < 1) {
+        BoletosToRegisterQueue.stopProcessing()
+        // eslint-disable-next-line no-use-before-define
+        clearInterval(interval)
+        callback(null)
+      }
+    })
+  }
+
+  const interval = setInterval(stopQueueWhenIdle, 300)
+
+  BoletosToRegisterQueue.on('error', (err) => {
+    logger.error({ status: 'failed', metadata: { err } })
+  })
 }
