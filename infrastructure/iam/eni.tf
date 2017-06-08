@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "eni_policy_document" {
+data "aws_iam_policy_document" "vpc_eni" {
   statement {
     effect = "Allow"
 
@@ -14,16 +14,7 @@ data "aws_iam_policy_document" "eni_policy_document" {
   }
 }
 
-resource "aws_iam_policy" "eni_policy" {
-  name = "lambda_eni_policy"
-  policy = "${data.aws_iam_policy_document.eni_policy_document.json}"
-}
-
-resource "aws_iam_policy_attachment" "eni_policy_attachment" {
-  name = "lambda_eni_policy_attachment"
-  policy_arn = "${aws_iam_policy.eni_policy.arn}"
-
-  roles = [
-    "${aws_iam_role.lambda_execution_role.name}"
-  ]
+resource "aws_iam_policy" "vpc_eni" {
+  name = "LambdaVPC"
+  policy = "${data.aws_iam_policy_document.vpc_eni.json}"
 }
