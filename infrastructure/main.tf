@@ -3,10 +3,6 @@ provider "aws" {
   profile = "superbowleto"
 }
 
-module "management" {
-  source = "./management"
-}
-
 terraform {
   backend "s3" {
     bucket = "terraform-state-superbowleto-infrastructure-lock"
@@ -14,6 +10,10 @@ terraform {
     region = "us-east-1"
     lock_table = "terraform-state-superbowleto-infrastructure-lock"
   }
+}
+
+module "management" {
+  source = "./management"
 }
 
 module "network" {
@@ -35,4 +35,5 @@ module "iam" {
   source = "./iam"
 
   sqs_queue_arns = "${module.sqs.sqs_queue_arns}"
+  credstash_secret_reader_policy_arn = "${module.management.credstash_secret_reader_policy_arn}"
 }
