@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "logs_policy_document" {
+data "aws_iam_policy_document" "logs" {
   statement {
     effect = "Allow"
 
@@ -13,16 +13,7 @@ data "aws_iam_policy_document" "logs_policy_document" {
   }
 }
 
-resource "aws_iam_policy" "logs_policy" {
-  name = "lambda_logs_policy"
-  policy = "${data.aws_iam_policy_document.logs_policy_document.json}"
-}
-
-resource "aws_iam_policy_attachment" "logs_policy_attachment" {
-  name = "lambda_logs_policy_attachment"
-  policy_arn = "${aws_iam_policy.logs_policy.arn}"
-
-  roles = [
-    "${aws_iam_role.lambda_execution_role.name}"
-  ]
+resource "aws_iam_policy" "logs" {
+  name = "LambdaLogs"
+  policy = "${data.aws_iam_policy_document.logs.json}"
 }

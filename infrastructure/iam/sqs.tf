@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "sqs_policy_document" {
+data "aws_iam_policy_document" "sqs" {
   statement {
     effect = "Allow"
 
@@ -15,16 +15,7 @@ data "aws_iam_policy_document" "sqs_policy_document" {
   }
 }
 
-resource "aws_iam_policy" "sqs_policy" {
-  name = "lambda_sqs_policy"
-  policy = "${data.aws_iam_policy_document.sqs_policy_document.json}"
-}
-
-resource "aws_iam_policy_attachment" "lambda_sqs_policy_attachment" {
-  name = "lambda_sqs_policy_attachment"
-  policy_arn = "${aws_iam_policy.sqs_policy.arn}"
-
-  roles = [
-    "${aws_iam_role.lambda_execution_role.name}"
-  ]
+resource "aws_iam_policy" "sqs" {
+  name = "LambdaSQS"
+  policy = "${data.aws_iam_policy_document.sqs.json}"
 }
