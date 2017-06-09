@@ -37,3 +37,7 @@ module "iam" {
   sqs_queue_arns = "${module.sqs.sqs_queue_arns}"
   credstash_secret_reader_policy_arn = "${module.management.credstash_secret_reader_policy_arn}"
 }
+
+module "api-gateway" {
+  source = "./api-gateway"
+}
