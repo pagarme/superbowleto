@@ -1,15 +1,19 @@
 import test from 'ava'
 import Sequelize from 'sequelize'
 import { identity } from 'ramda'
-import { models } from '../../../../build/database'
 import { handleDatabaseErrors } from '../../../../build/lib/errors/database'
 import {
   DatabaseError,
   InvalidParameterError,
   ValidationError
 } from '../../../../build/lib/errors'
+import { getModel } from '../../../../build/database'
 
-const { Boleto } = models
+let Boleto
+
+test.before(async () => {
+  Boleto = await getModel('Boleto')
+})
 
 test('handleDatabaseErrors: ValidationError', async (t) => {
   const err = await Boleto.create({})

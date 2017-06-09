@@ -18,7 +18,7 @@ export const generateBarcode = (boleto) => {
   return nodeBoleto.barcode_data
 }
 
-export const buildResponse = responseObjectBuilder(boleto =>
+export const buildModelResponse = responseObjectBuilder(boleto =>
   Promise.resolve(boleto)
     .then(pick([
       'id',
@@ -147,9 +147,6 @@ function create (database) {
     ],
     hooks: {
       afterCreate: addBarcode
-    },
-    classMethods: {
-      buildResponse
     }
   })
 }

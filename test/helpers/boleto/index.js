@@ -1,9 +1,8 @@
 import sinon from 'sinon'
 import { Queue } from 'sqs-quooler'
 import sqs from '../../../build/lib/sqs'
-import { models } from '../../../build/database'
-
-const { Boleto } = models
+import { getModel } from '../../../build/database'
+import { buildModelResponse } from '../../../build/resources/boleto/model'
 
 export const userQueueUrl = `http://${process.env.SQS_HOST || 'yopa'}:47195/queue/test`
 
@@ -23,8 +22,9 @@ export const mock = {
 export const createBoleto = (data = {}) => {
   const payload = Object.assign({}, mock, data)
 
-  return Boleto.create(payload)
-    .then(Boleto.buildResponse)
+  return getModel('Boleto')
+    .then(Boleto => Boleto.create(payload)
+      .then(buildModelResponse))
 }
 
 export const restoreFunction = (obj, name) => {

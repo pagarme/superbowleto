@@ -7,7 +7,6 @@ const config = getConfig({
     dialect: 'postgres',
     database: 'postgres',
     username: 'postgres',
-    password: 'touchdown1!',
     logging: true
   },
   production: {
@@ -15,7 +14,6 @@ const config = getConfig({
     dialect: 'postgres',
     database: 'DATABASE',
     username: 'USERNAME',
-    password: 'PASSWORD',
     logging: false
   },
   test: {
@@ -24,7 +22,6 @@ const config = getConfig({
     dialect: 'postgres',
     database: 'postgres',
     username: 'postgres',
-    password: 'touchdown1!',
     logging: false
   }
 })

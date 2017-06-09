@@ -1,5 +1,5 @@
 #!usr/bin/env node
 
-const database = require('../build/database').default
+const { getDatabase } = require('../build/database')
 
-database.sync({ force: true })
+getDatabase().then(database => database.sync({ force: true }))
