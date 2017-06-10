@@ -3,7 +3,7 @@ resource "aws_api_gateway_method" "api_method" {
   resource_id = "${var.resource_id}"
   http_method = "${var.method}"
   authorization = "NONE"
-  api_key_required = false #TODO: should be true when Usage Plan is added
+  api_key_required = true
 }
 
 resource "aws_api_gateway_integration" "api_lambda_integration" {
