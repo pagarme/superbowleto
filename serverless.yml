@@ -9,6 +9,9 @@ provider:
   region: us-east-1
 
 functions:
+  migrate-database:
+    handler: dist/database.migrate
+
   create-boleto:
     handler: dist/boleto.create
     events:
