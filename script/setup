@@ -1,5 +1,15 @@
 #!usr/bin/env node
 
-const { getDatabase } = require('../build/database')
+const { migrate } = require('../build/functions/database')
 
-getDatabase().then(database => database.sync({ force: true }))
+console.log('Migration started')
+
+migrate({}, {}, (err) => {
+  if (err) {
+    console.log('Migration error:')
+    console.log(err)
+    return
+  }
+
+  console.log('Migration completed')
+})
