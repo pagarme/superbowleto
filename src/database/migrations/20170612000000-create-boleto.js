@@ -8,6 +8,11 @@ export default {
       allowNull: false
     },
 
+    token: {
+      type: STRING,
+      allowNull: false
+    },
+
     queue_url: {
       type: STRING,
       allowNull: false

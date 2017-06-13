@@ -78,7 +78,9 @@ test('creates a non-registrable boleto', async (t) => {
   t.is(statusCode, 201)
   t.is(body.object, 'boleto')
   t.true(body.title_id != null)
+  t.true(body.token != null)
   t.true(typeof body.title_id === 'number')
+  t.true(typeof body.token === 'string')
   assert.containSubset(body, {
     status: 'issued',
     paid_amount: 0,
