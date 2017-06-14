@@ -59,3 +59,19 @@ export const updateSchema = {
   bank_response_code: Joi
     .string()
 }
+
+export const indexSchema = {
+  token: Joi
+    .string(),
+
+  title_id: Joi
+    .string(),
+
+  page: Joi
+    .number()
+    .integer(),
+
+  count: Joi
+    .number()
+    .integer()
+}
