@@ -22,6 +22,7 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
   Promise.resolve(boleto)
     .then(pick([
       'id',
+      'token',
       'queue_url',
       'status',
       'expiration_date',
@@ -56,6 +57,12 @@ function create (database) {
       primaryKey: true,
       allowNull: false,
       defaultValue: defaultCuidValue('bol_')
+    },
+
+    token: {
+      type: STRING,
+      allowNull: false,
+      defaultValue: defaultCuidValue(`${process.env.STAGE}_`)
     },
 
     queue_url: {

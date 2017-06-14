@@ -6,6 +6,7 @@ test('buildResponse', async (t) => {
 
   const input = {
     id: 'bol_cizec1xk2000001nyml04gwxp',
+    token: 'sandbox_cizec1xk2000001nyml04gwxp',
     queue_url: 'http://yopa/queue/test',
     status: 'issued',
     expiration_date: now,
@@ -29,6 +30,7 @@ test('buildResponse', async (t) => {
   t.deepEqual(output, {
     object: 'boleto',
     id: 'bol_cizec1xk2000001nyml04gwxp',
+    token: 'sandbox_cizec1xk2000001nyml04gwxp',
     queue_url: 'http://yopa/queue/test',
     status: 'issued',
     expiration_date: now,
