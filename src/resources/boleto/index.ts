@@ -5,7 +5,7 @@ import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/respo
 import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
 import * as boletoService from './service'
 import { parse } from '../../lib/http/request'
-import { createSchema, updateSchema } from './schema'
+import { createSchema, updateSchema, indexSchema } from './schema'
 import { makeFromLogger } from '../../lib/logger'
 import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
 import lambda from './lambda'
@@ -159,7 +159,12 @@ export const index = (event, context, callback) => {
   const page = path(['queryStringParameters', 'page'], event)
   const count = path(['queryStringParameters', 'count'], event)
 
-  Promise.resolve({ page, count })
+  // eslint-disable-next-line camelcase
+  const title_id = path(['queryStringParameters', 'nosso_numero'], event)
+  const token = path(['queryStringParameters', 'token'], event)
+
+  Promise.resolve({ page, count, token, title_id })
+    .then(parse(indexSchema))
     .then(boletoService.index)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))

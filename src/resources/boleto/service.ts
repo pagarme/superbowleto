@@ -113,9 +113,23 @@ export const update = (data) => {
       .catch(handleDatabaseErrors))
 }
 
-export const index = ({ page, count }) => {
+export const index = ({ page, count, token, title_id }) => {
+  const whereQuery = {
+    where: {
+    }
+  }
+
+  const possibleFields = { token, title_id }
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const field in possibleFields) {
+    if (possibleFields[field]) {
+      whereQuery.where[field] = possibleFields[field]
+    }
+  }
+
   const paginationQuery = getPaginationQuery({ page, count })
-  const query = mergeAll([{}, paginationQuery])
+  const query = mergeAll([{}, paginationQuery, whereQuery])
 
   return getModel('Boleto')
     .then(Boleto => Boleto.findAll(query)
