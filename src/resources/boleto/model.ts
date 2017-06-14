@@ -39,6 +39,7 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
       'company_name',
       'company_document_number',
       'bank_response_code',
+      'reference_id',
       'created_at',
       'updated_at'
     ]))
@@ -115,6 +116,10 @@ function create (database) {
       type: INTEGER,
       allowNull: false,
       autoIncrement: true
+    },
+
+    reference_id: {
+      type: STRING
     },
 
     barcode: {

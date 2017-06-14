@@ -21,6 +21,9 @@ export const createSchema = {
     .string()
     .required(),
 
+  reference_id: Joi
+    .string(),
+
   company_name: Joi
     .string()
     .required(),

@@ -68,7 +68,8 @@ test('creates a non-registrable boleto', async (t) => {
     register: false,
     queue_url: userQueueUrl,
     company_name: 'Some Company',
-    company_document_number: '98154524872'
+    company_document_number: '98154524872',
+    reference_id: 'ref_niidkanfikenafi'
   }
 
   const { body, statusCode } = await create({
@@ -79,8 +80,10 @@ test('creates a non-registrable boleto', async (t) => {
   t.is(body.object, 'boleto')
   t.true(body.title_id != null)
   t.true(body.token != null)
+  t.true(body.reference_id != null)
   t.true(typeof body.title_id === 'number')
   t.true(typeof body.token === 'string')
+  t.true(typeof body.reference_id === 'string')
   assert.containSubset(body, {
     status: 'issued',
     paid_amount: 0,
