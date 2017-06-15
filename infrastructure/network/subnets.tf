@@ -93,3 +93,12 @@ resource "aws_subnet" "database" {
   }
 }
 
+resource "aws_db_subnet_group" "database" {
+  name = "superbowleto_database_subnet_group"
+  description = "Superbowleto Database Subnet Group"
+  subnet_ids = ["${aws_subnet.database.*.id}"]
+
+  tags {
+    Name = "Superbowleto Database Subnet Group"
+  }
+}
