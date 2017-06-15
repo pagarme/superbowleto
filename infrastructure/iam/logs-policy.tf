@@ -14,6 +14,7 @@ data "aws_iam_policy_document" "logs" {
 }
 
 resource "aws_iam_policy" "logs" {
-  name = "LambdaLogs"
+  name = "SuperbowletoLambdaLogs"
+  description = "Allow Lambdas to create and write to CloudWatch logs"
   policy = "${data.aws_iam_policy_document.logs.json}"
 }
