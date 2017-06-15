@@ -1,6 +1,5 @@
 variable "stage" {
   type = "string"
-  default = "sandbox"
 }
 
 variable "lambda_execution_role_arn" {

@@ -1,6 +1,5 @@
 variable "stage" {
   type = "string"
-  default = "sandbox"
 }
 
 variable "database_security_group_ids" {

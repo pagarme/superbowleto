@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "sqs" {
     ]
 
     resources = [
-      "${var.sqs_queue_arns}"
+      "*"
     ]
   }
 }
