@@ -4,7 +4,6 @@ variable "role" {
 
 variable "stage" {
   type = "string"
-  default = "sandbox"
 }
 
 variable "name" {
