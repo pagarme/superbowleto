@@ -1,6 +1,8 @@
 module "sqs" {
   source = "./sqs"
   stage = "${var.stage}"
+
+  lambda_execution_role_name = "${var.lambda_execution_role_name}"
 }
 
 module "database" {

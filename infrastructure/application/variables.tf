@@ -15,6 +15,9 @@ variable "lambda_execution_role_arn" {
   type = "string"
 }
 
+variable "lambda_execution_role_name" {
+  type = "string"
+}
 variable "lambda_subnet_ids" {
   type = "list"
 }

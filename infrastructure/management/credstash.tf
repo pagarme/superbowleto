@@ -57,6 +57,7 @@ data "aws_iam_policy_document" "secret_reader" {
 
 resource "aws_iam_policy" "secret_reader" {
   name = "CredstashSecretRead"
+  description = "Provides read access to Credstash secrets"
   policy = "${data.aws_iam_policy_document.secret_reader.json}"
 }
 
@@ -88,5 +89,6 @@ data "aws_iam_policy_document" "secret_writer" {
 
 resource "aws_iam_policy" "secret_writer" {
   name = "CredstashSecretWrite"
+  description = "Provides write access to Credstash secrets"
   policy = "${data.aws_iam_policy_document.secret_writer.json}"
 }

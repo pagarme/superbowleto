@@ -29,6 +29,7 @@ module "iam" {
 module "sandbox" {
   source = "./application"
 
+  lambda_execution_role_name = "${module.iam.lambda_execution_role_name}"
   lambda_execution_role_arn = "${module.iam.lambda_execution_role_arn}"
   lambda_security_group_ids = "${module.network.lambda_security_group_ids}"
   lambda_subnet_ids = "${module.network.lambda_subnet_ids}"
