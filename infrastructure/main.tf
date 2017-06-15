@@ -27,8 +27,8 @@ module "sqs" {
 module "database" {
   source = "./database"
 
-  database_subnet_ids = "${module.network.database_subnet_ids}"
-  database_security_group_id = "${module.network.database_security_group_id}"
+  database_subnet_group_name = "${module.network.database_subnet_group_name}"
+  database_security_group_ids = "${module.network.database_security_group_ids}"
 }
 
 module "iam" {
