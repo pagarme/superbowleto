@@ -65,6 +65,10 @@ export default {
       autoIncrement: true
     },
 
+    reference_id: {
+      type: STRING
+    },
+
     barcode: {
       type: STRING
     },

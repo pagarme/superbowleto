@@ -107,7 +107,8 @@ export const register = (event, context, callback) => {
       const params = {
         MessageBody: JSON.stringify({
           boleto_id: boleto.id,
-          status: boleto.status
+          status: boleto.status,
+          reference_id: boleto.reference_id
         }),
         QueueUrl: boleto.queue_url
       }
