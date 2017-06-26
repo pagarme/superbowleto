@@ -1,13 +1,3 @@
-data "archive_file" "lambda_zip" {
-  type = "zip"
-  output_path = "${path.module}/lambda.zip"
-
-  source {
-    content = "noop"
-    filename = "noop"
-  }
-}
-
 resource "aws_lambda_function" "lambda" {
   function_name = "superbowleto-${var.stage}-${var.name}"
   handler = "${var.handler}"
@@ -19,6 +9,7 @@ resource "aws_lambda_function" "lambda" {
 
   filename = "${path.module}/lambda.zip"
   source_code_hash = "${data.archive_file.lambda_zip.output_base64sha256}"
+  source_code_hash = "${base64sha256(file("${path.module}/lambda.zip"))}"
 
   tags {
     Stage = "${var.stage}"
