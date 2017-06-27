@@ -11,7 +11,12 @@ const create = normalizeHandler(boletoHandler.create)
 const register = promisify(boletoHandler.register)
 
 test.before(async () => {
+  mockFunction(provider, 'register', () => Promise.resolve({ status: 'registered' }))
   await purgeQueue(userQueue)
+})
+
+test.after(async () => {
+  restoreFunction(provider, 'register')
 })
 
 test('registers a boleto (provider success)', async (t) => {
