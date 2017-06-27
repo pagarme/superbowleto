@@ -29,4 +29,8 @@ resource "aws_db_instance" "database" {
     Name = "Superbowleto Database"
     Stage = "${var.stage}"
   }
+
+  provisioner "local-exec" {
+    command = "${path.module}/credstash-database-auth.sh ${var.stage} ${self.id}"
+  }
 }
