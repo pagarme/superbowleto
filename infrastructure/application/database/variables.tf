@@ -2,6 +2,10 @@ variable "stage" {
   type = "string"
 }
 
+variable "region" {
+  type = "string"
+}
+
 variable "database_security_group_ids" {
   type = "list"
 }

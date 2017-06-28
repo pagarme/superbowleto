@@ -31,6 +31,6 @@ resource "aws_db_instance" "database" {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/credstash-database-auth.sh ${var.stage} ${self.id}"
+    command = "${path.module}/credstash-database-auth.sh ${var.region} ${var.stage} ${self.id}"
   }
 }

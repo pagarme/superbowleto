@@ -3,6 +3,14 @@ variable "stage" {
   default = "sandbox"
 }
 
+variable "region" {
+  type = "string"
+}
+
+variable "account_id" {
+  type = "string"
+}
+
 variable "database_subnet_group_name" {
   type = "string"
 }
