@@ -1,3 +1,20 @@
+# Given the network prefix = 10.0:
+#
+# AZ-1 (10.0.0.0/21)
+#   Lambda   = 10.0.0.0/22
+#   DMZ      = 10.0.4.0/25
+#   Database = 10.0.4.128/25
+#
+# AZ-2 (10.0.8.0/21)
+#   Lambda   = 10.0.8.0/22
+#   DMZ      = 10.0.12.0/25
+#   Database = 10.0.12.128/25
+#
+# AZ-N (10.0.${(N-1)*8}.0/21)
+#   Lambda   = 10.0.${(N-1)*8}.0/22
+#   DMZ      = 10.0.${(N-1)*8 + 4}.0/25
+#   Database = 10.0.${(N-1)*8 + 4}.128/25
+
 resource "aws_route_table" "dmz" {
   vpc_id = "${aws_vpc.vpc.id}"
 

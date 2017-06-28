@@ -17,6 +17,14 @@ module "management" {
 
 module "network" {
   source = "./network"
+
+  network_prefix = "10.0"
+  az_list = [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d"
+  ]
 }
 
 module "sandbox_access_control" {
