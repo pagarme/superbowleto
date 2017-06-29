@@ -1,30 +1,30 @@
 resource "aws_security_group" "dmz" {
-  name_prefix = "${lower(var.vpc_name)}_"
-  description = "${var.vpc_name} DMZ Security Group"
+  name_prefix = "superbowleto_"
+  description = "superbowleto DMZ Security Group"
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
-    Name = "${var.vpc_name} DMZ Security Group"
+    Name = "superbowleto DMZ Security Group"
   }
 }
 
 resource "aws_security_group" "lambda" {
-  name_prefix = "${lower(var.vpc_name)}_"
-  description = "${var.vpc_name} Lambda Security Group"
+  name_prefix = "superbowleto_"
+  description = "superbowleto Lambda Security Group"
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags = {
-    Name = "${var.vpc_name} Lambda Security Group"
+    Name = "superbowleto Lambda Security Group"
   }
 }
 
 resource "aws_security_group" "database" {
-  name_prefix = "${lower(var.vpc_name)}_"
-  description = "${var.vpc_name} Database Security Group"
+  name_prefix = "superbowleto_"
+  description = "superbowleto Database Security Group"
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
-    Name = "${var.vpc_name} Database Security Group"
+    Name = "superbowleto Database Security Group"
   }
 }
 

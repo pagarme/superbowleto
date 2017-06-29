@@ -16,13 +16,13 @@ data "aws_iam_policy_document" "sqs" {
 }
 
 resource "aws_iam_policy" "sqs" {
-  name = "SuperbowletoLambdaSQS"
-  description = "Allow Lambdas to use Superbowleto queues"
+  name = "${var.stage}-superbowleto-lambda-sqs"
+  description = "Allow Lambdas to use superbowleto queues"
   policy = "${data.aws_iam_policy_document.sqs.json}"
 }
 
 resource "aws_iam_policy_attachment" "sqs" {
-  name = "superbowleto-lambda-sqs-attachment"
+  name = "${var.stage}-superbowleto-lambda-sqs"
   policy_arn = "${aws_iam_policy.sqs.arn}"
 
   roles = [

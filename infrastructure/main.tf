@@ -19,20 +19,21 @@ module "network" {
   source = "./network"
 }
 
-module "iam" {
-  source = "./iam"
+module "sandbox_access_control" {
+  source = "./access-control"
+  stage = "sandbox"
 
   credstash_secret_reader_policy_arn = "${module.management.credstash_secret_reader_policy_arn}"
 }
 
 module "sandbox" {
   source = "./application"
-
+  stage = "sandbox"
   region = "${var.region}"
   account_id = "${var.account_id}"
 
-  lambda_execution_role_name = "${module.iam.lambda_execution_role_name}"
-  lambda_execution_role_arn = "${module.iam.lambda_execution_role_arn}"
+  lambda_execution_role_name = "${module.sandbox_access_control.lambda_execution_role_name}"
+  lambda_execution_role_arn = "${module.sandbox_access_control.lambda_execution_role_arn}"
   lambda_security_group_ids = "${module.network.lambda_security_group_ids}"
   lambda_subnet_ids = "${module.network.lambda_subnet_ids}"
 

@@ -3,11 +3,6 @@ variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
 
-variable "vpc_name" {
-  type = "string"
-  default = "Superbowleto"
-}
-
 variable "az_list" {
   type = "list"
   default = [

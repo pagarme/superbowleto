@@ -4,7 +4,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
 
   tags {
-    Name = "${var.vpc_name} VPC"
+    Name = "superbowleto VPC"
   }
 }
 
@@ -12,7 +12,7 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
-    Name = "${var.vpc_name} Internet Gateway"
+    Name = "superbowleto Internet Gateway"
   }
 }
 
