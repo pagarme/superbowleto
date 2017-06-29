@@ -2,6 +2,14 @@ import * as Umzug from 'umzug'
 
 import { getDatabase } from '../../database'
 
+const getMigrationsPath = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return './dist/migrations'
+  }
+
+  return './build/database/migrations'
+}
+
 export const migrate = (event, context, callback) => {
   getDatabase().then((database) => {
     const umzug = new Umzug({
@@ -14,7 +22,7 @@ export const migrate = (event, context, callback) => {
           database.getQueryInterface(),
           database.constructor
         ],
-        path: './build/database/migrations',
+        path: getMigrationsPath(),
         pattern: /\.js$/
       }
     })

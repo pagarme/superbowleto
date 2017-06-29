@@ -16,7 +16,8 @@ const externals = () => {
 module.exports = {
   context: join(__dirname, './build'),
   entry: {
-    boleto: './resources/boleto/index.js'
+    boleto: './resources/boleto/index.ts',
+    database: './functions/database/index.ts'
   },
   output: {
     path: join(__dirname, './dist'),
@@ -50,6 +51,10 @@ module.exports = {
       `,
       raw: true,
       entryOnly: false
+    }),
+    new Webpack.CopyWebpackPlugin({
+      from: './build/database/migrations',
+      to: './dist/migrations'
     })
   ]
 }
