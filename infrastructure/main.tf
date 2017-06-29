@@ -17,6 +17,13 @@ module "management" {
 
 module "network" {
   source = "./network"
+
+  network_prefix = "10.0"
+  az_list = [
+    "${var.region}a",
+    "${var.region}b",
+    "${var.region}c"
+  ]
 }
 
 module "sandbox_access_control" {

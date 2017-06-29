@@ -1,94 +1,69 @@
-# ===============================================
-# DMZ Subnet (public)
-# ===============================================
-
-resource "aws_subnet" "dmz" {
-  count = "${length(var.az_list)}"
-  vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "${cidrsubnet(var.vpc_cidr, 5, count.index + 0)}"
-  map_public_ip_on_launch = true
-  availability_zone = "${element(var.az_list, count.index)}"
-
-  tags {
-    Name = "superbowleto DMZ Subnet - AZ ${element(var.az_list, count.index)}"
-    Public = "true"
-  }
-}
-
-resource "aws_route_table" "dmz" {
-  vpc_id = "${aws_vpc.vpc.id}"
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.internet_gateway.id}"
-  }
-
-  tags {
-    Name = "superbowleto DMZ Route Table"
-  }
-}
-
-resource "aws_route_table_association" "dmz" {
-  count = "${length(var.az_list)}"
-  subnet_id = "${element(aws_subnet.dmz.*.id, count.index)}"
-  route_table_id = "${aws_route_table.dmz.id}"
-}
-
-resource "aws_nat_gateway" "nat_gateway" {
-  subnet_id = "${aws_subnet.dmz.0.id}"
-  allocation_id = "${aws_eip.nat_gateway.id}"
-  depends_on = ["aws_internet_gateway.internet_gateway"]
-}
-
-# ===============================================
-# Lambda Subnet (private)
-# ===============================================
+#--------------------------------------------------------------
+# Subnets size calculations
+#--------------------------------------------------------------
+#
+# There are 3 subnets for each Availability Zone:
+#   - dmz (public): where the internet gateways will reside.
+#   - lambda (private): where the lambda functions will reside.
+#   - database (private); where the database will reside.
+#
+# The subnets size calculations were made based on the following premises:
+#   - dmz subnet must have ~128 possible ips (cidr_block /25).
+#   - lambda subnet must have ~2048 possible ips (cidr_block /21).
+#   - database subnet must have ~128 possible ips (cidr_block /25).
+#   - all availability zones must have identical-sized subnets.
+#
+# The subnet size calculations can be expressed as (given the network_prefix `10.0`):
+#   AZ-1 (10.0.0.0/20)
+#     lambda   = 10.0.0.0/21
+#     dmz      = 10.0.8.0/25
+#     database = 10.0.8.128/25
+#   AZ-2 (10.0.16.0/20)
+#     lambda   = 10.0.16.0/21
+#     dmz      = 10.0.24.0/25
+#     database = 10.0.24.128/25
+#   AZ-N (10.0.${(N-1) * 16}.0/20)
+#     lambda   = 10.0.${(N-1)* 16}.0/21
+#     dmz      = 10.0.${(N-1)* 16 + 8}.0/25
+#     database = 10.0.${(N-1)* 16 + 8}.128/25
+#
+#  Total Possible AZs: 16
 
 resource "aws_subnet" "lambda" {
   count = "${length(var.az_list)}"
   vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "${cidrsubnet(var.vpc_cidr, 5, count.index + 5)}"
+  cidr_block = "${var.network_prefix}.${count.index * 16}.0/22"
   map_public_ip_on_launch = false
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "superbowleto Lambda Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto DMZ Subnet - ${element(var.az_list, count.index)}"
+    Public = "true"
+  }
+}
+
+resource "aws_subnet" "dmz" {
+  count = "${length(var.az_list)}"
+  vpc_id = "${aws_vpc.vpc.id}"
+  cidr_block = "${var.network_prefix}.${(count.index * 16) + 8}.0/25"
+  map_public_ip_on_launch = true
+  availability_zone = "${element(var.az_list, count.index)}"
+
+  tags {
+    Name = "superbowleto Lambda Subnet - ${element(var.az_list, count.index)}"
     Public = "false"
   }
 }
 
-resource "aws_route_table" "lambda" {
-  vpc_id = "${aws_vpc.vpc.id}"
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = "${aws_nat_gateway.nat_gateway.id}"
-  }
-
-  tags {
-    Name = "superbowleto Lambda Route Table"
-  }
-}
-
-resource "aws_route_table_association" "lambda" {
-  count = "${length(var.az_list)}"
-  subnet_id = "${element(aws_subnet.lambda.*.id, count.index)}"
-  route_table_id = "${aws_route_table.lambda.id}"
-}
-
-# ===============================================
-# Database Subnet (private)
-# ===============================================
-
 resource "aws_subnet" "database" {
   count = "${length(var.az_list)}"
   vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "${cidrsubnet(var.vpc_cidr, 5, count.index + 10)}"
+  cidr_block = "${var.network_prefix}.${(count.index * 16) + 8}.128/25"
   map_public_ip_on_launch = false
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "superbowleto Database Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto Database Subnet - ${element(var.az_list, count.index)}"
     Public = "true"
   }
 }
