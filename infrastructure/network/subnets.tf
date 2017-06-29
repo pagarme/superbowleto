@@ -10,7 +10,7 @@ resource "aws_subnet" "dmz" {
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "${var.vpc_name} DMZ Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto DMZ Subnet - AZ ${element(var.az_list, count.index)}"
     Public = "true"
   }
 }
@@ -24,7 +24,7 @@ resource "aws_route_table" "dmz" {
   }
 
   tags {
-    Name = "${var.vpc_name} DMZ Route Table"
+    Name = "superbowleto DMZ Route Table"
   }
 }
 
@@ -52,7 +52,7 @@ resource "aws_subnet" "lambda" {
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "${var.vpc_name} Lambda Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto Lambda Subnet - AZ ${element(var.az_list, count.index)}"
     Public = "false"
   }
 }
@@ -66,7 +66,7 @@ resource "aws_route_table" "lambda" {
   }
 
   tags {
-    Name = "${var.vpc_name} Lambda Route Table"
+    Name = "superbowleto Lambda Route Table"
   }
 }
 
@@ -88,17 +88,17 @@ resource "aws_subnet" "database" {
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "${var.vpc_name} Database Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto Database Subnet - AZ ${element(var.az_list, count.index)}"
     Public = "true"
   }
 }
 
 resource "aws_db_subnet_group" "database" {
   name = "superbowleto_database_subnet_group"
-  description = "Superbowleto Database Subnet Group"
+  description = "superbowleto Database Subnet Group"
   subnet_ids = ["${aws_subnet.database.*.id}"]
 
   tags {
-    Name = "Superbowleto Database Subnet Group"
+    Name = "superbowleto Database Subnet Group"
   }
 }

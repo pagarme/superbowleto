@@ -14,6 +14,6 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "${var.stage}-${var.project}-lambda-execution-role"
+  name = "${var.stage}-superbowleto-lambda-execution-role"
   assume_role_policy = "${data.aws_iam_policy_document.lambda_assume_role.json}"
 }

@@ -26,7 +26,7 @@ resource "aws_db_instance" "database" {
   vpc_security_group_ids = ["${var.database_security_group_ids}"]
 
   tags {
-    Name = "Superbowleto Database"
+    Name = "superbowleto Database"
     Stage = "${var.stage}"
   }
 

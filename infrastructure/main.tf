@@ -21,7 +21,6 @@ module "network" {
 
 module "sandbox_access_control" {
   source = "./access-control"
-  project = "${var.project}"
   stage = "sandbox"
 
   credstash_secret_reader_policy_arn = "${module.management.credstash_secret_reader_policy_arn}"
@@ -29,7 +28,7 @@ module "sandbox_access_control" {
 
 module "sandbox" {
   source = "./application"
-
+  stage = "sandbox"
   region = "${var.region}"
   account_id = "${var.account_id}"
 
