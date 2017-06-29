@@ -20,10 +20,9 @@ module "network" {
 
   network_prefix = "10.0"
   az_list = [
-    "us-east-1a",
-    "us-east-1b",
-    "us-east-1c",
-    "us-east-1d"
+    "${var.region}a",
+    "${var.region}b",
+    "${var.region}c"
   ]
 }
 

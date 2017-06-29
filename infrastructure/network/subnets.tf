@@ -37,7 +37,7 @@ resource "aws_subnet" "lambda" {
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "superbowleto DMZ Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto DMZ Subnet - ${element(var.az_list, count.index)}"
     Public = "true"
   }
 }
@@ -50,7 +50,7 @@ resource "aws_subnet" "dmz" {
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "superbowleto Lambda Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto Lambda Subnet - ${element(var.az_list, count.index)}"
     Public = "false"
   }
 }
@@ -63,7 +63,7 @@ resource "aws_subnet" "database" {
   availability_zone = "${element(var.az_list, count.index)}"
 
   tags {
-    Name = "superbowleto Database Subnet - AZ ${element(var.az_list, count.index)}"
+    Name = "superbowleto Database Subnet - ${element(var.az_list, count.index)}"
     Public = "true"
   }
 }
