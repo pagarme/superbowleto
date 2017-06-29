@@ -15,7 +15,16 @@ data "aws_iam_policy_document" "vpc" {
 }
 
 resource "aws_iam_policy" "vpc" {
-  name = "SuperbowletoLambdaVPCAccess"
+  name = "${var.stage}-${var.project}-lambda-vpc-access"
   description = "Allow Lambdas to be used within a VPC"
   policy = "${data.aws_iam_policy_document.vpc.json}"
+}
+
+resource "aws_iam_policy_attachment" "vpc" {
+  name = "${var.stage}-${var.project}-lambda-vpc-access"
+  policy_arn = "${aws_iam_policy.vpc.arn}"
+
+  roles = [
+    "${aws_iam_role.lambda_execution_role.name}"
+  ]
 }

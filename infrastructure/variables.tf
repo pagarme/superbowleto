@@ -1,3 +1,8 @@
+variable "project" {
+  type = "string"
+  default = "superbowleto"
+}
+
 variable "account_id" {
   type = "string"
   default = "745715572008"
