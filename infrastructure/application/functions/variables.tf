@@ -2,6 +2,14 @@ variable "stage" {
   type = "string"
 }
 
+variable "account_id" {
+  type = "string"
+}
+
+variable "region" {
+  type = "string"
+}
+
 variable "lambda_execution_role_arn" {
   type = "string"
 }

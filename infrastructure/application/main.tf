@@ -1,6 +1,8 @@
 module "sqs" {
   source = "./sqs"
   stage = "${var.stage}"
+  region = "${var.region}"
+  account_id = "${var.account_id}"
 
   lambda_execution_role_name = "${var.lambda_execution_role_name}"
 }
@@ -8,6 +10,7 @@ module "sqs" {
 module "database" {
   source = "./database"
   stage = "${var.stage}"
+  region = "${var.region}"
 
   database_subnet_group_name = "${var.database_subnet_group_name}"
   database_security_group_ids = "${var.database_security_group_ids}"
@@ -16,6 +19,8 @@ module "database" {
 module "functions" {
   source = "./functions"
   stage = "${var.stage}"
+  region = "${var.region}"
+  account_id = "${var.account_id}"
 
   lambda_execution_role_arn = "${var.lambda_execution_role_arn}"
   lambda_subnet_ids = "${var.lambda_subnet_ids}"

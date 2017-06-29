@@ -1,6 +1,8 @@
 module "endpoint_create_boleto" {
   source = "./api-endpoint"
   stage = "${var.stage}"
+  region = "${var.region}"
+  account_id = "${var.account_id}"
 
   rest_api_id = "${aws_api_gateway_rest_api.rest_api.id}"
   resource_id = "${aws_api_gateway_resource.resource_boleto_root.id}"
@@ -13,6 +15,8 @@ module "endpoint_create_boleto" {
 module "endpoint_index_boleto" {
   source = "./api-endpoint"
   stage = "${var.stage}"
+  region = "${var.region}"
+  account_id = "${var.account_id}"
 
   rest_api_id = "${aws_api_gateway_rest_api.rest_api.id}"
   resource_id = "${aws_api_gateway_resource.resource_boleto_root.id}"
@@ -25,6 +29,8 @@ module "endpoint_index_boleto" {
 module "endpoint_show_boleto" {
   source = "./api-endpoint"
   stage = "${var.stage}"
+  region = "${var.region}"
+  account_id = "${var.account_id}"
 
   rest_api_id = "${aws_api_gateway_rest_api.rest_api.id}"
   resource_id = "${aws_api_gateway_resource.resource_boleto_id.id}"
@@ -37,6 +43,8 @@ module "endpoint_show_boleto" {
 module "endpoint_update_boleto" {
   source = "./api-endpoint"
   stage = "${var.stage}"
+  region = "${var.region}"
+  account_id = "${var.account_id}"
 
   rest_api_id = "${aws_api_gateway_rest_api.rest_api.id}"
   resource_id = "${aws_api_gateway_resource.resource_boleto_id.id}"

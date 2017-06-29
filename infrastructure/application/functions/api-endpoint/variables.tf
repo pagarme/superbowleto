@@ -1,3 +1,15 @@
+variable "stage" {
+  type = "string"
+}
+
+variable "region" {
+  type = "string"
+}
+
+variable "account_id" {
+  type = "string"
+}
+
 variable "rest_api_id" {
   type = "string"
 }
@@ -11,10 +23,6 @@ variable "resource_path" {
 }
 
 variable "method" {
-  type = "string"
-}
-
-variable "stage" {
   type = "string"
 }
 

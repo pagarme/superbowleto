@@ -1,6 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
-  profile = "superbowleto"
+  region = "${var.region}"
 }
 
 terraform {
@@ -28,6 +27,9 @@ module "iam" {
 
 module "sandbox" {
   source = "./application"
+
+  region = "${var.region}"
+  account_id = "${var.account_id}"
 
   lambda_execution_role_name = "${module.iam.lambda_execution_role_name}"
   lambda_execution_role_arn = "${module.iam.lambda_execution_role_arn}"

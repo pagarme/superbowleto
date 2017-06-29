@@ -20,5 +20,5 @@ resource "aws_lambda_permission" "api_lambda_permission" {
   statement_id = "AllowExecutionFromApiGateway"
   action = "lambda:InvokeFunction"
   principal = "apigateway.amazonaws.com"
-  source_arn = "arn:aws:execute-api:us-east-1:745715572008:${var.rest_api_id}/*/${aws_api_gateway_method.api_method.http_method}${var.resource_path}"
+  source_arn = "arn:aws:execute-api:${var.region}:${var.account_id}:${var.rest_api_id}/*/${aws_api_gateway_method.api_method.http_method}${var.resource_path}"
 }
