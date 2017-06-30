@@ -10,10 +10,10 @@ const config = getConfig({
     logging: true
   },
   production: {
-    host: 'HOST',
+    host: process.env.DATABASE_ENDPOINT,
     dialect: 'postgres',
-    database: 'DATABASE',
-    username: 'USERNAME',
+    database: process.env.DATABASE_NAME,
+    username: process.env.DATABASE_USERNAME,
     logging: false
   },
   test: {
