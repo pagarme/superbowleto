@@ -4,6 +4,7 @@ data "null_data_source" "environment_variables" {
     BOLETOS_TO_REGISTER_QUEUE_URL = "${var.boletos_to_register_queue_url}"
     DATABASE_ENDPOINT = "${var.database_endpoint}"
     DATABASE_USERNAME = "${var.database_username}"
+    DATABASE_NAME = "${var.database_name}"
   }
 }
 
