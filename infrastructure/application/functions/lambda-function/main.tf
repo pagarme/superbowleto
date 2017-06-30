@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "lambda" {
-  function_name = "superbowleto-${var.stage}-${var.name}"
+  function_name = "${var.stage}-superbowleto-${var.name}"
   handler = "${var.handler}"
 
   role = "${var.role}"
