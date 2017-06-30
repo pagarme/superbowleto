@@ -29,4 +29,5 @@ module "functions" {
   boletos_to_register_queue_url = "${module.sqs.boletos_to_register_queue_url}"
   database_endpoint = "${module.database.endpoint}"
   database_username = "${module.database.username}"
+  database_name = "${module.database.name}"
 }
