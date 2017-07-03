@@ -3,8 +3,8 @@ import { getEnv } from '../../config'
 const Credstash = require('nodecredstash')
 
 export function getDatabasePassword () {
-  const credstash = Credstash({
-    table: 'database',
+  const credstash = new Credstash({
+    table: 'credential-store',
     awsOpts: { region: 'us-east-1' }
   })
 
