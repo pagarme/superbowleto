@@ -45,6 +45,7 @@
     "sequelize": "3.30.4",
     "serverless": "1.10.2",
     "sinon": "2.3.2",
+    "source-map-support": "0.4.15",
     "sqs-quooler": "1.3.0",
     "umzug": "2.0.1"
   },
@@ -60,7 +61,6 @@
     "nyc": "10.3.2",
     "serverless": "1.10.2",
     "source-map-loader": "0.2.1",
-    "source-map-support": "0.4.14",
     "typescript": "2.3.3",
     "typescript-eslint-parser": "3.0.0",
     "webpack": "2.3.3"
