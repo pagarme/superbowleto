@@ -64,6 +64,24 @@ resource "aws_security_group_rule" "dmz-to-lambda-2" {
   source_security_group_id = "${aws_security_group.lambda.id}"
 }
 
+resource "aws_security_group_rule" "lambda-to-all-1" {
+  security_group_id = "${aws_security_group.lambda.id}"
+  type = "egress"
+  from_port = 80
+  to_port = 80
+  protocol = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "lambda-to-all-2" {
+  security_group_id = "${aws_security_group.lambda.id}"
+  type = "egress"
+  from_port = 443
+  to_port = 443
+  protocol = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "lambda-from-dmz-1" {
   security_group_id = "${aws_security_group.lambda.id}"
   type = "ingress"
