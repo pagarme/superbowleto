@@ -26,7 +26,14 @@ const handleError = (err) => {
   return buildFailureResponse(500, new InternalServerError())
 }
 
+const configureContext = (context: any = {}) => {
+  // eslint-disable-next-line no-param-reassign
+  context.callbackWaitsForEmptyEventLoop = false
+}
+
 export const create = (event, context, callback) => {
+  configureContext(context)
+
   const body = JSON.parse(event.body || JSON.stringify({}))
   const logger = makeLogger({ operation: 'create' }, { id: defaultCuidValue('req_')() })
 
@@ -80,6 +87,8 @@ export const create = (event, context, callback) => {
 }
 
 export const register = (event, context, callback) => {
+  configureContext(context)
+
   const body = JSON.parse(event.body || JSON.stringify({}))
   const logger = makeLogger({ operation: 'register' }, { id: defaultCuidValue('req_')() })
   const { boleto_id, sqsMessage } = body
@@ -143,6 +152,8 @@ export const register = (event, context, callback) => {
 }
 
 export const update = (event, context, callback) => {
+  configureContext(context)
+
   const body = JSON.parse(event.body || JSON.stringify({}))
   const { bank_response_code, paid_amount } = body
   const id = path(['pathParameters', 'id'], event)
@@ -157,6 +168,8 @@ export const update = (event, context, callback) => {
 }
 
 export const index = (event, context, callback) => {
+  configureContext(context)
+
   const page = path(['queryStringParameters', 'page'], event)
   const count = path(['queryStringParameters', 'count'], event)
 
@@ -174,6 +187,8 @@ export const index = (event, context, callback) => {
 }
 
 export const show = (event, context, callback) => {
+  configureContext(context)
+
   const id = path(['pathParameters', 'id'], event)
 
   Promise.resolve(id)
@@ -185,6 +200,8 @@ export const show = (event, context, callback) => {
 }
 
 export const processBoletosToRegister = (event, context, callback) => {
+  configureContext(context)
+
   const logger = makeLogger({ operation: 'processBoletosToRegister' }, { id: defaultCuidValue('req_')() })
 
   const processBoleto = (item, sqsMessage) => lambda.register({
