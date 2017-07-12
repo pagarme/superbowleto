@@ -161,7 +161,7 @@ export const index = (event, context, callback) => {
   const count = path(['queryStringParameters', 'count'], event)
 
   // eslint-disable-next-line camelcase
-  const title_id = path(['queryStringParameters', 'nosso_numero'], event)
+  const title_id = path(['queryStringParameters', 'title_id'], event)
   const token = path(['queryStringParameters', 'token'], event)
 
   Promise.resolve({ page, count, token, title_id })
