@@ -9,7 +9,7 @@ const config = getConfig({
   },
   production: {
     'boletos-to-register': {
-      queueUrl: 'QUEUE_URL',
+      queueUrl: process.env.BOLETOS_TO_REGISTER_QUEUE_URL,
       concurrency: 10
     }
   },
