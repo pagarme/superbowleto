@@ -14,6 +14,10 @@ export const createSchema = {
     .integer()
     .required(),
 
+  title_id: Joi
+    .number()
+    .integer(),
+
   instructions: Joi
     .string(),
 

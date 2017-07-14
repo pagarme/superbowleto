@@ -67,6 +67,7 @@ test('creates a non-registrable boleto', async (t) => {
     instructions: 'Please do not accept after expiration_date',
     register: false,
     queue_url: userQueueUrl,
+    title_id: 123456,
     company_name: 'Some Company',
     company_document_number: '98154524872',
     reference_id: 'ref_niidkanfikenafi'
@@ -91,6 +92,7 @@ test('creates a non-registrable boleto', async (t) => {
     instructions: payload.instructions,
     issuer: payload.issuer,
     issuer_id: null,
+    title_id: 123456,
     payer_name: null,
     payer_document_type: null,
     payer_document_number: null,
