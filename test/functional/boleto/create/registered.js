@@ -8,6 +8,14 @@ import * as provider from '../../../../build/providers/bradesco'
 
 const create = normalizeHandler(boletoHandler.create)
 
+test.before(() => {
+  mockFunction(provider, 'register', () => Promise.resolve({ status: 'registered' }))
+})
+
+test.after(async () => {
+  restoreFunction(provider, 'register')
+})
+
 test('creates a boleto (provider success)', async (t) => {
   const payload = mock
 
