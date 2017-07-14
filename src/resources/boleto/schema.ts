@@ -18,6 +18,9 @@ export const createSchema = {
     .number()
     .integer(),
 
+  token: Joi
+    .string(),
+
   instructions: Joi
     .string(),
 

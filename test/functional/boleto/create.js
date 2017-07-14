@@ -68,6 +68,7 @@ test('creates a non-registrable boleto', async (t) => {
     register: false,
     queue_url: userQueueUrl,
     title_id: 123456,
+    token: 'live_az1sx2dc3fv4gb5gb6hn7',
     company_name: 'Some Company',
     company_document_number: '98154524872',
     reference_id: 'ref_niidkanfikenafi'
@@ -89,6 +90,7 @@ test('creates a non-registrable boleto', async (t) => {
     status: 'issued',
     paid_amount: 0,
     amount: payload.amount,
+    token: 'live_az1sx2dc3fv4gb5gb6hn7',
     instructions: payload.instructions,
     issuer: payload.issuer,
     issuer_id: null,
