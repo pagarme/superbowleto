@@ -12,8 +12,8 @@ const { endpoint, merchantId, securityKey } = prop('bradesco', getConfig())
 
 const makeLogger = makeFromLogger('bradesco/index')
 
-export const buildHeaders = () => {
-  return Promise.all([
+export const buildHeaders = () =>
+  Promise.all([
     getCredentials('providers/bradesco/company_id'),
     getCredentials('providers/bradesco/api_key')
   ])
@@ -24,7 +24,6 @@ export const buildHeaders = () => {
         Authorization: `Basic ${authorization}`
       }
     })
-}
 
 export const buildPayload = (boleto) => {
   return Promise.resolve('providers/bradesco/company_id')
@@ -71,7 +70,7 @@ export const translateResponseCode = (response) => {
 export const verifyRegistrationStatus = (boleto) => {
   const logger = makeLogger({ operation: 'verifyRegistrationStatus' })
 
-  return Promise.resolve(buildHeaders)
+  return Promise.resolve(buildHeaders())
     .then(headers => ({
       headers,
       url: `${endpoint}`,
