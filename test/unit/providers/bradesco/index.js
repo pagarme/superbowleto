@@ -1,10 +1,12 @@
 import test from 'ava'
+import Promise from 'bluebird'
 import moment from 'moment'
 import { createBoleto } from '../../../helpers/boleto'
 import { buildHeaders, buildPayload, translateResponseCode } from '../../../../build/providers/bradesco'
+import { getCredentials } from '../../../../build/lib/credentials'
 
-test('buildHeaders', (t) => {
-  const headers = buildHeaders()
+test('buildHeaders', async (t) => {
+  const headers = await buildHeaders()
 
   t.deepEqual(headers, {
     Authorization: 'Basic MTAwMDA1MjU0OmJiRTlYTjhSaE95QTktNzlISFBuYkoxLVFxeTdrem9LR2RSLU5qbWk5Zmc='
@@ -13,7 +15,7 @@ test('buildHeaders', (t) => {
 
 test('buildPayload', async (t) => {
   const boleto = await createBoleto()
-  const payload = buildPayload(boleto)
+  const payload = await buildPayload(boleto)
 
   t.deepEqual(payload, {
     merchant_id: '100005254',
