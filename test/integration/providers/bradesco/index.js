@@ -10,7 +10,7 @@ test('register', async (t) => {
   t.is(response.status, 'registered')
 })
 
-test('verifyRegistrationStatus', async (t) => {
+test.only('verifyRegistrationStatus', async (t) => {
   const boleto = await createBoleto()
   boleto.issuer_id = boleto.title_id
 
