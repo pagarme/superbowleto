@@ -8,7 +8,9 @@ const config = getConfig({
   },
   production: {
     bradesco: {
-      endpoint: 'https://meiosdepagamentobradesco.com.br/apiregistro/api'
+      endpoint: process.env.STAGE === 'sandbox'
+        ? 'https://homolog.meiosdepagamentobradesco.com.br/apiregistro/api'
+        : 'https://meiosdepagamentobradesco.com.br/apiregistro/api'
     }
   },
   test: {

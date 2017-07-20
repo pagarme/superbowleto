@@ -56,7 +56,11 @@ export const buildPayload = boleto =>
     .then(spec => applySpec(spec)(boleto))
 
 export const translateResponseCode = (response) => {
+  const logger = makeLogger({ operation: 'translateResponseCode' })
+
   const responseCode = response.data.status.codigo.toString()
+
+  logger.info({ status: 'succeeded', metadata: { providerResponse: response.toString() } })
 
   const defaultValue = {
     message: 'CÓDIGO INEXISTENTE',
