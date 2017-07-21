@@ -1,5 +1,4 @@
 import * as Promise from 'bluebird'
-import { path } from 'ramda'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 import { InternalServerError, NotFoundError, ValidationError } from '../../lib/errors'
 import { parse } from '../../lib/http/request'

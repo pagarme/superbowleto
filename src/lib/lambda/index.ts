@@ -5,12 +5,12 @@ import getConfig from '../../config/lambda'
 const config = getConfig()
 
 const lambda = new Lambda({
+  region: config.region,
+  endpoint: config.endpoint,
   credentials: new Credentials({
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey
-  }),
-  endpoint: config.endpoint,
-  region: config.region
+  })
 })
 
 export default lambda

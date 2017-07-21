@@ -100,7 +100,7 @@ export const verifyRegistrationStatus = (boleto) => {
 }
 
 export const register = (boleto) => {
-  const logger = makeLogger({ operation: 'verifyRegistrationStatus' })
+  const logger = makeLogger({ operation: 'register' })
 
   return Promise.all([
     buildHeaders(),
