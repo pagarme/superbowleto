@@ -1,3 +1,4 @@
+// tslint:disable:object-shorthand-properties-first
 import * as Promise from 'bluebird'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 import { InternalServerError, NotFoundError, ValidationError } from '../../lib/errors'
@@ -41,6 +42,7 @@ export const create = (event, context, callback) => {
 
   // eslint-disable-next-line
   const pushBoletoToQueueConditionally = (boleto) => {
+<<<<<<< HEAD
     if (boleto.status === 'pending_registration') {
       logger.info({
         subOperation: 'pushToQueue',
@@ -48,6 +50,17 @@ export const create = (event, context, callback) => {
         metadata: { boleto_id: boleto.id }
       })
 
+=======
+    const propNotEq = complement(propEq)
+    const shouldSendBoletoToQueue = and(
+      propEq('status', 'pending_registration'),
+      propNotEq('issuer', 'development')
+    )
+
+    if (shouldSendBoletoToQueue(boleto)) {
+      logger.info({ subOperation: 'pushToQueue', status: 'started',
+        metadata: { boleto_id: boleto.id } })
+>>>>>>> ed5b0f2... fixes size limit of lines in boleto/index.ts
       return BoletosToRegisterQueue.push({
         boleto_id: boleto.id
       })
@@ -226,8 +239,8 @@ export const processBoletosToRegister = (event, context, callback) => {
 
   const logger = makeLogger(
     { operation: 'processBoletosToRegister' },
-    { id: defaultCuidValue('req_')() }
-  )
+    { id: defaultCuidValue('req_')() })
+  logger.info({ operation: 'processBoletosToRegister', status: 'started' })
 
   const processBoleto = (item, sqsMessage) => lambda.register({
     sqsMessage,
