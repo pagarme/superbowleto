@@ -1,6 +1,6 @@
-import { curryN } from 'ramda'
 import { validate } from 'joi'
-import { ValidationError, InvalidParameterError } from '../errors'
+import { curryN } from 'ramda'
+import { InvalidParameterError, ValidationError } from '../errors'
 
 export const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
   const options = {
@@ -14,8 +14,8 @@ export const parse = curryN(2, (schema, data) => new Promise((resolve, reject) =
   }
 
   const errors = error.details.map(err => new InvalidParameterError({
-    message: err.message,
-    field: err.path
+    field: err.path,
+    message: err.message
   }))
 
   return reject(new ValidationError({ errors }))

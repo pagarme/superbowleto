@@ -1,16 +1,16 @@
 import * as Promise from 'bluebird'
 import { path } from 'ramda'
-import sqs from '../../lib/sqs'
-import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
-import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
-import * as boletoService from './service'
-import { parse } from '../../lib/http/request'
-import { createSchema, updateSchema } from './schema'
-import { makeFromLogger } from '../../lib/logger'
-import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
-import lambda from './lambda'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
+import { InternalServerError, NotFoundError, ValidationError } from '../../lib/errors'
+import { parse } from '../../lib/http/request'
+import { buildFailureResponse, buildSuccessResponse } from '../../lib/http/response'
+import { makeFromLogger } from '../../lib/logger'
+import sqs from '../../lib/sqs'
+import lambda from './lambda'
 import { buildModelResponse } from './model'
+import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
+import { createSchema, indexSchema, updateSchema } from './schema'
+import * as boletoService from './service'
 
 const makeLogger = makeFromLogger('boleto/index')
 
@@ -68,8 +68,8 @@ export const create = (event, context, callback) => {
     .then(buildSuccessResponse(201))
     .tap((response) => {
       logger.info({
-        status: 'succeeded',
-        metadata: { body: response.body, statusCode: response.statusCode }
+        metadata: { body: response.body, statusCode: response.statusCode },
+        status: 'succeeded'
       })
     })
     .catch((err) => {
@@ -107,6 +107,7 @@ export const register = (event, context, callback) => {
       const params = {
         MessageBody: JSON.stringify({
           boleto_id: boleto.id,
+          reference_id: boleto.reference_id,
           status: boleto.status
         }),
         QueueUrl: boleto.queue_url
@@ -130,8 +131,8 @@ export const register = (event, context, callback) => {
     .tap(sendMessageToUserQueueConditionally)
     .tap((response) => {
       logger.info({
-        status: 'succeeded',
-        metadata: { body: response.body, statusCode: response.statusCode }
+        metadata: { body: response.body, statusCode: response.statusCode },
+        status: 'succeeded'
       })
     })
     .catch((err) => {
@@ -159,7 +160,12 @@ export const index = (event, context, callback) => {
   const page = path(['queryStringParameters', 'page'], event)
   const count = path(['queryStringParameters', 'count'], event)
 
-  Promise.resolve({ page, count })
+  // tslint:disable-next-line
+  const title_id = path(['queryStringParameters', 'title_id'], event)
+  const token = path(['queryStringParameters', 'token'], event)
+
+  Promise.resolve({ page, count, token, title_id })
+    .then(parse(indexSchema))
     .then(boletoService.index)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))
@@ -192,8 +198,8 @@ export const processBoletosToRegister = (event, context, callback) => {
 
   function stopQueueWhenIdle () {
     const params = {
-      QueueUrl: BoletosToRegisterQueueUrl,
-      AttributeNames: ['ApproximateNumberOfMessages']
+      AttributeNames: ['ApproximateNumberOfMessages'],
+      QueueUrl: BoletosToRegisterQueueUrl
     }
 
     sqs.getQueueAttributes(params, (err, data) => {

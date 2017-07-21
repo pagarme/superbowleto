@@ -1,18 +1,18 @@
 import * as Promise from 'bluebird'
-import { assoc, pick } from 'ramda'
-import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
 import { Boleto as NodeBoleto } from 'node-boleto'
+import { assoc, pick } from 'ramda'
+import { DATE, ENUM, INTEGER, STRING, TEXT } from 'sequelize'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 
 export const generateBarcode = (boleto) => {
   const nodeBoleto = new NodeBoleto({
-    banco: boleto.issuer,
-    valor: boleto.amount,
-    nosso_numero: boleto.title_id,
-    data_vencimento: boleto.expiration_date,
     agencia: '1229',
+    banco: boleto.issuer,
+    carteira: '25',
     codigo_cedente: '469',
-    carteira: '25'
+    data_vencimento: boleto.expiration_date,
+    nosso_numero: boleto.title_id,
+    valor: boleto.amount
   })
 
   return nodeBoleto.barcode_data
@@ -53,49 +53,50 @@ const addBarcode = boleto =>
 function create (database) {
   return database.define('Boleto', {
     id: {
-      type: STRING,
-      primaryKey: true,
       allowNull: false,
-      defaultValue: defaultCuidValue('bol_')
+      defaultValue: defaultCuidValue('bol_'),
+      primaryKey: true,
+      type: STRING
     },
 
     token: {
-      type: STRING,
       allowNull: false,
-      defaultValue: defaultCuidValue(`${process.env.STAGE}_`)
+      defaultValue: defaultCuidValue(`${process.env.STAGE}_`),
+      type: STRING
     },
 
+    // tslint:disable-next-line:object-literal-sort-keys
     queue_url: {
-      type: STRING,
-      allowNull: false
+      allowNull: false,
+      type: STRING
     },
 
     status: {
-      type: ENUM,
       allowNull: false,
+      defaultValue: 'issued',
+      type: ENUM,
       values: [
         'issued',
         'pending_registration',
         'registered',
         'refused'
-      ],
-      defaultValue: 'issued'
+      ]
     },
 
     expiration_date: {
-      type: DATE,
-      allowNull: false
+      allowNull: false,
+      type: DATE
     },
 
     amount: {
-      type: INTEGER,
-      allowNull: false
+      allowNull: false,
+      type: INTEGER
     },
 
     paid_amount: {
-      type: INTEGER,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
+      type: INTEGER
     },
 
     instructions: {
@@ -103,8 +104,8 @@ function create (database) {
     },
 
     issuer: {
-      type: STRING,
-      allowNull: false
+      allowNull: false,
+      type: STRING
     },
 
     issuer_id: {
@@ -112,9 +113,9 @@ function create (database) {
     },
 
     title_id: {
-      type: INTEGER,
       allowNull: false,
-      autoIncrement: true
+      autoIncrement: true,
+      type: INTEGER
     },
 
     barcode: {
@@ -135,27 +136,27 @@ function create (database) {
     },
 
     company_name: {
-      type: STRING,
-      allowNull: false
+      allowNull: false,
+      type: STRING
     },
 
     company_document_number: {
-      type: STRING,
-      allowNull: false
+      allowNull: false,
+      type: STRING
     },
 
     bank_response_code: {
       type: STRING
     }
   }, {
-    indexes: [
-      { fields: ['queue_url'] },
-      { fields: ['status'] }
-    ],
-    hooks: {
-      afterCreate: addBarcode
-    }
-  })
+      hooks: {
+        afterCreate: addBarcode
+      },
+      indexes: [
+        { fields: ['queue_url'] },
+        { fields: ['status'] }
+      ]
+    })
 }
 
 export default {

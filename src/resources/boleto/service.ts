@@ -1,14 +1,14 @@
 import * as Promise from 'bluebird'
 import { mergeAll } from 'ramda'
 import { getModel } from '../../database'
+import { getPaginationQuery } from '../../lib/database/pagination'
+import { defaultCuidValue } from '../../lib/database/schema'
 import { NotFoundError } from '../../lib/errors'
 import { handleDatabaseErrors } from '../../lib/errors/database'
-import { getPaginationQuery } from '../../lib/database/pagination'
-import sqs from '../../lib/sqs'
-import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
-import { findProvider } from '../../providers'
 import { makeFromLogger } from '../../lib/logger'
-import { defaultCuidValue } from '../../lib/database/schema'
+import sqs from '../../lib/sqs'
+import { findProvider } from '../../providers'
+import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
 
 const makeLogger = makeFromLogger('boleto/service')
 
@@ -60,7 +60,7 @@ export const register = (boleto) => {
 
   return provider.register(boleto)
     .then(updateBoletoStatus)
-    // eslint-disable-next-line
+    // tslint:disable-next-line
     .tap((boleto) => {
       logger.info({ status: 'succeeded', metadata: { boleto } })
     })
@@ -103,8 +103,8 @@ export const update = (data) => {
         }
 
         return boleto.update({
-          paid_amount: paidAmount || boleto.paid_amount,
-          bank_response_code: bankResponseCode || boleto.bank_response_code
+          bank_response_code: bankResponseCode || boleto.bank_response_code,
+          paid_amount: paidAmount || boleto.paid_amount
         })
       })
       .tap((boleto) => {

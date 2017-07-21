@@ -1,4 +1,4 @@
-import { curryN, compose, objOf } from 'ramda'
+import { compose, curryN, objOf } from 'ramda'
 import { normalizeErrors } from '../errors/normalizer'
 
 export const buildErrorPayload = compose(
@@ -7,11 +7,11 @@ export const buildErrorPayload = compose(
 )
 
 export const buildSuccessResponse = curryN(2, (statusCode, data) => ({
-  statusCode,
-  body: JSON.stringify(data)
+  body: JSON.stringify(data),
+  statusCode
 }))
 
 export const buildFailureResponse = curryN(2, (statusCode, data) => ({
-  statusCode,
-  body: JSON.stringify(buildErrorPayload(data))
+  body: JSON.stringify(buildErrorPayload(data)),
+  statusCode
 }))

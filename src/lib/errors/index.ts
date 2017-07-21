@@ -1,15 +1,16 @@
 class BaseError extends Error {
-  name: string
-  message: string
-  type: string
-  field?: string
-  errors?: Array<any>
+  public name: string
+  public message: string
+  public type: string
+  public field?: string
+  public errors?: any[]
 
   constructor (message?: string) {
     super(message)
   }
 }
 
+// tslint:disable:max-classes-per-file
 export class NotFoundError extends BaseError {
   constructor (error: any = {}) {
     super(error.message)

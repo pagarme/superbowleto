@@ -7,7 +7,9 @@
   "scripts": {
     "build-production": "tsc && webpack",
     "build-test": "tsc",
-    "lint": "eslint 'src/**/*.ts' 'test/**/*.js'",
+    "lint": "npm run tslint && npm run eslint",
+    "eslint": "eslint 'test/**/*.js'",
+    "tslint": "tslint 'src/**/*.ts'",
     "setup": "node ./script/setup",
     "test": "npm run prepare-test && nyc ava --verbose --serial 'test/**/*.js'",
     "test-functional": "npm run prepare-test && ava --verbose --serial 'test/functional/**/*.js'",
@@ -59,7 +61,7 @@
     "nyc": "10.3.2",
     "serverless": "1.10.2",
     "source-map-loader": "0.2.1",
-    "source-map-support": "0.4.14",
+    "tslint": "5.5.0",
     "typescript": "2.3.3",
     "typescript-eslint-parser": "3.0.0",
     "webpack": "2.3.3"

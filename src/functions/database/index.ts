@@ -5,10 +5,6 @@ import { getDatabase } from '../../database'
 export const migrate = (event, context, callback) => {
   getDatabase().then((database) => {
     const umzug = new Umzug({
-      storage: 'sequelize',
-      storageOptions: {
-        sequelize: database
-      },
       migrations: {
         params: [
           database.getQueryInterface(),
@@ -16,6 +12,10 @@ export const migrate = (event, context, callback) => {
         ],
         path: './build/database/migrations',
         pattern: /\.js$/
+      },
+      storage: 'sequelize',
+      storageOptions: {
+        sequelize: database
       }
     })
 

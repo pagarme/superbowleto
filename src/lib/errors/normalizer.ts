@@ -13,15 +13,15 @@ const hasErrors = compose(Array.isArray, prop('errors'))
 
 const normalizeSingleError = compose(
   merge({
-    type: 'unknown_error',
+    field: null,
     message: '',
-    field: null
+    type: 'unknown_error'
   }),
   pick([
     'type',
     'message',
     'field'
-  ]),
+  ])
 )
 
 const normalizeMultipleErrors = map(normalizeSingleError)

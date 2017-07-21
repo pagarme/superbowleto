@@ -1,5 +1,5 @@
-import lambda from '../../lib/lambda'
 import { getEnv } from '../../config/index'
+import lambda from '../../lib/lambda'
 
 function getFullLamdaFunctionName (shortName) {
   const stage = process.env.STAGE || 'test'

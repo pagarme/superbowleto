@@ -1,8 +1,8 @@
-import Sequelize from 'sequelize'
 import * as Promise from 'bluebird'
+import Sequelize from 'sequelize'
 import getConfig from '../config/database'
+import { getCredentials } from '../lib/credentials'
 import * as rawModels from './models'
-import { getDatabasePassword } from '../lib/credentials'
 
 const config = getConfig()
 
@@ -19,28 +19,29 @@ export function getDatabase () {
     return Promise.resolve(database)
   }
 
-  return getDatabasePassword().then((password) => {
-    database = new Sequelize(Object.assign({}, defaults, config, {
-      password
-    }))
+  return getCredentials('database/password')
+    .then((password) => {
+      database = new Sequelize(Object.assign({}, defaults, config, {
+        password
+      }))
 
-    const createInstance = model => ({
-      model,
-      instance: model.create(database)
-    })
+      const createInstance = model => ({
+        model,
+        instance: model.create(database)
+      })
 
-    const associateModels = ({ model, instance }) => {
-      if (model.associate) {
-        model.associate(instance, database.models)
+      const associateModels = ({ model, instance }) => {
+        if (model.associate) {
+          model.associate(instance, database.models)
+        }
       }
-    }
 
-    Object.values(rawModels)
-      .map(createInstance)
-      .map(associateModels)
+      Object.values(rawModels)
+        .map(createInstance)
+        .map(associateModels)
 
-    return database
-  })
+      return database
+    })
 }
 
 export function getModel (modelName) {
