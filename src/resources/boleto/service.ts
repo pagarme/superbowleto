@@ -18,9 +18,9 @@ export const create = (data) => {
   logger.info({ status: 'started', metadata: { data } })
 
   return getModel('Boleto')
-    .then(Boleto =>
+    .then(boletoModel =>
       Promise.resolve(data)
-      .then(Boleto.create.bind(Boleto))
+      .then(boletoModel.create.bind(boletoModel))
       .tap((boleto) => {
         logger.info({ status: 'succeeded', metadata: { boleto } })
       })
@@ -72,7 +72,7 @@ export const register = (boleto) => {
 
 export const registerById = id =>
   getModel('Boleto')
-    .then(Boleto => Boleto.findOne({
+    .then(boletoModel => boletoModel.findOne({
       where: {
         id
       }
@@ -94,7 +94,7 @@ export const update = (data) => {
   }
 
   return getModel('Boleto')
-    .then(Boleto => Boleto.findOne(query)
+    .then(boletoModel => boletoModel.findOne(query)
       .then((boleto) => {
         if (!boleto) {
           throw new NotFoundError({
@@ -118,7 +118,7 @@ export const index = ({ page, count }) => {
   const query = mergeAll([{}, paginationQuery])
 
   return getModel('Boleto')
-    .then(Boleto => Boleto.findAll(query)
+    .then(boletoModel => boletoModel.findAll(query)
       .catch(handleDatabaseErrors))
 }
 
@@ -130,7 +130,7 @@ export const show = (id) => {
   }
 
   return getModel('Boleto')
-    .then(Boleto => Boleto.findOne(query)
+    .then(boletoModel => boletoModel.findOne(query)
       .then((boleto) => {
         if (!boleto) {
           throw new NotFoundError({

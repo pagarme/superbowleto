@@ -88,7 +88,10 @@ export const verifyRegistrationStatus = (boleto) => {
     .then(axios.request)
     .then(translateResponseCode)
     .tap((response) => {
-      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
+      logger.info({
+        status: 'succeeded',
+        metadata: { status: response.status, data: response.data }
+      })
     })
     .catch((err) => {
       logger.error({ status: 'failed', metadata: { err } })
@@ -122,7 +125,10 @@ export const register = (boleto) => {
       return translatedResponseCode
     })
     .tap((response) => {
-      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
+      logger.info({
+        status: 'succeeded',
+        metadata: { status: response.status, data: response.data }
+      })
     })
     .catch((err) => {
       logger.error({ status: 'failed', metadata: { err } })

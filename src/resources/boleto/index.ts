@@ -43,15 +43,28 @@ export const create = (event, context, callback) => {
   // eslint-disable-next-line
   const pushBoletoToQueueConditionally = (boleto) => {
     if (boleto.status === 'pending_registration') {
-      logger.info({ subOperation: 'pushToQueue', status: 'started', metadata: { boleto_id: boleto.id } })
+      logger.info({
+        subOperation: 'pushToQueue',
+        status: 'started',
+        metadata: { boleto_id: boleto.id }
+      })
+
       return BoletosToRegisterQueue.push({
         boleto_id: boleto.id
       })
         .then(() => {
-          logger.info({ subOperation: 'pushToQueue', status: 'succeeded', metadata: { boleto_id: boleto.id } })
+          logger.info({
+            subOperation: 'pushToQueue',
+            status: 'succeeded',
+            metadata: { boleto_id: boleto.id }
+          })
         })
         .catch((err) => {
-          logger.info({ subOperation: 'pushToQueue', status: 'failed', metadata: { boleto_id: boleto.id, err } })
+          logger.info({
+            subOperation: 'pushToQueue',
+            status: 'failed',
+            metadata: { err, boleto_id: boleto.id }
+          })
           throw err
         })
     }
@@ -87,13 +100,26 @@ export const register = (event, context, callback) => {
   // eslint-disable-next-line
   const removeBoletoFromQueueConditionally = (boleto) => {
     if (boleto.status === 'registered' || boleto.status === 'refused') {
-      logger.info({ subOperation: 'removeFromQueue', status: 'started', metadata: { boleto_id: boleto.id } })
+      logger.info({
+        subOperation: 'removeFromQueue',
+        status: 'started',
+        metadata: { boleto_id: boleto.id }
+      })
+
       return BoletosToRegisterQueue.remove(sqsMessage)
         .then(() => {
-          logger.info({ subOperation: 'removeFromQueue', status: 'succeeded', metadata: { boleto_id: boleto.id } })
+          logger.info({
+            subOperation: 'removeFromQueue',
+            status: 'succeeded',
+            metadata: { boleto_id: boleto.id }
+          })
         })
         .catch((err) => {
-          logger.info({ subOperation: 'removeFromQueue', status: 'failed', metadata: { boleto_id: boleto.id, err } })
+          logger.info({
+            subOperation: 'removeFromQueue',
+            status: 'failed',
+            metadata: { err, boleto_id: boleto.id }
+          })
           throw err
         })
     }
@@ -102,7 +128,11 @@ export const register = (event, context, callback) => {
   // eslint-disable-next-line
   const sendMessageToUserQueueConditionally = (boleto) => {
     if (boleto.status === 'registered' || boleto.status === 'refused') {
-      logger.info({ subOperation: 'sendToUserQueue', status: 'started', metadata: { boleto_id: boleto.id } })
+      logger.info({
+        subOperation: 'sendToUserQueue',
+        status: 'started',
+        metadata: { boleto_id: boleto.id }
+      })
 
       const params = {
         MessageBody: JSON.stringify({
@@ -115,10 +145,18 @@ export const register = (event, context, callback) => {
 
       return sqs.sendMessage(params).promise()
         .then(() => {
-          logger.info({ subOperation: 'sendToUserQueue', status: 'succeeded', metadata: { boleto_id: boleto.id } })
+          logger.info({
+            subOperation: 'sendToUserQueue',
+            status: 'succeeded',
+            metadata: { boleto_id: boleto.id }
+          })
         })
         .catch((err) => {
-          logger.info({ subOperation: 'sendToUserQueue', status: 'failed', metadata: { boleto_id: boleto.id, err } })
+          logger.info({
+            subOperation: 'sendToUserQueue',
+            status: 'failed',
+            metadata: { err, boleto_id: boleto.id }
+          })
           throw err
         })
     }
@@ -185,11 +223,16 @@ export const show = (event, context, callback) => {
 }
 
 export const processBoletosToRegister = (event, context, callback) => {
-  const logger = makeLogger({ operation: 'processBoletosToRegister' }, { id: defaultCuidValue('req_')() })
+  configureContext(context)
+
+  const logger = makeLogger(
+    { operation: 'processBoletosToRegister' },
+    { id: defaultCuidValue('req_')() }
+  )
 
   const processBoleto = (item, sqsMessage) => lambda.register({
-    boleto_id: item.boleto_id,
-    sqsMessage
+    sqsMessage,
+    boleto_id: item.boleto_id
   })
 
   BoletosToRegisterQueue.startProcessing(processBoleto, {

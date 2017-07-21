@@ -7,14 +7,17 @@ const credstash = new Credstash({
   table: 'credential-store'
 })
 
+const superBowletoEnvStage = `superbowleto/${process.env.STAGE}`
+const apiKey = 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg'
+
 const localCredstashTable = {
-  [`superbowleto/${process.env.STAGE}/database/password`]: 'touchdown1!',
-  [`superbowleto/${process.env.STAGE}/providers/bradesco/company_id`]: '100005254',
-  [`superbowleto/${process.env.STAGE}/providers/bradesco/api_key`]: 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg'
+  [`${superBowletoEnvStage}/database/password`]: 'touchdown1!',
+  [`${superBowletoEnvStage}/providers/bradesco/company_id`]: '100005254',
+  [`${superBowletoEnvStage}/providers/bradesco/api_key`]: apiKey
 }
 
 export const getCredentials = memoize((key: string): Promise<string> => {
-  const credstashKey = `superbowleto/${process.env.STAGE}/${key}`
+  const credstashKey = `${superBowletoEnvStage}/${key}`
 
   if (getEnv() === 'test') {
     return Promise.resolve('touchdown1!')

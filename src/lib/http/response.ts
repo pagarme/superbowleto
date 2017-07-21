@@ -7,11 +7,11 @@ export const buildErrorPayload = compose(
 )
 
 export const buildSuccessResponse = curryN(2, (statusCode, data) => ({
-  body: JSON.stringify(data),
-  statusCode
+  statusCode,
+  body: JSON.stringify(data)
 }))
 
 export const buildFailureResponse = curryN(2, (statusCode, data) => ({
-  body: JSON.stringify(buildErrorPayload(data)),
-  statusCode
+  statusCode,
+  body: JSON.stringify(buildErrorPayload(data))
 }))

@@ -148,15 +148,16 @@ function create (database) {
     bank_response_code: {
       type: STRING
     }
+  // tslint:disable-next-line:align
   }, {
-      hooks: {
-        afterCreate: addBarcode
-      },
-      indexes: [
-        { fields: ['queue_url'] },
-        { fields: ['status'] }
-      ]
-    })
+    hooks: {
+      afterCreate: addBarcode
+    },
+    indexes: [
+      { fields: ['queue_url'] },
+      { fields: ['status'] }
+    ]
+  })
 }
 
 export default {
