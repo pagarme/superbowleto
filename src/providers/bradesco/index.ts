@@ -93,12 +93,12 @@ export const verifyRegistrationStatus = (boleto) => {
     })
     .catch((err) => {
       logger.error({ status: 'failed', metadata: { err } })
-      throw Promise.reject(err)
+      return Promise.reject(err)
     })
 }
 
 export const register = (boleto) => {
-  const logger = makeLogger({ operation: 'verifyRegistrationStatus' })
+  const logger = makeLogger({ operation: 'register' })
 
   return Promise.all([
     buildHeaders(),
@@ -127,6 +127,6 @@ export const register = (boleto) => {
     })
     .catch((err) => {
       logger.error({ status: 'failed', metadata: { err } })
-      throw Promise.reject(err)
+      return Promise.reject(err)
     })
 }

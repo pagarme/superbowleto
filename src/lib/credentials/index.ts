@@ -1,6 +1,8 @@
 import { memoize, prop } from 'ramda'
 import { getEnv } from '../../config'
+import { makeFromLogger } from '../../lib/logger'
 
+const makeLogger = makeFromLogger('lib/credentials')
 const Credstash = require('nodecredstash')
 
 const credstash = new Credstash({
@@ -15,7 +17,10 @@ const localCredstashTable = {
 }
 
 export const getCredentials = memoize((key: string): Promise<string> => {
+  const logger = makeLogger({ operation: 'getCredentials' })
   const credstashKey = `superbowleto/${process.env.STAGE}/${key}`
+
+  logger.info({ status: 'started', metadata: { credstashKey } })
 
   if (getEnv() === 'test') {
     return Promise.resolve(prop(credstashKey, localCredstashTable))
@@ -24,4 +29,8 @@ export const getCredentials = memoize((key: string): Promise<string> => {
   return credstash.getSecret({
     name: credstashKey
   })
+    .catch((err) => {
+      logger.error({ status: 'failed', metadata: { err } })
+      return Promise.reject(err)
+    })
 })
