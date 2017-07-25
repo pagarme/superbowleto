@@ -1,43 +1,29 @@
 import test from 'ava'
 import Promise from 'bluebird'
-import { assert } from '../../../helpers/chai'
-import { normalizeHandler } from '../../../helpers/normalizer'
-import { mock, mockFunction, restoreFunction } from '../../../helpers/boleto'
-import * as boletoHandler from '../../../../build/resources/boleto'
-import * as provider from '../../../../build/providers/bradesco'
-import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
-import { BoletosToRegisterQueue } from '../../../../build/resources/boleto/queues'
+import { assert } from '../../../../helpers/chai'
+import { normalizeHandler } from '../../../../helpers/normalizer'
+import { mock } from '../../../../helpers/boleto'
+import * as boletoHandler from '../../../../../build/resources/boleto'
 
 const create = normalizeHandler(boletoHandler.create)
 
-test.before(async () => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'unknown' }))
-  await purgeQueue(BoletosToRegisterQueue)
-})
-
-test.after(async () => {
-  restoreFunction(provider, 'register')
-})
-
 test('creates a boleto (provider unknown)', async (t) => {
   const payload = mock
+
+  payload.amount = 300
+  payload.issuer = 'development'
 
   const { body, statusCode } = await create({
     body: payload
   })
 
-  const sqsItem = await findItemOnQueue(
-    BoletosToRegisterQueue,
-    item => item.boleto_id === body.id
-  )
-
-  t.is(sqsItem.boleto_id, body.id)
-
   t.is(statusCode, 201)
   t.is(body.object, 'boleto')
+
   t.true(body.title_id != null)
   t.true(body.barcode != null)
   t.true(typeof body.title_id === 'number')
+
   assert.containSubset(body, {
     status: 'pending_registration',
     paid_amount: 0,
