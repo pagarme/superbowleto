@@ -203,6 +203,7 @@ export const processBoletosToRegister = (event, context, callback) => {
   configureContext(context)
 
   const logger = makeLogger({ operation: 'processBoletosToRegister' }, { id: defaultCuidValue('req_')() })
+  logger.info({ operation: 'processBoletosToRegister', status: 'started' })
 
   const processBoleto = (item, sqsMessage) => lambda.register({
     boleto_id: item.boleto_id,
@@ -235,7 +236,7 @@ export const processBoletosToRegister = (event, context, callback) => {
     })
   }
 
-  const interval = setInterval(stopQueueWhenIdle, 300)
+  const interval = setInterval(stopQueueWhenIdle, 5000)
 
   BoletosToRegisterQueue.on('error', (err) => {
     logger.error({ status: 'failed', metadata: { err } })
