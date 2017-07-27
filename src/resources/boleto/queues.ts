@@ -5,6 +5,8 @@ import getConfig from '../../config/queues'
 
 const config = prop('boletos-to-register', getConfig())
 
+console.log(config)
+
 export const BoletosToRegisterQueue = new Queue({
   sqs,
   endpoint: config.queueUrl,

@@ -8,9 +8,10 @@ function getFullLambdaFunctionName (shortName) {
 }
 
 function register (payload) {
+  console.log(process.env)
   return lambda.invoke({
     FunctionName: getFullLambdaFunctionName('register-boleto'),
-    InvocationType: 'event',
+    InvocationType: 'Event',
     Payload: JSON.stringify(payload)
   }).promise()
 }
