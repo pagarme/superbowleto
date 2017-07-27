@@ -6,8 +6,8 @@ const makeLogger = makeFromLogger('development/index')
 
 export const register = (boleto) => {
   const getStatusFromAmount = cond([
-    [equals(300), always('pending_registration')],
-    [equals(400), always('refused')],
+    [equals(5000003), always('pending_registration')],
+    [equals(5000004), always('refused')],
     [T, always('registered')]
   ])
 
