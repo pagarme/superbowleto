@@ -1,12 +1,17 @@
 import * as Promise from 'bluebird'
-import { assoc, pick } from 'ramda'
+import { assoc, pick, cond, equals, T, identity, always } from 'ramda'
 import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
 import { Boleto as NodeBoleto } from 'node-boleto'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 
+const barcodeBank = cond([
+  [equals('development'), always('bradesco')],
+  [T, identity]
+])
+
 export const generateBarcode = (boleto) => {
   const nodeBoleto = new NodeBoleto({
-    banco: boleto.issuer,
+    banco: barcodeBank(boleto.issuer),
     valor: boleto.amount,
     nosso_numero: boleto.title_id,
     data_vencimento: boleto.expiration_date,
