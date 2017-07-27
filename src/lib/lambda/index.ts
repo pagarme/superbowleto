@@ -9,7 +9,8 @@ const lambda = new Lambda({
   endpoint: config.endpoint,
   credentials: new Credentials({
     accessKeyId: config.accessKeyId,
-    secretAccessKey: config.secretAccessKey
+    secretAccessKey: config.secretAccessKey,
+    sessionToken: config.sessionToken
   })
 })
 

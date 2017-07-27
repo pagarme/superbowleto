@@ -205,10 +205,12 @@ export const processBoletosToRegister = (event, context, callback) => {
   const logger = makeLogger({ operation: 'processBoletosToRegister' }, { id: defaultCuidValue('req_')() })
   logger.info({ operation: 'processBoletosToRegister', status: 'started' })
 
-  const processBoleto = (item, sqsMessage) => lambda.register({
-    boleto_id: item.boleto_id,
-    sqsMessage
-  })
+  const processBoleto = (item, sqsMessage) => {
+    lambda.register({
+      boleto_id: item.boleto_id,
+      sqsMessage
+    })
+  }
 
   BoletosToRegisterQueue.startProcessing(processBoleto, {
     keepMessages: true
