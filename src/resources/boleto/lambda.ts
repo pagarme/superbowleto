@@ -1,15 +1,15 @@
 import lambda from '../../lib/lambda'
 import { getEnv } from '../../config/index'
 
-function getFullLamdaFunctionName (shortName) {
+function getFullLambdaFunctionName (shortName) {
   const stage = process.env.STAGE || 'test'
 
-  return `superbowleto-${stage}-${shortName}`
+  return `${stage}-superbowleto-${shortName}`
 }
 
 function register (payload) {
   return lambda.invoke({
-    FunctionName: getFullLamdaFunctionName('boleto_register'),
+    FunctionName: getFullLambdaFunctionName('register-boleto'),
     InvocationType: 'event',
     Payload: JSON.stringify(payload)
   }).promise()
