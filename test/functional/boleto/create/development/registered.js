@@ -10,7 +10,7 @@ const create = normalizeHandler(boletoHandler.create)
 test('creates a boleto (provider success)', async (t) => {
   const payload = mock
 
-  payload.amount = 100
+  payload.amount = 5000000
   payload.issuer = 'development'
 
   const { body, statusCode } = await create({
