@@ -119,6 +119,10 @@ export const index = ({ page, count, token, title_id }) => {
     }
   }
 
+  const orderQuery = {
+    order: 'id DESC'
+  }
+
   const possibleFields = { token, title_id }
 
   // eslint-disable-next-line no-restricted-syntax
@@ -129,7 +133,13 @@ export const index = ({ page, count, token, title_id }) => {
   }
 
   const paginationQuery = getPaginationQuery({ page, count })
-  const query = mergeAll([{}, paginationQuery, whereQuery])
+
+  const query = mergeAll([
+    {},
+    paginationQuery,
+    whereQuery,
+    orderQuery
+  ])
 
   return getModel('Boleto')
     .then(Boleto => Boleto.findAll(query)
