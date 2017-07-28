@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird'
-import { path } from 'ramda'
+import { and, complement, path, prop, propEq } from 'ramda'
 import sqs from '../../lib/sqs'
 import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
 import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
@@ -49,7 +49,13 @@ export const create = (event, context, callback) => {
 
   // eslint-disable-next-line
   const pushBoletoToQueueConditionally = (boleto) => {
-    if (boleto.status === 'pending_registration') {
+    const propNotEq = complement(propEq)
+    const shouldSendBoletoToQueue = and(
+      propEq('status', 'pending_registration'),
+      propNotEq('issuer', 'development')
+    )
+
+    if (shouldSendBoletoToQueue(boleto)) {
       logger.info({ subOperation: 'pushToQueue', status: 'started', metadata: { boleto_id: boleto.id } })
       return BoletosToRegisterQueue.push({
         boleto_id: boleto.id
