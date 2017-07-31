@@ -31,7 +31,7 @@ export const buildPayload = boleto =>
     .then(merchantId => ({
       merchant_id: always(merchantId),
       boleto: {
-        carteira: always('25'),
+        carteira: always('26'),
         nosso_numero: prop('title_id'),
         numero_documento: prop('title_id'),
         data_emissao: compose(format('date'), prop('created_at')),
