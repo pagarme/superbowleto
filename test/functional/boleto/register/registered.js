@@ -15,22 +15,8 @@ test.before(async () => {
 })
 
 test('registers a boleto (provider success)', async (t) => {
-  const payload = {
-    expiration_date: new Date(),
-    amount: 2000,
-    issuer: 'bradesco',
-    instructions: 'Please do not accept after expiration_date',
-    register: false,
-    queue_url: userQueueUrl,
-    payer_name: 'David Bowie',
-    payer_document_type: 'cpf',
-    payer_document_number: '98154524872',
-    company_name: 'Some Company',
-    company_document_number: '98154524872'
-  }
-
   const { body } = await create({
-    body: payload
+    body: mock
   })
 
   const boleto = await register({
