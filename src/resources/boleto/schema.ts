@@ -16,13 +16,16 @@ export const createSchema = {
 
   title_id: Joi
     .number()
-    .integer(),
+    .integer()
+    .allow(null),
 
   token: Joi
-    .string(),
+    .string()
+    .allow(null),
 
   instructions: Joi
-    .string(),
+    .string()
+    .allow(null),
 
   issuer: Joi
     .string()
@@ -41,7 +44,8 @@ export const createSchema = {
     .required(),
 
   reference_id: Joi
-    .string(),
+    .string()
+    .allow(null),
 
   company_name: Joi
     .string()
@@ -53,16 +57,19 @@ export const createSchema = {
 
   payer_name: Joi
     .string()
-    .when('register', { is: true, then: Joi.required() }),
+    .allow(null)
+    .when('register', { is: true, then: Joi.required().disallow(null) }),
 
   payer_document_type: Joi
     .equal(['cpf', 'cnpj'])
-    .when('register', { is: true, then: Joi.required() }),
+    .allow(null)
+    .when('register', { is: true, then: Joi.required().disallow(null) }),
 
   payer_document_number: Joi
     .number()
     .integer()
-    .when('register', { is: true, then: Joi.required() }),
+    .allow(null)
+    .when('register', { is: true, then: Joi.required().disallow(null) }),
 
   register: Joi
     .boolean()
