@@ -28,6 +28,18 @@ export const createSchema = {
     .string()
     .required(),
 
+  issuer_account: Joi
+    .string()
+    .required(),
+
+  issuer_agency: Joi
+    .string()
+    .required(),
+
+  issuer_wallet: Joi
+    .string()
+    .required(),
+
   reference_id: Joi
     .string(),
 

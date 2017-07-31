@@ -14,6 +14,9 @@ test('buildResponse', async (t) => {
     instructions: 'Please do not accept after expiration_date',
     issuer: 'bradesco',
     issuer_id: 'ciz04q0oi000001ppjf0lq4pa',
+    issuer_account: '9721',
+    issuer_agency: '3381',
+    issuer_wallet: '26',
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872',
@@ -38,6 +41,9 @@ test('buildResponse', async (t) => {
     instructions: 'Please do not accept after expiration_date',
     issuer: 'bradesco',
     issuer_id: 'ciz04q0oi000001ppjf0lq4pa',
+    issuer_account: '9721',
+    issuer_agency: '3381',
+    issuer_wallet: '26',
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872',
@@ -52,11 +58,14 @@ test('generateBarcode', (t) => {
   const input = {
     issuer: 'bradesco',
     amount: 2000,
+    issuer_account: '9721',
+    issuer_agency: '3381',
+    issuer_wallet: '26',
     title_id: '1',
     expiration_date: new Date('2017-05-26')
   }
 
   const barcode = generateBarcode(input)
 
-  t.is(barcode, '23798717100000020001229250000000000100004690')
+  t.is(barcode, '23792717100000020003381260000000000100097210')
 })

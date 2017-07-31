@@ -15,9 +15,9 @@ export const generateBarcode = (boleto) => {
     valor: boleto.amount,
     nosso_numero: boleto.title_id,
     data_vencimento: boleto.expiration_date,
-    agencia: '1229',
-    codigo_cedente: '469',
-    carteira: '25'
+    agencia: boleto.issuer_agency,
+    codigo_cedente: boleto.issuer_account,
+    carteira: boleto.issuer_wallet
   })
 
   return nodeBoleto.barcode_data
@@ -35,6 +35,9 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
       'paid_amount',
       'instructions',
       'issuer',
+      'issuer_account',
+      'issuer_agency',
+      'issuer_wallet',
       'issuer_id',
       'title_id',
       'barcode',
@@ -114,6 +117,18 @@ function create (database) {
     },
 
     issuer_id: {
+      type: STRING
+    },
+
+    issuer_wallet: {
+      type: STRING
+    },
+
+    issuer_agency: {
+      type: STRING
+    },
+
+    issuer_account: {
       type: STRING
     },
 
