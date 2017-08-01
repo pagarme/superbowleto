@@ -19,9 +19,14 @@ test('registers a boleto (provider success)', async (t) => {
     body: mock
   })
 
-  const boleto = await register({
-    body: JSON.stringify({ boleto_id: body.id, sqsMessage: { ReceiptHandle: 'abc' } })
-  }, {})
+  const payload = {
+    boleto_id: body.id,
+    sqsMessage: {
+      ReceiptHandle: 'abc'
+    }
+  }
+
+  const boleto = await register(payload, {})
 
   const userSQSItem = await findItemOnQueue(
     userQueue,
@@ -36,15 +41,18 @@ test('registers a boleto (provider success)', async (t) => {
 })
 
 test('try to register already registered boleto', async (t) => {
-  const payload = mock
-
   const { body } = await create({
-    body: payload
+    body: mock
   })
 
-  const boleto = await register({
-    body: JSON.stringify({ boleto_id: body.id, sqsMessage: { ReceiptHandle: 'abc' } })
-  }, {})
+  const payload = {
+    boleto_id: body.id,
+    sqsMessage: {
+      ReceiptHandle: 'abc'
+    }
+  }
+
+  const boleto = await register(payload, {})
 
   t.is(boleto.status, 'registered')
 })
