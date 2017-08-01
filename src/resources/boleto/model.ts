@@ -161,12 +161,12 @@ function create (database) {
 
     company_name: {
       type: STRING,
-      allowNull: false
+      allowNull: true
     },
 
     company_document_number: {
       type: STRING,
-      allowNull: false
+      allowNull: true
     },
 
     bank_response_code: {
