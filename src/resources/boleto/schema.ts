@@ -58,18 +58,20 @@ export const createSchema = {
   payer_name: Joi
     .string()
     .allow(null)
-    .when('register', { is: true, then: Joi.required().disallow(null) }),
+    .allow('')
+    .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
 
   payer_document_type: Joi
     .equal(['cpf', 'cnpj'])
     .allow(null)
-    .when('register', { is: true, then: Joi.required().disallow(null) }),
+    .allow('')
+    .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
 
   payer_document_number: Joi
-    .number()
-    .integer()
+    .string()
     .allow(null)
-    .when('register', { is: true, then: Joi.required().disallow(null) }),
+    .allow('')
+    .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
 
   register: Joi
     .boolean()
