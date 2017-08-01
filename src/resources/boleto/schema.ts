@@ -25,6 +25,7 @@ export const createSchema = {
 
   instructions: Joi
     .string()
+    .allow('')
     .allow(null),
 
   issuer: Joi
