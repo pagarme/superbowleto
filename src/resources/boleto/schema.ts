@@ -49,11 +49,13 @@ export const createSchema = {
 
   company_name: Joi
     .string()
-    .required(),
+    .allow(null)
+    .allow(''),
 
   company_document_number: Joi
     .string()
-    .required(),
+    .allow(null)
+    .allow(''),
 
   payer_name: Joi
     .string()

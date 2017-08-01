@@ -37,14 +37,6 @@ test('creates a boleto with invalid data', async (t) => {
       field: 'issuer'
     }, {
       type: 'invalid_parameter',
-      message: '"company_name" is required',
-      field: 'company_name'
-    }, {
-      type: 'invalid_parameter',
-      message: '"company_document_number" is required',
-      field: 'company_document_number'
-    }, {
-      type: 'invalid_parameter',
       message: '"payer_name" is required',
       field: 'payer_name'
     }, {
