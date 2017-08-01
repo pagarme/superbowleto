@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird'
-import { and, complement, path, prop, propEq } from 'ramda'
+import { both, complement, path, prop, propEq } from 'ramda'
 import sqs from '../../lib/sqs'
 import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
 import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
@@ -50,7 +50,7 @@ export const create = (event, context, callback) => {
   // eslint-disable-next-line
   const pushBoletoToQueueConditionally = (boleto) => {
     const propNotEq = complement(propEq)
-    const shouldSendBoletoToQueue = and(
+    const shouldSendBoletoToQueue = both(
       propEq('status', 'pending_registration'),
       propNotEq('issuer', 'development')
     )
