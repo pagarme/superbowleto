@@ -22,9 +22,14 @@ test('registers a boleto (provider pending)', async (t) => {
     body: mock
   })
 
-  const boleto = await register({
-    body: JSON.stringify({ boleto_id: body.id, sqsMessage: { ReceiptHandle: 'abc' } })
-  }, {})
+  const payload = {
+    boleto_id: body.id,
+    sqsMessage: {
+      ReceiptHandle: 'abc'
+    }
+  }
+
+  const boleto = await register(payload, {})
 
   t.is(boleto.status, 'pending_registration')
 })

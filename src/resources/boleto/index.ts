@@ -95,9 +95,8 @@ export const create = (event, context, callback) => {
 export const register = (event, context, callback) => {
   configureContext(context)
 
-  const body = JSON.parse(event.body || JSON.stringify({}))
   const logger = makeLogger({ operation: 'register' }, { id: defaultCuidValue('req_')() })
-  const { boleto_id, sqsMessage } = body
+  const { boleto_id, sqsMessage } = event
 
   // eslint-disable-next-line
   const removeBoletoFromQueueConditionally = (boleto) => {
@@ -139,7 +138,7 @@ export const register = (event, context, callback) => {
     }
   }
 
-  logger.info({ status: 'started', metadata: { body } })
+  logger.info({ status: 'started', metadata: event })
 
   boletoService.registerById(boleto_id)
     .tap(removeBoletoFromQueueConditionally)
