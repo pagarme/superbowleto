@@ -6,8 +6,15 @@ import {
   format
 } from '../../../../build/providers/bradesco/formatter'
 
-test('date', (t) => {
-  const timestamp = moment('2017-04-03').format()
+test('date: when timezones are in different days', (t) => {
+  const timestamp = moment('2017-04-03T00:00:00-00:00').format()
+  const result = date(timestamp)
+
+  t.is(result, '2017-04-02')
+})
+
+test('date: when both timezones are in the same day', (t) => {
+  const timestamp = moment('2017-04-03T12:00:00-00:00').format()
   const result = date(timestamp)
 
   t.is(result, '2017-04-03')

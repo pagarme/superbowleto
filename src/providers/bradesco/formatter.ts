@@ -1,11 +1,11 @@
-import * as moment from 'moment'
+import * as moment from 'moment-timezone'
 import {
   always,
   cond,
   equals
 } from 'ramda'
 
-export const date = timestamp => moment(timestamp).format('YYYY-MM-DD')
+export const date = timestamp => moment(timestamp).tz('America/Sao_Paulo').format('YYYY-MM-DD')
 
 export const documentType = cond([
   [equals('cpf'), always('1')],
