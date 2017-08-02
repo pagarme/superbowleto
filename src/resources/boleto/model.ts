@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird'
 import { assoc, pick, cond, equals, T, identity, always } from 'ramda'
-import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
 import { Boleto as NodeBoleto } from 'node-boleto'
+import { DATE, ENUM, INTEGER, STRING, TEXT } from 'sequelize'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 
 const barcodeBank = cond([
@@ -74,6 +74,7 @@ function create (database) {
       defaultValue: defaultCuidValue(`${process.env.STAGE}_`)
     },
 
+    // tslint:disable-next-line:object-literal-sort-keys
     queue_url: {
       type: STRING,
       allowNull: false
@@ -172,6 +173,7 @@ function create (database) {
     bank_response_code: {
       type: STRING
     }
+  // tslint:disable-next-line:align
   }, {
     indexes: [
       { fields: ['queue_url'] },

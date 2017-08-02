@@ -1,5 +1,5 @@
-import Sequelize from 'sequelize'
 import { compose, cond, T } from 'ramda'
+import Sequelize from 'sequelize'
 import { DatabaseError, InvalidParameterError, ValidationError } from './index'
 
 const isValidationError = err => err instanceof Sequelize.ValidationError
@@ -7,8 +7,8 @@ const isSequelizeError = err => err instanceof Sequelize.Error
 
 const handleValidationErrors = (err) => {
   const errors = err.errors.map(error => new InvalidParameterError({
-    message: error.message,
-    field: error.path
+    field: error.path,
+    message: error.message
   }))
 
   return new ValidationError({ errors })

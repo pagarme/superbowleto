@@ -1,4 +1,4 @@
-import { SQS, Credentials } from 'aws-sdk'
+import { Credentials, SQS } from 'aws-sdk'
 import getConfig from '../../config/sqs'
 
 const config = getConfig()

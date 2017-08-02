@@ -3,11 +3,11 @@ import { getConfig } from './index'
 const config = getConfig({
   development: {
     host: process.env.DB_HOST || 'postgres',
-    port: process.env.DB_PORT || '5432',
     dialect: 'postgres',
     database: 'postgres',
     username: 'postgres',
-    logging: true
+    logging: true,
+    port: process.env.DB_PORT || '5432'
   },
   production: {
     host: process.env.DATABASE_ENDPOINT,
@@ -18,11 +18,11 @@ const config = getConfig({
   },
   test: {
     host: process.env.DB_HOST || 'postgres',
-    port: process.env.DB_PORT || '5432',
     dialect: 'postgres',
     database: 'postgres',
     username: 'postgres',
-    logging: false
+    logging: false,
+    port: process.env.DB_PORT || '5432'
   }
 })
 

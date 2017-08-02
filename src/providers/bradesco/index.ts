@@ -1,11 +1,11 @@
 import axios from 'axios'
 import * as Promise from 'bluebird'
 import { always, applySpec, compose, defaultTo, prop } from 'ramda'
-import { format } from './formatter'
 import getConfig from '../../config/providers'
+import { getCredentials } from '../../lib/credentials'
 import { encodeBase64 } from '../../lib/encoding'
 import { makeFromLogger } from '../../lib/logger'
-import { getCredentials } from '../../lib/credentials'
+import { format } from './formatter'
 import responseCodeMap from './response-codes'
 
 const { endpoint } = prop('bradesco', getConfig())
@@ -25,13 +25,12 @@ export const buildHeaders = () =>
       }
     })
 
-
 export const buildPayload = boleto =>
   Promise.resolve(getCredentials('providers/bradesco/company_id'))
     .then(merchantId => ({
       merchant_id: always(merchantId),
       boleto: {
-        carteira: always('26'),
+        carteira: always('25'),
         nosso_numero: prop('title_id'),
         numero_documento: prop('title_id'),
         data_emissao: compose(format('date'), prop('created_at')),
@@ -89,7 +88,10 @@ export const verifyRegistrationStatus = (boleto) => {
     .then(axios.request)
     .then(translateResponseCode)
     .tap((response) => {
-      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
+      logger.info({
+        status: 'succeeded',
+        metadata: { status: response.status, data: response.data }
+      })
     })
     .tapCatch(err => logger.error({ status: 'failed', metadata: { err } }))
 }
@@ -120,7 +122,10 @@ export const register = (boleto) => {
       return translatedResponseCode
     })
     .tap((response) => {
-      logger.info({ status: 'succeeded', metadata: { status: response.status, data: response.data } })
+      logger.info({
+        status: 'succeeded',
+        metadata: { status: response.status, data: response.data }
+      })
     })
     .tapCatch(err => logger.error({ status: 'failed', metadata: { err } }))
 }

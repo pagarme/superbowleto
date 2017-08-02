@@ -1,14 +1,6 @@
 import * as Joi from 'joi'
 
 export const createSchema = {
-  queue_url: Joi
-    .string()
-    .required(),
-
-  expiration_date: Joi
-    .date()
-    .required(),
-
   amount: Joi
     .number()
     .integer()
@@ -34,6 +26,10 @@ export const createSchema = {
 
   issuer_account: Joi
     .string()
+    .required(),
+
+  expiration_date: Joi
+    .date()
     .required(),
 
   issuer_agency: Joi
@@ -76,21 +72,41 @@ export const createSchema = {
     .allow('')
     .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
 
+  queue_url: Joi
+    .string()
+    .required(),
+
   register: Joi
     .boolean()
-    .default(true)
+    .default(true),
 }
 
 export const updateSchema = {
+  bank_response_code: Joi
+    .string(),
+
   id: Joi
     .string()
     .required(),
 
   paid_amount: Joi
     .number()
+    .integer()
+}
+
+export const indexSchema = {
+  count: Joi
+    .number()
     .integer(),
 
-  bank_response_code: Joi
+  page: Joi
+    .number()
+    .integer(),
+
+  title_id: Joi
+    .string(),
+
+  token: Joi
     .string()
 }
 

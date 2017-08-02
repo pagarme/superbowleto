@@ -9,4 +9,3 @@ export const findProvider = cond([
     throw new Error('Provider not found')
   }]
 ])
-

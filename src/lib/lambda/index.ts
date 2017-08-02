@@ -1,4 +1,4 @@
-import { Lambda, Credentials } from 'aws-sdk'
+import { Credentials, Lambda } from 'aws-sdk'
 
 import getConfig from '../../config/lambda'
 

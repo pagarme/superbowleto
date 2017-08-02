@@ -1,8 +1,8 @@
-import Sequelize from 'sequelize'
 import * as Promise from 'bluebird'
+import Sequelize from 'sequelize'
 import getConfig from '../config/database'
-import * as rawModels from './models'
 import { getCredentials } from '../lib/credentials'
+import * as rawModels from './models'
 
 const config = getConfig()
 
