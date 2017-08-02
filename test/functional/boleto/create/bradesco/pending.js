@@ -1,12 +1,12 @@
 import test from 'ava'
 import Promise from 'bluebird'
-import { assert } from '../../../helpers/chai'
-import { normalizeHandler } from '../../../helpers/normalizer'
-import { mock, mockFunction, restoreFunction } from '../../../helpers/boleto'
-import * as boletoHandler from '../../../../build/resources/boleto'
-import * as provider from '../../../../build/providers/bradesco'
-import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
-import { BoletosToRegisterQueue } from '../../../../build/resources/boleto/queues'
+import { assert } from '../../../../helpers/chai'
+import { normalizeHandler } from '../../../../helpers/normalizer'
+import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
+import * as boletoHandler from '../../../../../build/resources/boleto'
+import * as provider from '../../../../../build/providers/bradesco'
+import { findItemOnQueue, purgeQueue } from '../../../../helpers/sqs'
+import { BoletosToRegisterQueue } from '../../../../../build/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
 
@@ -15,7 +15,7 @@ test.before(async () => {
   await purgeQueue(BoletosToRegisterQueue)
 })
 
-test.after(async () => {
+test.after(() => {
   restoreFunction(provider, 'register')
 })
 
@@ -32,12 +32,13 @@ test('creates a boleto (provider unknown)', async (t) => {
   )
 
   t.is(sqsItem.boleto_id, body.id)
-
   t.is(statusCode, 201)
   t.is(body.object, 'boleto')
+
   t.true(body.title_id != null)
   t.true(body.barcode != null)
   t.true(typeof body.title_id === 'number')
+
   assert.containSubset(body, {
     status: 'pending_registration',
     paid_amount: 0,

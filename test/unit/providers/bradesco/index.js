@@ -3,8 +3,8 @@ import moment from 'moment'
 import { createBoleto } from '../../../helpers/boleto'
 import { buildHeaders, buildPayload, translateResponseCode } from '../../../../build/providers/bradesco'
 
-test('buildHeaders', (t) => {
-  const headers = buildHeaders()
+test('buildHeaders', async (t) => {
+  const headers = await buildHeaders()
 
   t.deepEqual(headers, {
     Authorization: 'Basic MTAwMDA1MjU0OmJiRTlYTjhSaE95QTktNzlISFBuYkoxLVFxeTdrem9LR2RSLU5qbWk5Zmc='
@@ -13,12 +13,12 @@ test('buildHeaders', (t) => {
 
 test('buildPayload', async (t) => {
   const boleto = await createBoleto()
-  const payload = buildPayload(boleto)
+  const payload = await buildPayload(boleto)
 
   t.deepEqual(payload, {
     merchant_id: '100005254',
     boleto: {
-      carteira: '25',
+      carteira: '26',
       nosso_numero: boleto.title_id,
       numero_documento: boleto.title_id,
       data_emissao: moment(boleto.created_at).format('YYYY-MM-DD'),

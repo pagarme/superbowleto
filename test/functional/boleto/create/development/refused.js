@@ -1,23 +1,17 @@
 import test from 'ava'
 import Promise from 'bluebird'
-import { assert } from '../../../helpers/chai'
-import { normalizeHandler } from '../../../helpers/normalizer'
-import { mock, mockFunction, restoreFunction } from '../../../helpers/boleto'
-import * as boletoHandler from '../../../../build/resources/boleto'
-import * as provider from '../../../../build/providers/bradesco'
+import { assert } from '../../../../helpers/chai'
+import { normalizeHandler } from '../../../../helpers/normalizer'
+import { mock } from '../../../../helpers/boleto'
+import * as boletoHandler from '../../../../../build/resources/boleto'
 
 const create = normalizeHandler(boletoHandler.create)
 
-test.before(() => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'refused' }))
-})
-
-test.after(async () => {
-  restoreFunction(provider, 'register')
-})
-
 test('creates a boleto (provider refused)', async (t) => {
   const payload = mock
+
+  payload.amount = 5000004
+  payload.issuer = 'development'
 
   const { body, statusCode } = await create({
     body: payload
@@ -25,9 +19,11 @@ test('creates a boleto (provider refused)', async (t) => {
 
   t.is(statusCode, 201)
   t.is(body.object, 'boleto')
+
   t.true(body.title_id != null)
   t.true(body.barcode != null)
   t.true(typeof body.title_id === 'number')
+
   assert.containSubset(body, {
     status: 'refused',
     paid_amount: 0,

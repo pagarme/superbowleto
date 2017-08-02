@@ -6,11 +6,25 @@ export const createSchema = {
     .integer()
     .required(),
 
-  company_document_number: Joi
+  title_id: Joi
+    .number()
+    .integer()
+    .allow(null),
+
+  token: Joi
+    .string()
+    .allow(null),
+
+  instructions: Joi
+    .string()
+    .allow('')
+    .allow(null),
+
+  issuer: Joi
     .string()
     .required(),
 
-  company_name: Joi
+  issuer_account: Joi
     .string()
     .required(),
 
@@ -18,43 +32,53 @@ export const createSchema = {
     .date()
     .required(),
 
-  instructions: Joi
-    .string(),
-
-  issuer: Joi
+  issuer_agency: Joi
     .string()
     .required(),
 
-  payer_document_number: Joi
-    .number()
-    .integer()
-    .when('register', { is: true, then: Joi.required() }),
+  issuer_wallet: Joi
+    .string()
+    .required(),
 
-  payer_document_type: Joi
-    .equal(['cpf', 'cnpj'])
-    .when('register', { is: true, then: Joi.required() }),
+  reference_id: Joi
+    .string()
+    .allow(null),
+
+  company_name: Joi
+    .string()
+    .allow(null)
+    .allow(''),
+
+  company_document_number: Joi
+    .string()
+    .allow(null)
+    .allow(''),
 
   payer_name: Joi
     .string()
-    .when('register', { is: true, then: Joi.required() }),
+    .allow(null)
+    .allow('')
+    .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
+
+  payer_document_type: Joi
+    .equal(['cpf', 'cnpj'])
+    .allow(null)
+    .allow('')
+    .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
+
+  payer_document_number: Joi
+    .string()
+    .allow(null)
+    .allow('')
+    .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
 
   queue_url: Joi
     .string()
     .required(),
 
-  reference_id: Joi
-    .string(),
-
   register: Joi
     .boolean()
     .default(true),
-
-  title_id: Joi
-    .number()
-    .integer(),
-
-  token: Joi
-    .string()
 }
 
 export const updateSchema = {
@@ -84,4 +108,20 @@ export const indexSchema = {
 
   token: Joi
     .string()
+}
+
+export const indexSchema = {
+  token: Joi
+    .string(),
+
+  title_id: Joi
+    .string(),
+
+  page: Joi
+    .number()
+    .integer(),
+
+  count: Joi
+    .number()
+    .integer()
 }

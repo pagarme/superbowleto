@@ -1,4 +1,5 @@
 const Webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const package = require('./package.json')
 const { join } = require('path')
 
@@ -16,7 +17,8 @@ const externals = () => {
 module.exports = {
   context: join(__dirname, './build'),
   entry: {
-    boleto: './resources/boleto/index.js'
+    boleto: './resources/boleto/index.js',
+    database: './functions/database/index.js'
   },
   output: {
     path: join(__dirname, './dist'),
@@ -38,10 +40,8 @@ module.exports = {
   },
   plugins: [
     new Webpack.DefinePlugin({
-      'process.env':  {
-        'ENV': JSON.stringify('production'),
-        'NODE_ENV': JSON.stringify('production'),
-      }
+      'process.env.ENV': JSON.stringify('production'),
+      'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     new Webpack.BannerPlugin({
       banner: `
@@ -50,6 +50,11 @@ module.exports = {
       `,
       raw: true,
       entryOnly: false
-    })
+    }),
+    new CopyWebpackPlugin([{
+      from: './database/migrations',
+      to: './migrations',
+      context: join(__dirname, './build')
+    }])
   ]
 }

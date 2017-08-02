@@ -20,24 +20,18 @@ test.after(() => {
 })
 
 test('registers a boleto (provider refused)', async (t) => {
-  const payload = {
-    expiration_date: new Date(),
-    amount: 2000,
-    issuer: 'bradesco',
-    instructions: 'Please do not accept after expiration_date',
-    register: false,
-    queue_url: userQueueUrl,
-    company_name: 'Some Company',
-    company_document_number: '98154524872'
-  }
-
   const { body } = await create({
-    body: payload
+    body: mock
   })
 
-  const boleto = await register({
-    body: JSON.stringify({ boleto_id: body.id, sqsMessage: { ReceiptHandle: 'abc' } })
-  }, {})
+  const payload = {
+    boleto_id: body.id,
+    sqsMessage: {
+      ReceiptHandle: 'abc'
+    }
+  }
+
+  const boleto = await register(payload, {})
 
   const userSQSItem = await findItemOnQueue(
     userQueue,
@@ -50,15 +44,18 @@ test('registers a boleto (provider refused)', async (t) => {
 })
 
 test('try to register already refused boleto', async (t) => {
-  const payload = mock
-
   const { body } = await create({
-    body: payload
+    body: mock
   })
 
-  const boleto = await register({
-    body: JSON.stringify({ boleto_id: body.id, sqsMessage: { ReceiptHandle: 'abc' } })
-  }, {})
+  const payload = {
+    boleto_id: body.id,
+    sqsMessage: {
+      ReceiptHandle: 'abc'
+    }
+  }
+
+  const boleto = await register(payload, {})
 
   t.is(boleto.status, 'refused')
 })

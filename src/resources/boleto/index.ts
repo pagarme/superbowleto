@@ -2,6 +2,7 @@
 import * as Promise from 'bluebird'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 import { InternalServerError, NotFoundError, ValidationError } from '../../lib/errors'
+import { and, complement, path, prop, propEq } from 'ramda'
 import { parse } from '../../lib/http/request'
 import { buildFailureResponse, buildSuccessResponse } from '../../lib/http/response'
 import { makeFromLogger } from '../../lib/logger'
@@ -26,7 +27,14 @@ const handleError = (err) => {
   return buildFailureResponse(500, new InternalServerError())
 }
 
+const configureContext = (context: any = {}) => {
+  // eslint-disable-next-line no-param-reassign
+  context.callbackWaitsForEmptyEventLoop = false
+}
+
 export const create = (event, context, callback) => {
+  configureContext(context)
+
   const body = JSON.parse(event.body || JSON.stringify({}))
   const logger = makeLogger({ operation: 'create' }, { id: defaultCuidValue('req_')() })
 
@@ -42,15 +50,6 @@ export const create = (event, context, callback) => {
 
   // eslint-disable-next-line
   const pushBoletoToQueueConditionally = (boleto) => {
-<<<<<<< HEAD
-    if (boleto.status === 'pending_registration') {
-      logger.info({
-        subOperation: 'pushToQueue',
-        status: 'started',
-        metadata: { boleto_id: boleto.id }
-      })
-
-=======
     const propNotEq = complement(propEq)
     const shouldSendBoletoToQueue = and(
       propEq('status', 'pending_registration'),
@@ -60,7 +59,6 @@ export const create = (event, context, callback) => {
     if (shouldSendBoletoToQueue(boleto)) {
       logger.info({ subOperation: 'pushToQueue', status: 'started',
         metadata: { boleto_id: boleto.id } })
->>>>>>> ed5b0f2... fixes size limit of lines in boleto/index.ts
       return BoletosToRegisterQueue.push({
         boleto_id: boleto.id
       })
@@ -105,9 +103,10 @@ export const create = (event, context, callback) => {
 }
 
 export const register = (event, context, callback) => {
-  const body = JSON.parse(event.body || JSON.stringify({}))
+  configureContext(context)
+
   const logger = makeLogger({ operation: 'register' }, { id: defaultCuidValue('req_')() })
-  const { boleto_id, sqsMessage } = body
+  const { boleto_id, sqsMessage } = event
 
   // eslint-disable-next-line
   const removeBoletoFromQueueConditionally = (boleto) => {
@@ -149,8 +148,8 @@ export const register = (event, context, callback) => {
       const params = {
         MessageBody: JSON.stringify({
           boleto_id: boleto.id,
-          reference_id: boleto.reference_id,
-          status: boleto.status
+          status: boleto.status,
+          reference_id: boleto.reference_id
         }),
         QueueUrl: boleto.queue_url
       }
@@ -174,7 +173,7 @@ export const register = (event, context, callback) => {
     }
   }
 
-  logger.info({ status: 'started', metadata: { body } })
+  logger.info({ status: 'started', metadata: event })
 
   boletoService.registerById(boleto_id)
     .tap(removeBoletoFromQueueConditionally)
@@ -193,6 +192,8 @@ export const register = (event, context, callback) => {
 }
 
 export const update = (event, context, callback) => {
+  configureContext(context)
+
   const body = JSON.parse(event.body || JSON.stringify({}))
   const { bank_response_code, paid_amount } = body
   const id = path(['pathParameters', 'id'], event)
@@ -207,6 +208,8 @@ export const update = (event, context, callback) => {
 }
 
 export const index = (event, context, callback) => {
+  configureContext(context)
+
   const page = path(['queryStringParameters', 'page'], event)
   const count = path(['queryStringParameters', 'count'], event)
 
@@ -224,6 +227,8 @@ export const index = (event, context, callback) => {
 }
 
 export const show = (event, context, callback) => {
+  configureContext(context)
+
   const id = path(['pathParameters', 'id'], event)
 
   Promise.resolve(id)
@@ -273,7 +278,7 @@ export const processBoletosToRegister = (event, context, callback) => {
     })
   }
 
-  const interval = setInterval(stopQueueWhenIdle, 300)
+  const interval = setInterval(stopQueueWhenIdle, 5000)
 
   BoletosToRegisterQueue.on('error', (err) => {
     logger.error({ status: 'failed', metadata: { err } })

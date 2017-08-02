@@ -93,10 +93,7 @@ export const verifyRegistrationStatus = (boleto) => {
         metadata: { status: response.status, data: response.data }
       })
     })
-    .catch((err) => {
-      logger.error({ status: 'failed', metadata: { err } })
-      throw Promise.reject(err)
-    })
+    .tapCatch(err => logger.error({ status: 'failed', metadata: { err } }))
 }
 
 export const register = (boleto) => {
@@ -130,8 +127,5 @@ export const register = (boleto) => {
         metadata: { status: response.status, data: response.data }
       })
     })
-    .catch((err) => {
-      logger.error({ status: 'failed', metadata: { err } })
-      throw Promise.reject(err)
-    })
+    .tapCatch(err => logger.error({ status: 'failed', metadata: { err } }))
 }

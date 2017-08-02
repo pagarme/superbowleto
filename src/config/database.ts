@@ -2,27 +2,27 @@ import { getConfig } from './index'
 
 const config = getConfig({
   development: {
-    database: 'postgres',
-    dialect: 'postgres',
     host: process.env.DB_HOST || 'postgres',
+    dialect: 'postgres',
+    database: 'postgres',
+    username: 'postgres',
     logging: true,
-    port: process.env.DB_PORT || '5432',
-    username: 'postgres'
+    port: process.env.DB_PORT || '5432'
   },
   production: {
-    database: process.env.DATABASE_NAME,
-    dialect: 'postgres',
     host: process.env.DATABASE_ENDPOINT,
-    logging: false,
-    username: process.env.DATABASE_USERNAME
+    dialect: 'postgres',
+    database: process.env.DATABASE_NAME,
+    username: process.env.DATABASE_USERNAME,
+    logging: false
   },
   test: {
-    database: 'postgres',
-    dialect: 'postgres',
     host: process.env.DB_HOST || 'postgres',
+    dialect: 'postgres',
+    database: 'postgres',
+    username: 'postgres',
     logging: false,
-    port: process.env.DB_PORT || '5432',
-    username: 'postgres'
+    port: process.env.DB_PORT || '5432'
   }
 })
 

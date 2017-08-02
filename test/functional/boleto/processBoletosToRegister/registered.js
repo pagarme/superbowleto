@@ -22,9 +22,7 @@ test.before(async () => {
 
   mockFunction(lambda, 'register', payload =>
     new Promise((resolve, reject) => {
-      boletoHandler.register({
-        body: JSON.stringify(payload)
-      }, {}, (err, data) => {
+      boletoHandler.register(payload, {}, (err, data) => {
         if (err) {
           return reject(err)
         }

@@ -466,5 +466,21 @@ export default {
   93005116: {
     message: 'SISTEMA INDISPONIVEL NO MOMENTO',
     status: 'unknown'
+  },
+  93005117: {
+    message: 'REGISTRO NAO ENCONTRADO NAS BASES CDDA/CIP',
+    status: 'refused'
+  },
+  93005118: {
+    message: 'INFORMACOES DE ENTRADA INCONSISTENTES CDDA/CIP',
+    status: 'refused'
+  },
+  93005119: {
+    message: 'REGISTRO EFETUADO COM SUCESSO',
+    status: 'registered'
+  },
+  93005120: {
+    message: 'CARTEIRA DE COBRANCA NAO ACEITA',
+    status: 'refused'
   }
 }

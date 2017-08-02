@@ -1,17 +1,23 @@
 import * as Promise from 'bluebird'
+import { assoc, pick, cond, equals, T, identity, always } from 'ramda'
 import { Boleto as NodeBoleto } from 'node-boleto'
 import { DATE, ENUM, INTEGER, STRING, TEXT } from 'sequelize'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 
+const barcodeBank = cond([
+  [equals('development'), always('bradesco')],
+  [T, identity]
+])
+
 export const generateBarcode = (boleto) => {
   const nodeBoleto = new NodeBoleto({
-    banco: boleto.issuer,
+    banco: barcodeBank(boleto.issuer),
     valor: boleto.amount,
     nosso_numero: boleto.title_id,
     data_vencimento: boleto.expiration_date,
-    agencia: '1229',
-    codigo_cedente: '469',
-    carteira: '25'
+    agencia: boleto.issuer_agency,
+    codigo_cedente: boleto.issuer_account,
+    carteira: boleto.issuer_wallet
   })
 
   return nodeBoleto.barcode_data
@@ -29,6 +35,9 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
       'paid_amount',
       'instructions',
       'issuer',
+      'issuer_account',
+      'issuer_agency',
+      'issuer_wallet',
       'issuer_id',
       'title_id',
       'barcode',
@@ -38,6 +47,7 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
       'company_name',
       'company_document_number',
       'bank_response_code',
+      'reference_id',
       'created_at',
       'updated_at'
     ]))
@@ -111,10 +121,26 @@ function create (database) {
       type: STRING
     },
 
+    issuer_wallet: {
+      type: STRING
+    },
+
+    issuer_agency: {
+      type: STRING
+    },
+
+    issuer_account: {
+      type: STRING
+    },
+
     title_id: {
       type: INTEGER,
       allowNull: false,
       autoIncrement: true
+    },
+
+    reference_id: {
+      type: STRING
     },
 
     barcode: {
@@ -136,12 +162,12 @@ function create (database) {
 
     company_name: {
       type: STRING,
-      allowNull: false
+      allowNull: true
     },
 
     company_document_number: {
       type: STRING,
-      allowNull: false
+      allowNull: true
     },
 
     bank_response_code: {
