@@ -9,7 +9,7 @@ const barcodeBank = cond([
   [T, identity]
 ])
 
-export const generateBarcode = (boleto) => {
+export const generateBoletoCode = (boleto) => {
   const nodeBoleto = new NodeBoleto({
     banco: barcodeBank(boleto.issuer),
     valor: boleto.amount,
@@ -20,7 +20,10 @@ export const generateBarcode = (boleto) => {
     carteira: boleto.issuer_wallet
   })
 
-  return nodeBoleto.barcode_data
+  return {
+    barcode: nodeBoleto.barcode_data,
+    digitable_line: nodeBoleto.linha_digitavel
+  }
 }
 
 export const buildModelResponse = responseObjectBuilder(boleto =>
@@ -41,6 +44,7 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
       'issuer_id',
       'title_id',
       'barcode',
+      'digitable_line',
       'payer_name',
       'payer_document_type',
       'payer_document_number',
@@ -54,10 +58,14 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
     .then(assoc('object', 'boleto'))
 )
 
-const addBarcode = boleto =>
+const addBoletoCode = (boleto) => {
+  const { barcode, digitable_line } = generateBoletoCode(boleto)
+
   boleto.updateAttributes({
-    barcode: generateBarcode(boleto)
+    barcode,
+    digitable_line
   })
+}
 
 function create (database) {
   return database.define('Boleto', {
@@ -146,6 +154,10 @@ function create (database) {
       type: STRING
     },
 
+    digitable_line: {
+      type: STRING
+    },
+
     payer_name: {
       type: STRING
     },
@@ -179,7 +191,7 @@ function create (database) {
       { fields: ['status'] }
     ],
     hooks: {
-      afterCreate: addBarcode
+      afterCreate: addBoletoCode
     }
   })
 }
