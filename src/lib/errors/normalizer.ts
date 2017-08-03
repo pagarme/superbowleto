@@ -21,7 +21,7 @@ const normalizeSingleError = compose(
     'type',
     'message',
     'field'
-  ]),
+  ])
 )
 
 const normalizeMultipleErrors = map(normalizeSingleError)

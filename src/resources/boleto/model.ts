@@ -172,6 +172,7 @@ function create (database) {
     bank_response_code: {
       type: STRING
     }
+  // tslint:disable-next-line:align
   }, {
     indexes: [
       { fields: ['queue_url'] },
