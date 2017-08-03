@@ -3,7 +3,7 @@ class BaseError extends Error {
   message: string
   type: string
   field?: string
-  errors?: Array<any>
+  errors?: any[]
 
   constructor (message?: string) {
     super(message)

@@ -60,7 +60,6 @@ export const register = (boleto) => {
 
   return provider.register(boleto)
     .then(updateBoletoStatus)
-    // eslint-disable-next-line
     .tap((boleto) => {
       logger.info({ status: 'succeeded', metadata: { boleto } })
     })
@@ -125,7 +124,6 @@ export const index = ({ page, count, token, title_id }) => {
 
   const possibleFields = { token, title_id }
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const field in possibleFields) {
     if (possibleFields[field]) {
       whereQuery.where[field] = possibleFields[field]
