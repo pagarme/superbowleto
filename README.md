@@ -1,5 +1,7 @@
 # superbowleto
+
 [![Build Status](https://travis-ci.org/pagarme/superbowleto.svg?branch=master)](https://travis-ci.org/pagarme/superbowleto)
+[![Coverage Status](https://coveralls.io/repos/github/pagarme/superbowleto/badge.svg?branch=coveralls)](https://coveralls.io/github/pagarme/superbowleto?branch=coveralls)
 
 :football: A microservice to issue, register and manage boletos
 
