@@ -7,6 +7,7 @@
   "scripts": {
     "build-production": "tsc && webpack",
     "build-test": "tsc",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint 'src/**/*.ts' 'test/**/*.js'",
     "setup": "node ./script/setup",
     "test": "npm run prepare-test && nyc ava --verbose --serial 'test/**/*.js'",
@@ -56,6 +57,7 @@
     "chai": "3.5.0",
     "chai-subset": "1.5.0",
     "copy-webpack-plugin": "4.0.1",
+    "coveralls": "^2.13.1",
     "eslint": "3.19.0",
     "eslint-config-airbnb-base": "11.1.2",
     "eslint-plugin-import": "2.2.0",
