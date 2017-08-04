@@ -81,7 +81,7 @@ export const create = (event, context, callback) => {
 
   logger.info({ status: 'started', metadata: { body } })
 
-  Promise.resolve(body)
+  return Promise.resolve(body)
     .then(parse(createSchema))
     .then(boletoService.create)
     .tap(registerBoletoConditionally)
@@ -166,7 +166,8 @@ export const register = (event, context, callback) => {
 
   logger.info({ status: 'started', metadata: event })
 
-  boletoService.registerById(boleto_id)
+  return Promise.resolve(boleto_id)
+    .then(boletoService.registerById)
     .tap(removeBoletoFromQueueConditionally)
     .tap(sendMessageToUserQueueConditionally)
     .tap((response) => {
@@ -189,7 +190,7 @@ export const update = (event, context, callback) => {
   const { bank_response_code, paid_amount } = body
   const id = path(['pathParameters', 'id'], event)
 
-  Promise.resolve({ id, bank_response_code, paid_amount })
+  return Promise.resolve({ id, bank_response_code, paid_amount })
     .then(parse(updateSchema))
     .then(boletoService.update)
     .then(buildModelResponse)
@@ -208,7 +209,7 @@ export const index = (event, context, callback) => {
   const title_id = path(['queryStringParameters', 'title_id'], event)
   const token = path(['queryStringParameters', 'token'], event)
 
-  Promise.resolve({ page, count, token, title_id })
+  return Promise.resolve({ page, count, token, title_id })
     .then(parse(indexSchema))
     .then(boletoService.index)
     .then(buildModelResponse)
@@ -222,7 +223,7 @@ export const show = (event, context, callback) => {
 
   const id = path(['pathParameters', 'id'], event)
 
-  Promise.resolve(id)
+  return Promise.resolve(id)
     .then(boletoService.show)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))
