@@ -1,5 +1,5 @@
 import test from 'ava'
-import { buildModelResponse, generateBarcode } from '../../../../build/resources/boleto/model'
+import { buildModelResponse, generateBoletoCode } from '../../../../build/resources/boleto/model'
 
 test('buildResponse', async (t) => {
   const now = new Date()
@@ -54,7 +54,7 @@ test('buildResponse', async (t) => {
   }, 'should be a boleto object')
 })
 
-test('generateBarcode', (t) => {
+test('generateBoletoCode', (t) => {
   const input = {
     issuer: 'bradesco',
     amount: 2000,
@@ -65,7 +65,8 @@ test('generateBarcode', (t) => {
     expiration_date: new Date('2017-05-26')
   }
 
-  const barcode = generateBarcode(input)
+  const { barcode, digitable_line } = generateBoletoCode(input)
 
   t.is(barcode, '23792717100000020003381260000000000100097210')
+  t.is(digitable_line, '23793.38128 60000.000004 01000.972107 2 71710000002000')
 })
