@@ -20,6 +20,14 @@ test('buildResponse', async (t) => {
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872',
+    payer_address: {
+      zipcode: '5555555',
+      street: 'Rua Fidêncio Ramos',
+      street_number: '308',
+      neighborhood: 'Vila Olímpia',
+      city: 'São Paulo',
+      state: 'SP'
+    },
     company_name: 'Some Company',
     company_document_number: '98154524872',
     created_at: now,
@@ -47,6 +55,14 @@ test('buildResponse', async (t) => {
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872',
+    payer_address: {
+      zipcode: '5555555',
+      street: 'Rua Fidêncio Ramos',
+      street_number: '308',
+      neighborhood: 'Vila Olímpia',
+      city: 'São Paulo',
+      state: 'SP'
+    },
     company_name: 'Some Company',
     company_document_number: '98154524872',
     created_at: now,

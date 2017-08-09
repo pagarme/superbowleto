@@ -94,6 +94,15 @@ test('shows a boleto with a specific token', async (t) => {
     payer_name: 'David Bowie',
     payer_document_type: 'cpf',
     payer_document_number: '98154524872',
+    payer_address: {
+      zipcode: '04551010',
+      street: 'Rua Fidêncio Ramos',
+      street_number: '308',
+      complementary: '9º andar, conjunto 91',
+      neighborhood: 'Vila Olímpia',
+      city: 'São Paulo',
+      state: 'SP'
+    },
     queue_url: userQueueUrl,
     company_name: 'Some Company',
     company_document_number: '98154524872'
