@@ -1,6 +1,13 @@
 import axios from 'axios'
 import * as Promise from 'bluebird'
-import { always, applySpec, compose, defaultTo, prop } from 'ramda'
+import {
+  always,
+  applySpec,
+  compose,
+  defaultTo,
+  prop,
+  path
+} from 'ramda'
 import { format } from './formatter'
 import getConfig from '../../config/providers'
 import { encodeBase64 } from '../../lib/encoding'
@@ -25,7 +32,6 @@ export const buildHeaders = () =>
       }
     })
 
-
 export const buildPayload = boleto =>
   Promise.resolve(getCredentials('providers/bradesco/company_id'))
     .then(merchantId => ({
@@ -42,13 +48,13 @@ export const buildPayload = boleto =>
           documento: prop('payer_document_number'),
           tipo_documento: compose(format('documentType'), prop('payer_document_type')),
           endereco: {
-            cep: always('04551010'),
-            logradouro: always('Rua Fidêncio Ramos'),
-            numero: always('308'),
-            complemento: always('9º andar, conjunto 91'),
-            bairro: always('Vila Olímpia'),
-            cidade: always('São Paulo'),
-            uf: always('SP')
+            cep: path(['payer_address', 'zipcode']),
+            logradouro: path(['payer_address', 'street']),
+            numero: path(['payer_address', 'street_number']),
+            complemento: path(['payer_address', 'complementary']),
+            bairro: path(['payer_address', 'neighborhood']),
+            cidade: path(['payer_address', 'city']),
+            uf: path(['payer_address', 'state'])
           }
         }
       }
