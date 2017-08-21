@@ -1,6 +1,19 @@
 import * as Promise from 'bluebird'
-import { assoc, pick, cond, equals, T, identity, always } from 'ramda'
-import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
+import {
+  assoc,
+  pick,
+  cond,
+  equals,
+  T,
+  identity,
+  always,
+  all,
+  ifElse,
+  has,
+  __
+} from 'ramda'
+
+import { STRING, INTEGER, ENUM, TEXT, DATE, JSON } from 'sequelize'
 import { Boleto as NodeBoleto } from 'node-boleto'
 import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
 
@@ -48,6 +61,7 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
       'payer_name',
       'payer_document_type',
       'payer_document_number',
+      'payer_address',
       'company_name',
       'company_document_number',
       'bank_response_code',
@@ -65,6 +79,39 @@ const addBoletoCode = (boleto) => {
     barcode,
     digitable_line
   })
+}
+
+const validateModel = (boleto) => {
+  if (!boleto.payer_address) {
+    boleto.payer_address = {}
+  }
+
+  const defaultAddress = {
+    zipcode: '04551010',
+    street: 'Rua Fidêncio Ramos',
+    street_number: '308',
+    complementary: '9º andar, conjunto 91',
+    neighborhood: 'Vila Olímpia',
+    city: 'São Paulo',
+    state: 'SP'
+  }
+
+  const requiredAddressFields = [
+    'zipcode',
+    'street',
+    'street_number',
+    'neighborhood',
+    'city',
+    'state'
+  ]
+
+  const hasInPayerAddress = has(__, boleto.payer_address)
+
+  boleto.payer_address = (
+    all(hasInPayerAddress, requiredAddressFields)
+    ? boleto.payer_address
+    : defaultAddress
+  )
 }
 
 function create (database) {
@@ -171,6 +218,10 @@ function create (database) {
       type: STRING
     },
 
+    payer_address: {
+      type: JSON
+    },
+
     company_name: {
       type: STRING,
       allowNull: true
@@ -191,7 +242,8 @@ function create (database) {
       { fields: ['status'] }
     ],
     hooks: {
-      afterCreate: addBoletoCode
+      afterCreate: addBoletoCode,
+      beforeValidate: validateModel
     }
   })
 }

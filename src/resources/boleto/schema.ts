@@ -76,6 +76,43 @@ export const createSchema = {
     .allow('')
     .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
 
+  payer_address: Joi.object().keys({
+    zipcode: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    street: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    complementary: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    neighborhood: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    street_number: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    city: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    state: Joi
+      .string()
+      .allow(null)
+      .allow('')
+  }),
+
   register: Joi
     .boolean()
     .default(true)
