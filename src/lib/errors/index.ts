@@ -56,7 +56,7 @@ export class InternalServerError extends BaseError {
   constructor (error: any = {}) {
     super(error.message)
 
-    Object.setPrototypeOf(this, DatabaseError.prototype)
+    Object.setPrototypeOf(this, InternalServerError.prototype)
     this.name = 'InternalServerError'
     this.type = 'internal'
   }
