@@ -66,7 +66,12 @@ export const translateResponseCode = (response) => {
 
   const responseCode = response.data.status.codigo.toString()
 
-  logger.info({ status: 'succeeded', metadata: { providerResponse: response.toString() } })
+  logger.info({
+    status: 'succeeded',
+    metadata: {
+      response: response.data
+    }
+  })
 
   const defaultValue = {
     message: 'CÓDIGO INEXISTENTE',
