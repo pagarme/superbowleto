@@ -1,16 +1,24 @@
 import * as Promise from 'bluebird'
 import {
+  __,
+  T,
+  all,
+  always,
   assoc,
-  pick,
+  both,
+  complement,
   cond,
   equals,
-  T,
-  identity,
-  always,
-  all,
-  ifElse,
   has,
-  __
+  identity,
+  ifElse,
+  intersection,
+  isNil,
+  keys,
+  map,
+  pipe,
+  pick,
+  values
 } from 'ramda'
 
 import { STRING, INTEGER, ENUM, TEXT, DATE, JSON } from 'sequelize'
@@ -81,7 +89,7 @@ const addBoletoCode = (boleto) => {
   })
 }
 
-const validateModel = (boleto) => {
+export const validateModel = (boleto) => {
   if (!boleto.payer_address) {
     boleto.payer_address = {}
   }
@@ -105,13 +113,31 @@ const validateModel = (boleto) => {
     'state'
   ]
 
-  const hasInPayerAddress = has(__, boleto.payer_address)
-
-  boleto.payer_address = (
-    all(hasInPayerAddress, requiredAddressFields)
-    ? boleto.payer_address
-    : defaultAddress
+  const hasAllRequiredFields = pipe(
+    keys,
+    intersection(requiredAddressFields),
+    equals(requiredAddressFields)
   )
+
+  const isNotNil = complement(isNil)
+
+  const hasNoNilValues = pipe(
+    values,
+    all(isNotNil)
+  )
+
+  const isValidAddress = both(
+    hasNoNilValues,
+    hasAllRequiredFields
+  )
+
+  const getAddress = ifElse(
+    isValidAddress,
+    identity,
+    always(defaultAddress)
+  )
+
+  boleto.payer_address = getAddress(boleto.payer_address)
 }
 
 function create (database) {

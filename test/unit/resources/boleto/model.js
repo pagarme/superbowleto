@@ -1,5 +1,9 @@
 import test from 'ava'
-import { buildModelResponse, generateBoletoCode } from '../../../../build/resources/boleto/model'
+import {
+  buildModelResponse,
+  generateBoletoCode,
+  validateModel
+} from '../../../../build/resources/boleto/model'
 
 test('buildResponse', async (t) => {
   const now = new Date()
@@ -85,4 +89,74 @@ test('generateBoletoCode', (t) => {
 
   t.is(barcode, '23792717100000020003381260000000000100097210')
   t.is(digitable_line, '23793.38128 60000.000004 01000.972107 2 71710000002000')
+})
+
+test('validateModel: with empty address', async (t) => {
+  const boleto = {
+    payer_address: {}
+  }
+
+  validateModel(boleto)
+
+  t.deepEqual(boleto.payer_address, {
+    zipcode: '04551010',
+    street: 'Rua Fidêncio Ramos',
+    street_number: '308',
+    complementary: '9º andar, conjunto 91',
+    neighborhood: 'Vila Olímpia',
+    city: 'São Paulo',
+    state: 'SP'
+  }, 'should use default address')
+})
+
+test('validateModel: with complete address', async (t) => {
+  const boleto = {
+    payer_address: {
+      zipcode: '01329010',
+      street: 'Rua dos Franceses',
+      street_number: '147',
+      complementary: 'Apt 101',
+      neighborhood: 'Morro dos Ingleses',
+      city: 'São Paulo',
+      state: 'SP'
+    }
+  }
+
+  validateModel(boleto)
+
+  t.deepEqual(boleto.payer_address, {
+    zipcode: '01329010',
+    street: 'Rua dos Franceses',
+    street_number: '147',
+    complementary: 'Apt 101',
+    neighborhood: 'Morro dos Ingleses',
+    city: 'São Paulo',
+    state: 'SP'
+  }, 'should use payer_address "as is"')
+})
+
+test('validateModel: with incomplete address', async (t) => {
+  const boleto = {
+    payer_address: {
+      zipcode: '01329010',
+      street: 'Rua dos Franceses',
+      street_number: '147',
+      complementary: 'Apt 101',
+      neighborhood: 'Morro dos Ingleses',
+      city: null,
+      state: null
+    }
+  }
+
+  validateModel(boleto)
+
+  t.deepEqual(boleto.payer_address, {
+    zipcode: '04551010',
+    street: 'Rua Fidêncio Ramos',
+    street_number: '308',
+    complementary: '9º andar, conjunto 91',
+    neighborhood: 'Vila Olímpia',
+    city: 'São Paulo',
+    state: 'SP'
+  }, 'should use default address')
 })
