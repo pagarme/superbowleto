@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:9.6-alpine
     ports:
-      - 5432:5432
+      - 5432
     environment:
       - POSTGRES_PASSWORD=touchdown1!
 
@@ -12,7 +12,7 @@ services:
     image: pagarme/yopa:latest
     command: java -Xms64m -Xmx256m -jar uberjar.jar -c /tmp/yopa-in/config.yml -o /tmp/dev-env-aws-regions-override.xml
     ports:
-      - 47195:47195
+      - 47195
     volumes:
       - ./yopa-config.yml:/tmp/yopa-in/config.yml:ro
     healthcheck:
