@@ -1,12 +1,19 @@
 import test from 'ava'
 import { findProvider } from '../../../build/providers'
 import * as bradesco from '../../../build/providers/bradesco'
+import * as development from '../../../build/providers/development'
 import { NotFoundError } from '../../../build/lib/errors/index'
 
-test('findProvider: with existing provider', (t) => {
-  const provider = findProvider('bradesco')
+test('findProvider: with bradesco provider', (t) => {
+  const bradescoProvider = findProvider('bradesco')
 
-  t.deepEqual(provider, bradesco, 'should return the right provider')
+  t.deepEqual(bradescoProvider, bradesco, 'should return the bradesco provider')
+})
+
+test('findProvider: with development provider', (t) => {
+  const developmentProvider = findProvider('development')
+
+  t.deepEqual(developmentProvider, development, 'should return the development provider')
 })
 
 test('findProvider: with no existing provider', (t) => {
