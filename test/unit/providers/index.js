@@ -1,6 +1,7 @@
 import test from 'ava'
 import { findProvider } from '../../../build/providers'
 import * as bradesco from '../../../build/providers/bradesco'
+import { NotFoundError } from '../../../build/lib/errors/index'
 
 test('findProvider: with existing provider', (t) => {
   const provider = findProvider('bradesco')
@@ -13,7 +14,7 @@ test('findProvider: with no existing provider', (t) => {
 
   t.throws(
     tryToGetProvider,
-    Error,
+    NotFoundError,
     'Provider not found',
     'should throw an error'
   )
