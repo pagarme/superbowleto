@@ -297,7 +297,7 @@ export default {
   },
   9300574: {
     message: 'TITULO JA CADASTRADO',
-    status: 'check_status'
+    status: 'registered'
   },
   9300575: {
     message: 'INFORME A DATA DE VENCIMENTO',
