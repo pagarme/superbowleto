@@ -90,7 +90,7 @@ export const verifyRegistrationStatus = (boleto) => {
       url: `${endpoint}`,
       method: 'GET',
       params: {
-        nosso_numero: prop('issuer_id', boleto),
+        nosso_numero: prop('title_id', boleto),
         numero_documento: prop('title_id', boleto)
       }
     }))
