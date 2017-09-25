@@ -98,7 +98,8 @@ export const createSchema = {
       .allow(''),
 
     street_number: Joi
-      .string()
+      .alternatives()
+      .try(Joi.string(), Joi.number())
       .allow(null)
       .allow(''),
 
