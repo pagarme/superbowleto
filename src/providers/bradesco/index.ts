@@ -95,7 +95,12 @@ export const verifyRegistrationStatus = (boleto) => {
       }
     }))
     .tap((request) => {
-      logger.info({ status: 'started', metadata: { request } })
+      logger.info({
+        status: 'started',
+        metadata: {
+          request: { body: request.data }
+        }
+      })
     })
     .then(axios.request)
     .then(translateResponseCode)
@@ -122,7 +127,12 @@ export const register = (boleto) => {
       method: 'POST'
     }))
     .tap((request) => {
-      logger.info({ status: 'started', metadata: { request } })
+      logger.info({
+        status: 'started',
+        metadata: {
+          request: { body: request.data }
+        }
+      })
     })
     .then(axios.request)
     .then(translateResponseCode)
