@@ -5,6 +5,7 @@ import {
   applySpec,
   compose,
   defaultTo,
+  dissocPath,
   prop,
   path
 } from 'ramda'
@@ -110,7 +111,12 @@ export const verifyRegistrationStatus = (boleto) => {
         metadata: { status: response.status, data: response.data }
       })
     })
-    .tapCatch(err => logger.error({ status: 'failed', metadata: { err } }))
+    .tapCatch(err => logger.error({
+      status: 'failed',
+      metadata: {
+        err: dissocPath(['config', 'headers'], err)
+      }
+    }))
 }
 
 export const register = (boleto) => {
@@ -149,5 +155,10 @@ export const register = (boleto) => {
         metadata: { status: response.status, data: response.data }
       })
     })
-    .tapCatch(err => logger.error({ status: 'failed', metadata: { err } }))
+    .tapCatch(err => logger.error({
+      status: 'failed',
+      metadata: {
+        err: dissocPath(['config', 'headers'], err)
+      }
+    }))
 }
