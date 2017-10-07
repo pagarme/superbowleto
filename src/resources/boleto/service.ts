@@ -60,6 +60,19 @@ export const register = (boleto) => {
 
   return provider.register(boleto)
     .then(updateBoletoStatus)
+    .catch(() => {
+      logger.info({
+        status: 'processing',
+        message: 'Boleto register failed: will send to background registering',
+        metadata: {
+          boleto
+        }
+      })
+
+      boleto.update({
+        status: 'pending_registration'
+      })
+    })
     .tap((boleto) => {
       logger.info({ status: 'succeeded', metadata: { boleto } })
     })
