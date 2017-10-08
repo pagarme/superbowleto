@@ -58,7 +58,9 @@ export const register = (boleto) => {
     return Promise.resolve(boleto)
   }
 
-  return provider.register(boleto)
+  return Promise.resolve(boleto)
+    .then(provider.register)
+    .timeout(10000)
     .then(updateBoletoStatus)
     .catch(() => {
       logger.info({
