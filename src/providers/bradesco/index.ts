@@ -5,9 +5,9 @@ import {
   applySpec,
   compose,
   defaultTo,
-  dissocPath,
-  prop,
-  path
+  path,
+  pathOr,
+  prop
 } from 'ramda'
 import { format } from './formatter'
 import getConfig from '../../config/providers'
@@ -114,7 +114,7 @@ export const verifyRegistrationStatus = (boleto) => {
     .tapCatch(err => logger.error({
       status: 'failed',
       metadata: {
-        err: dissocPath(['config', 'headers'], err)
+        err: pathOr(err, ['response', 'data'], err)
       }
     }))
 }
@@ -158,7 +158,7 @@ export const register = (boleto) => {
     .tapCatch(err => logger.error({
       status: 'failed',
       metadata: {
-        err: dissocPath(['config', 'headers'], err)
+        err: pathOr(err, ['response', 'data'], err)
       }
     }))
 }
