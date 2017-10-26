@@ -33,7 +33,7 @@ export const create = (data) => {
 
 export const register = (boleto) => {
   const provider = findProvider(boleto.issuer)
-  const timeoutMilliseconds = process.env.NODE_ENV === 'production' ? 10000 : 25000
+  const timeoutMs = process.env.NODE_ENV === 'production' ? 6000 : 25000
 
   const logger = makeLogger({ operation: 'register' }, { id: defaultCuidValue('req_')() })
 
@@ -61,7 +61,7 @@ export const register = (boleto) => {
 
   return Promise.resolve(boleto)
     .then(provider.register)
-    .timeout(timeoutMilliseconds)
+    .timeout(timeoutMs)
     .then(updateBoletoStatus)
     .catch(() => {
       logger.info({
