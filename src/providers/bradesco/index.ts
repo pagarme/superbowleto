@@ -82,43 +82,6 @@ export const translateResponseCode = (response) => {
   return defaultTo(defaultValue, prop(responseCode, responseCodeMap))
 }
 
-export const verifyRegistrationStatus = (boleto) => {
-  const logger = makeLogger({ operation: 'verifyRegistrationStatus' })
-
-  return Promise.resolve(buildHeaders())
-    .then(headers => ({
-      headers,
-      url: `${endpoint}`,
-      method: 'GET',
-      params: {
-        nosso_numero: prop('title_id', boleto),
-        numero_documento: prop('title_id', boleto)
-      }
-    }))
-    .tap((request) => {
-      logger.info({
-        status: 'started',
-        metadata: {
-          request: { body: request.data }
-        }
-      })
-    })
-    .then(axios.request)
-    .then(translateResponseCode)
-    .tap((response) => {
-      logger.info({
-        status: 'succeeded',
-        metadata: { status: response.status, data: response.data }
-      })
-    })
-    .tapCatch(err => logger.error({
-      status: 'failed',
-      metadata: {
-        err: pathOr(err, ['response', 'data'], err)
-      }
-    }))
-}
-
 export const register = (boleto) => {
   const logger = makeLogger({ operation: 'register' })
 
@@ -142,13 +105,6 @@ export const register = (boleto) => {
     })
     .then(axios.request)
     .then(translateResponseCode)
-    .then((translatedResponseCode) => {
-      if (translatedResponseCode.status === 'check_status') {
-        return verifyRegistrationStatus(boleto)
-      }
-
-      return translatedResponseCode
-    })
     .tap((response) => {
       logger.info({
         status: 'succeeded',
