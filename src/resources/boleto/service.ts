@@ -180,3 +180,82 @@ export const show = (id) => {
       })
       .catch(handleDatabaseErrors))
 }
+
+export const processBoleto = (item, sqsMessage) => {
+  const { boleto_id } = item
+
+  const logger = makeLogger({ operation: 'process_boleto' }, { id: defaultCuidValue('req_')() })
+
+  // eslint-disable-next-line
+  const removeBoletoFromQueueConditionally = (boleto) => {
+    if (boleto.status === 'registered' || boleto.status === 'refused') {
+      logger.info({
+        subOperation: 'removeFromQueue', status: 'started',
+        metadata: { boleto_id: boleto.id }
+      })
+      return BoletosToRegisterQueue.remove(sqsMessage)
+        .then(() => {
+          logger.info({
+            subOperation: 'removeFromQueue', status: 'succeeded',
+            metadata: { boleto_id: boleto.id }
+          })
+        })
+        .catch((err) => {
+          logger.info({
+            subOperation: 'removeFromQueue', status: 'failed',
+            metadata: { err, boleto_id: boleto.id }
+          })
+          throw err
+        })
+    }
+  }
+
+  const sendMessageToUserQueueConditionally = (boleto) => {
+    if (boleto.status === 'registered' || boleto.status === 'refused') {
+      logger.info({
+        subOperation: 'sendToUserQueue', status: 'started',
+        metadata: { boleto_id: boleto.id }
+      })
+
+      const params = {
+        MessageBody: JSON.stringify({
+          boleto_id: boleto.id,
+          status: boleto.status,
+          reference_id: boleto.reference_id
+        }),
+        QueueUrl: boleto.queue_url
+      }
+
+      return sqs.sendMessage(params).promise()
+        .then(() => {
+          logger.info({
+            subOperation: 'sendToUserQueue', status: 'succeeded',
+            metadata: { boleto_id: boleto.id }
+          })
+        })
+        .catch((err) => {
+          logger.info({
+            subOperation: 'sendToUserQueue', status: 'failed',
+            metadata: { err, boleto_id: boleto.id }
+          })
+          throw err
+        })
+    }
+  }
+
+  logger.info({ status: 'started', metadata: item })
+
+  return Promise.resolve(boleto_id)
+    .then(registerById)
+    .tap(removeBoletoFromQueueConditionally)
+    .tap(sendMessageToUserQueueConditionally)
+    .tap((response) => {
+      logger.info({
+        status: 'succeeded',
+        metadata: { body: response.body, statusCode: response.statusCode }
+      })
+    })
+    .catch((err) => {
+      logger.error({ status: 'failed', metadata: { err } })
+    })
+}
