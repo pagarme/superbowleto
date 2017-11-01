@@ -33,9 +33,10 @@ const configureContext = (context: any = {}) => {
 
 export const create = (event, context, callback) => {
   configureContext(context)
+  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
 
   const body = JSON.parse(event.body || JSON.stringify({}))
-  const logger = makeLogger({ operation: 'create' }, { id: defaultCuidValue('req_')() })
+  const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: requestId })
 
   const shouldRegister = () => body.register !== 'false' && body.register !== false
 
@@ -57,7 +58,7 @@ export const create = (event, context, callback) => {
 
     if (shouldSendBoletoToQueue(boleto)) {
       logger.info({
-        subOperation: 'pushToQueue', status: 'started',
+        sub_operation: 'send_to_background_queue', status: 'started',
         metadata: { boleto_id: boleto.id }
       })
       return BoletosToRegisterQueue.push({
@@ -65,13 +66,13 @@ export const create = (event, context, callback) => {
       })
         .then(() => {
           logger.info({
-            subOperation: 'pushToQueue', status: 'succeeded',
+            sub_operation: 'send_to_background_queue', status: 'success',
             metadata: { boleto_id: boleto.id }
           })
         })
         .catch((err) => {
           logger.info({
-            subOperation: 'pushToQueue', status: 'failed',
+            sub_operation: 'send_to_background_queue', status: 'failed',
             metadata: { err, boleto_id: boleto.id }
           })
           throw err
@@ -90,7 +91,7 @@ export const create = (event, context, callback) => {
     .then(buildSuccessResponse(201))
     .tap((response) => {
       logger.info({
-        status: 'succeeded',
+        status: 'success',
         metadata: { body: response.body, statusCode: response.statusCode }
       })
     })
@@ -104,26 +105,26 @@ export const create = (event, context, callback) => {
 export const register = (event, context, callback) => {
   configureContext(context)
 
-  const logger = makeLogger({ operation: 'register' }, { id: defaultCuidValue('req_')() })
+  const logger = makeLogger({ operation: 'register' }, { id: requestId })
   const { boleto_id, sqsMessage } = event
 
   // eslint-disable-next-line
   const removeBoletoFromQueueConditionally = (boleto) => {
     if (boleto.status === 'registered' || boleto.status === 'refused') {
       logger.info({
-        subOperation: 'removeFromQueue', status: 'started',
+        sub_operation: 'remove_from_background_queue', status: 'started',
         metadata: { boleto_id: boleto.id }
       })
       return BoletosToRegisterQueue.remove(sqsMessage)
         .then(() => {
           logger.info({
-            subOperation: 'removeFromQueue', status: 'succeeded',
+            sub_operation: 'remove_from_background_queue', status: 'success',
             metadata: { boleto_id: boleto.id }
           })
         })
         .catch((err) => {
           logger.info({
-            subOperation: 'removeFromQueue', status: 'failed',
+            sub_operation: 'remove_from_background_queue', status: 'failed',
             metadata: { err, boleto_id: boleto.id }
           })
           throw err
@@ -134,7 +135,8 @@ export const register = (event, context, callback) => {
   const sendMessageToUserQueueConditionally = (boleto) => {
     if (boleto.status === 'registered' || boleto.status === 'refused') {
       logger.info({
-        subOperation: 'sendToUserQueue', status: 'started',
+        sub_operation: 'send_message_to_client_queue',
+        status: 'started',
         metadata: { boleto_id: boleto.id }
       })
 
@@ -150,13 +152,15 @@ export const register = (event, context, callback) => {
       return sqs.sendMessage(params).promise()
         .then(() => {
           logger.info({
-            subOperation: 'sendToUserQueue', status: 'succeeded',
+            sub_operation: 'send_message_to_client_queue',
+            status: 'success',
             metadata: { boleto_id: boleto.id }
           })
         })
         .catch((err) => {
           logger.info({
-            subOperation: 'sendToUserQueue', status: 'failed',
+            sub_operation: 'send_message_to_client_queue',
+            status: 'failed',
             metadata: { err, boleto_id: boleto.id }
           })
           throw err
@@ -172,7 +176,7 @@ export const register = (event, context, callback) => {
     .tap(sendMessageToUserQueueConditionally)
     .tap((response) => {
       logger.info({
-        status: 'succeeded',
+        status: 'success',
         metadata: { body: response.body, statusCode: response.statusCode }
       })
     })
@@ -185,6 +189,7 @@ export const register = (event, context, callback) => {
 
 export const update = (event, context, callback) => {
   configureContext(context)
+  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
 
   const body = JSON.parse(event.body || JSON.stringify({}))
   const { bank_response_code, paid_amount } = body
@@ -201,6 +206,7 @@ export const update = (event, context, callback) => {
 
 export const index = (event, context, callback) => {
   configureContext(context)
+  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
 
   const page = path(['queryStringParameters', 'page'], event)
   const count = path(['queryStringParameters', 'count'], event)
@@ -220,6 +226,7 @@ export const index = (event, context, callback) => {
 
 export const show = (event, context, callback) => {
   configureContext(context)
+  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
 
   const id = path(['pathParameters', 'id'], event)
 
@@ -233,12 +240,11 @@ export const show = (event, context, callback) => {
 
 export const processBoletosToRegister = (event, context, callback) => {
   configureContext(context)
+  const requestId = defaultCuidValue('req_')()
 
-  const logger = makeLogger(
-    { operation: 'processBoletosToRegister' },{ id: defaultCuidValue('req_')() }
-  )
+  const logger = makeLogger({ operation: 'process_background_queue' }, { id: requestId })
 
-  logger.info({ operation: 'processBoletosToRegister', status: 'started' })
+  logger.info({ status: 'started' })
 
   BoletosToRegisterQueue.startProcessing(boletoService.processBoleto, {
     keepMessages: true

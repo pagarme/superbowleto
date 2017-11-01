@@ -13,7 +13,7 @@ import { defaultCuidValue } from '../../lib/database/schema'
 const makeLogger = makeFromLogger('boleto/service')
 
 export const create = (data) => {
-  const logger = makeLogger({ operation: 'create' }, { id: defaultCuidValue('req_')() })
+  const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: defaultCuidValue('req_')() })
 
   logger.info({ status: 'started', metadata: { data } })
 
@@ -22,7 +22,7 @@ export const create = (data) => {
       Promise.resolve(data)
       .then(Boleto.create.bind(Boleto))
       .tap((boleto) => {
-        logger.info({ status: 'succeeded', metadata: { boleto } })
+        logger.info({ status: 'success', metadata: { boleto } })
       })
       .catch((err) => {
         logger.error({ status: 'failed', metadata: { err } })
@@ -77,7 +77,7 @@ export const register = (boleto) => {
       })
     })
     .tap((boleto) => {
-      logger.info({ status: 'succeeded', metadata: { boleto } })
+      logger.info({ status: 'success', metadata: { boleto } })
     })
     .catch((err) => {
       logger.error({ status: 'failed', metadata: { err } })
@@ -123,7 +123,7 @@ export const update = (data) => {
         })
       })
       .tap((boleto) => {
-        logger.info({ status: 'succeeded', metadata: { boleto } })
+        logger.info({ status: 'success', metadata: { boleto } })
       })
       .catch(handleDatabaseErrors))
 }
@@ -190,19 +190,22 @@ export const processBoleto = (item, sqsMessage) => {
   const removeBoletoFromQueueConditionally = (boleto) => {
     if (boleto.status === 'registered' || boleto.status === 'refused') {
       logger.info({
-        subOperation: 'removeFromQueue', status: 'started',
+        sub_operation: 'remove_from_background_queue',
+        status: 'started',
         metadata: { boleto_id: boleto.id }
       })
       return BoletosToRegisterQueue.remove(sqsMessage)
         .then(() => {
           logger.info({
-            subOperation: 'removeFromQueue', status: 'succeeded',
+            sub_operation: 'remove_from_background_queue',
+            status: 'success',
             metadata: { boleto_id: boleto.id }
           })
         })
         .catch((err) => {
           logger.info({
-            subOperation: 'removeFromQueue', status: 'failed',
+            sub_operation: 'remove_from_background_queue',
+            status: 'failed',
             metadata: { err, boleto_id: boleto.id }
           })
           throw err
@@ -213,7 +216,8 @@ export const processBoleto = (item, sqsMessage) => {
   const sendMessageToUserQueueConditionally = (boleto) => {
     if (boleto.status === 'registered' || boleto.status === 'refused') {
       logger.info({
-        subOperation: 'sendToUserQueue', status: 'started',
+        sub_operation: 'send_message_to_client_queue',
+        status: 'started',
         metadata: { boleto_id: boleto.id }
       })
 
@@ -229,13 +233,15 @@ export const processBoleto = (item, sqsMessage) => {
       return sqs.sendMessage(params).promise()
         .then(() => {
           logger.info({
-            subOperation: 'sendToUserQueue', status: 'succeeded',
+            sub_operation: 'send_message_to_client_queue',
+            status: 'success',
             metadata: { boleto_id: boleto.id }
           })
         })
         .catch((err) => {
           logger.info({
-            subOperation: 'sendToUserQueue', status: 'failed',
+            sub_operation: 'send_message_to_client_queue',
+            status: 'failed',
             metadata: { err, boleto_id: boleto.id }
           })
           throw err
@@ -243,7 +249,7 @@ export const processBoleto = (item, sqsMessage) => {
     }
   }
 
-  logger.info({ status: 'started', metadata: item })
+  logger.info({ status: 'started', metadata: { item } })
 
   return Promise.resolve(boleto_id)
     .then(registerById)
@@ -251,7 +257,7 @@ export const processBoleto = (item, sqsMessage) => {
     .tap(sendMessageToUserQueueConditionally)
     .tap((response) => {
       logger.info({
-        status: 'succeeded',
+        status: 'success',
         metadata: { body: response.body, statusCode: response.statusCode }
       })
     })

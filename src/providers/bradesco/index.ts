@@ -68,7 +68,7 @@ export const translateResponseCode = (response) => {
   const responseCode = response.data.status.codigo.toString()
 
   logger.info({
-    status: 'succeeded',
+    status: 'success',
     metadata: {
       response: response.data
     }
@@ -107,7 +107,7 @@ export const register = (boleto) => {
     .then(translateResponseCode)
     .tap((response) => {
       logger.info({
-        status: 'succeeded',
+        status: 'success',
         metadata: { status: response.status, data: response.data }
       })
     })

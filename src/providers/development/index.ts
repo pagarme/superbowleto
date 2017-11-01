@@ -19,7 +19,7 @@ export const register = (boleto) => {
     }))
     .tap((response) => {
       logger.info({
-        status: 'succeeded',
+        status: 'success',
         metadata: {
           status: response.status,
           data: response.data
