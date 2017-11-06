@@ -21,7 +21,7 @@ test('buildPayload', async (t) => {
       carteira: '26',
       nosso_numero: boleto.title_id,
       numero_documento: boleto.title_id,
-      data_emissao: moment(boleto.created_at).format('YYYY-MM-DD'),
+      data_emissao: moment().format('YYYY-MM-DD'),
       data_vencimento: moment(boleto.expiration_date).format('YYYY-MM-DD'),
       valor_titulo: 2000,
       pagador: {

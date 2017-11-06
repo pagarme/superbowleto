@@ -1,4 +1,5 @@
 import axios from 'axios'
+import * as moment from 'moment'
 import * as Promise from 'bluebird'
 import {
   always,
@@ -41,7 +42,7 @@ export const buildPayload = boleto =>
         carteira: always('26'),
         nosso_numero: prop('title_id'),
         numero_documento: prop('title_id'),
-        data_emissao: compose(format('date'), prop('created_at')),
+        data_emissao: compose(format('date'), always(moment().toDate())),
         data_vencimento: compose(format('date'), prop('expiration_date')),
         valor_titulo: prop('amount'),
         pagador: {
