@@ -63,16 +63,7 @@ export const buildPayload = boleto =>
     .then(spec => applySpec(spec)(boleto))
 
 export const translateResponseCode = (response) => {
-  const logger = makeLogger({ operation: 'translateResponseCode' })
-
   const responseCode = response.data.status.codigo.toString()
-
-  logger.info({
-    status: 'success',
-    metadata: {
-      response: response.data
-    }
-  })
 
   const defaultValue = {
     message: 'CÓDIGO INEXISTENTE',
@@ -88,7 +79,13 @@ const defaultOptions = {
 
 export const getProvider = ({ requestId } = defaultOptions) => {
   const register = (boleto) => {
-    const logger = makeLogger({ operation: 'register' })
+    const logger = makeLogger(
+      {
+        operation: 'register_boleto_on_provider',
+        provider: 'bradesco'
+      },
+      { id: requestId }
+    )
 
     return Promise.all([
       buildHeaders(),
@@ -109,6 +106,11 @@ export const getProvider = ({ requestId } = defaultOptions) => {
         })
       })
       .then(axios.request)
+      .tap(response => logger.info({
+        metadata: {
+          response: response.data
+        }
+      }))
       .then(translateResponseCode)
       .tap((response) => {
         logger.info({
