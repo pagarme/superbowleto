@@ -4,16 +4,20 @@ import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
 import * as boletoHandler from '../../../../../build/resources/boleto'
-import * as provider from '../../../../../build/providers/bradesco'
+import * as Provider from '../../../../../build/providers/bradesco'
 
 const create = normalizeHandler(boletoHandler.create)
 
 test.before(() => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'refused' }))
+  mockFunction(Provider, 'getProvider', () => ({
+    register () {
+      return Promise.resolve({ status: 'refused' })
+    }
+  }))
 })
 
 test.after(async () => {
-  restoreFunction(provider, 'register')
+  restoreFunction(Provider, 'getProvider')
 })
 
 test('creates a boleto (provider refused)', async (t) => {

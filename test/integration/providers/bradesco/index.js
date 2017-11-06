@@ -1,6 +1,8 @@
 import test from 'ava'
 import { createBoleto } from '../../../helpers/boleto'
-import { register } from '../../../../build/providers/bradesco'
+import * as Provider from '../../../../build/providers/bradesco'
+
+const { register } = Provider.getProvider()
 
 test('register', async (t) => {
   const boleto = await createBoleto()

@@ -3,14 +3,18 @@ import { Promise, promisify } from 'bluebird'
 import { mock, mockFunction, restoreFunction } from '../../../helpers/boleto'
 import { normalizeHandler } from '../../../helpers/normalizer'
 import * as boletoHandler from '../../../../build/resources/boleto'
-import * as provider from '../../../../build/providers/bradesco'
+import * as Provider from '../../../../build/providers/bradesco'
 
 test.before(async () => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'unknown' }))
+  mockFunction(Provider, 'getProvider', () => ({
+    register () {
+      return Promise.resolve({ status: 'unknown' })
+    }
+  }))
 })
 
 test.after(() => {
-  restoreFunction(provider, 'register')
+  restoreFunction(Provider, 'getProvider')
 })
 
 const create = normalizeHandler(boletoHandler.create)

@@ -82,39 +82,50 @@ export const translateResponseCode = (response) => {
   return defaultTo(defaultValue, prop(responseCode, responseCodeMap))
 }
 
-export const register = (boleto) => {
-  const logger = makeLogger({ operation: 'register' })
-
-  return Promise.all([
-    buildHeaders(),
-    buildPayload(boleto)
-  ])
-    .spread((headers, payload) => ({
-      headers,
-      data: payload,
-      url: endpoint,
-      method: 'POST'
-    }))
-    .tap((request) => {
-      logger.info({
-        status: 'started',
-        metadata: {
-          request: { body: request.data }
-        }
-      })
-    })
-    .then(axios.request)
-    .then(translateResponseCode)
-    .tap((response) => {
-      logger.info({
-        status: 'success',
-        metadata: { status: response.status, data: response.data }
-      })
-    })
-    .tapCatch(err => logger.error({
-      status: 'failed',
-      metadata: {
-        err: pathOr(err, ['response', 'data'], err)
-      }
-    }))
+const defaultOptions = {
+  requestId: `req_${Date.now()}`
 }
+
+export const getProvider = ({ requestId } = defaultOptions) => {
+  const register = (boleto) => {
+    const logger = makeLogger({ operation: 'register' })
+
+    return Promise.all([
+      buildHeaders(),
+      buildPayload(boleto)
+    ])
+      .spread((headers, payload) => ({
+        headers,
+        data: payload,
+        url: endpoint,
+        method: 'POST'
+      }))
+      .tap((request) => {
+        logger.info({
+          status: 'started',
+          metadata: {
+            request: { body: request.data }
+          }
+        })
+      })
+      .then(axios.request)
+      .then(translateResponseCode)
+      .tap((response) => {
+        logger.info({
+          status: 'success',
+          metadata: { status: response.status, data: response.data }
+        })
+      })
+      .tapCatch(err => logger.error({
+        status: 'failed',
+        metadata: {
+          err: pathOr(err, ['response', 'data'], err)
+        }
+      }))
+  }
+
+  return {
+    register
+  }
+}
+

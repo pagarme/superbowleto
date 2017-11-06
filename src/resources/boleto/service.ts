@@ -33,7 +33,8 @@ export default function boletoService ({ requestId }) {
   }
 
   const register = (boleto) => {
-    const provider = findProvider(boleto.issuer)
+    const Provider = findProvider(boleto.issuer)
+    const provider = Provider.getProvider({ requestId })
     const timeoutMs = process.env.NODE_ENV === 'production' ? 6000 : 25000
 
     const logger = makeLogger({ operation: 'register' }, { id: requestId })
@@ -64,12 +65,13 @@ export default function boletoService ({ requestId }) {
       .then(provider.register)
       .timeout(timeoutMs)
       .then(updateBoletoStatus)
-      .catch(() => {
+      .catch((err) => {
         logger.info({
           status: 'processing',
           message: 'Boleto register failed: will send to background registering',
           metadata: {
-            boleto
+            boleto,
+            err
           }
         })
 

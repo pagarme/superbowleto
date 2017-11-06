@@ -4,7 +4,7 @@ import { assert } from '../../../helpers/chai'
 import { normalizeHandler } from '../../../helpers/normalizer'
 import * as boletoHandler from '../../../../build/resources/boleto'
 import { mock, userQueue, mockFunction, restoreFunction } from '../../../helpers/boleto'
-import * as provider from '../../../../build/providers/bradesco'
+import * as Provider from '../../../../build/providers/bradesco'
 import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
 import lambda from '../../../../build/resources/boleto/lambda'
 import { BoletosToRegisterQueue } from '../../../../build/resources/boleto/queues'
@@ -14,7 +14,11 @@ const create = normalizeHandler(boletoHandler.create)
 const processBoletosToRegister = promisify(boletoHandler.processBoletosToRegister)
 
 test.before(async () => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'unknown' }))
+  mockFunction(Provider, 'getProvider', () => ({
+    register () {
+      return Promise.resolve({ status: 'unknown' })
+    }
+  }))
 
   await purgeQueue(BoletosToRegisterQueue)
   await purgeQueue(userQueue)
@@ -34,12 +38,16 @@ test.before(async () => {
 })
 
 test.after(async () => {
-  restoreFunction(provider, 'register')
+  restoreFunction(Provider, 'getProvider')
   restoreFunction(lambda, 'register')
 })
 
 test('process many boletos (provider registered)', async (t) => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'registered' }))
+  mockFunction(Provider, 'getProvider', () => ({
+    register () {
+      return Promise.resolve({ status: 'registered' })
+    }
+  }))
 
   await processBoletosToRegister({}, {})
 
