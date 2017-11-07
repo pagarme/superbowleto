@@ -5,6 +5,9 @@ const parseHandlerEvent = event => Object.assign({}, event, {
 })
 
 const computeHandlerEvent = event => Object.assign({}, event, {
+  headers: {
+    'x-request-id': 'req_a872b1c123'
+  },
   body: JSON.stringify(event.body)
 })
 

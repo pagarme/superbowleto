@@ -3,20 +3,24 @@ import { Promise, promisify } from 'bluebird'
 import { mock, mockFunction, restoreFunction, userQueueUrl, userQueue } from '../../../helpers/boleto'
 import { normalizeHandler } from '../../../helpers/normalizer'
 import * as boletoHandler from '../../../../build/resources/boleto'
-import * as provider from '../../../../build/providers/bradesco'
+import * as Provider from '../../../../build/providers/bradesco'
 import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
 
 const create = normalizeHandler(boletoHandler.create)
-
 const register = promisify(boletoHandler.register)
 
 test.before(() => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'refused' }))
+  mockFunction(Provider, 'getProvider', () => ({
+    register () {
+      return Promise.resolve({ status: 'refused' })
+    }
+  }))
+
   purgeQueue(userQueue)
 })
 
 test.after(() => {
-  restoreFunction(provider, 'register')
+  restoreFunction(Provider, 'getProvider')
 })
 
 test('registers a boleto (provider refused)', async (t) => {

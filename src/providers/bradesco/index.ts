@@ -63,16 +63,7 @@ export const buildPayload = boleto =>
     .then(spec => applySpec(spec)(boleto))
 
 export const translateResponseCode = (response) => {
-  const logger = makeLogger({ operation: 'translateResponseCode' })
-
   const responseCode = response.data.status.codigo.toString()
-
-  logger.info({
-    status: 'succeeded',
-    metadata: {
-      response: response.data
-    }
-  })
 
   const defaultValue = {
     message: 'CÓDIGO INEXISTENTE',
@@ -82,83 +73,61 @@ export const translateResponseCode = (response) => {
   return defaultTo(defaultValue, prop(responseCode, responseCodeMap))
 }
 
-export const verifyRegistrationStatus = (boleto) => {
-  const logger = makeLogger({ operation: 'verifyRegistrationStatus' })
-
-  return Promise.resolve(buildHeaders())
-    .then(headers => ({
-      headers,
-      url: `${endpoint}`,
-      method: 'GET',
-      params: {
-        nosso_numero: prop('title_id', boleto),
-        numero_documento: prop('title_id', boleto)
-      }
-    }))
-    .tap((request) => {
-      logger.info({
-        status: 'started',
-        metadata: {
-          request: { body: request.data }
-        }
-      })
-    })
-    .then(axios.request)
-    .then(translateResponseCode)
-    .tap((response) => {
-      logger.info({
-        status: 'succeeded',
-        metadata: { status: response.status, data: response.data }
-      })
-    })
-    .tapCatch(err => logger.error({
-      status: 'failed',
-      metadata: {
-        err: pathOr(err, ['response', 'data'], err)
-      }
-    }))
+const defaultOptions = {
+  requestId: `req_${Date.now()}`
 }
 
-export const register = (boleto) => {
-  const logger = makeLogger({ operation: 'register' })
+export const getProvider = ({ requestId } = defaultOptions) => {
+  const register = (boleto) => {
+    const logger = makeLogger(
+      {
+        operation: 'register_boleto_on_provider',
+        provider: 'bradesco'
+      },
+      { id: requestId }
+    )
 
-  return Promise.all([
-    buildHeaders(),
-    buildPayload(boleto)
-  ])
-    .spread((headers, payload) => ({
-      headers,
-      data: payload,
-      url: endpoint,
-      method: 'POST'
-    }))
-    .tap((request) => {
-      logger.info({
-        status: 'started',
+    return Promise.all([
+      buildHeaders(),
+      buildPayload(boleto)
+    ])
+      .spread((headers, payload) => ({
+        headers,
+        data: payload,
+        url: endpoint,
+        method: 'POST'
+      }))
+      .tap((request) => {
+        logger.info({
+          status: 'started',
+          metadata: {
+            request: { body: request.data }
+          }
+        })
+      })
+      .then(axios.request)
+      .tap(response => logger.info({
         metadata: {
-          request: { body: request.data }
+          response: response.data
         }
+      }))
+      .then(translateResponseCode)
+      .tap((response) => {
+        logger.info({
+          status: 'success',
+          metadata: { status: response.status, data: response.data }
+        })
       })
-    })
-    .then(axios.request)
-    .then(translateResponseCode)
-    .then((translatedResponseCode) => {
-      if (translatedResponseCode.status === 'check_status') {
-        return verifyRegistrationStatus(boleto)
-      }
+      .tapCatch(err => logger.error({
+        status: 'failed',
+        metadata: {
+          err: pathOr(err, ['response', 'data'], err)
+        }
+      }))
+  }
 
-      return translatedResponseCode
-    })
-    .tap((response) => {
-      logger.info({
-        status: 'succeeded',
-        metadata: { status: response.status, data: response.data }
-      })
-    })
-    .tapCatch(err => logger.error({
-      status: 'failed',
-      metadata: {
-        err: pathOr(err, ['response', 'data'], err)
-      }
-    }))
+  return {
+    register
+  }
 }
+

@@ -34,7 +34,7 @@ export const migrate = (event, context, callback) => {
     })
 
     umzug.up()
-      .tap(() => logger.info({ status: 'succeeded' }))
+      .tap(() => logger.info({ status: 'success' }))
       .then(() => callback(null))
       .catch(err => callback(err))
       .catch((err) => {

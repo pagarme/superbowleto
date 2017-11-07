@@ -4,19 +4,24 @@ import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
 import * as boletoHandler from '../../../../../build/resources/boleto'
-import * as provider from '../../../../../build/providers/bradesco'
+import * as Provider from '../../../../../build/providers/bradesco'
 import { findItemOnQueue, purgeQueue } from '../../../../helpers/sqs'
 import { BoletosToRegisterQueue } from '../../../../../build/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
 
 test.before(async () => {
-  mockFunction(provider, 'register', () => Promise.resolve({ status: 'unknown' }))
+  mockFunction(Provider, 'getProvider', () => ({
+    register () {
+      return Promise.resolve({ status: 'unknown' })
+    }
+  }))
+
   await purgeQueue(BoletosToRegisterQueue)
 })
 
 test.after(() => {
-  restoreFunction(provider, 'register')
+  restoreFunction(Provider, 'getProvider')
 })
 
 test('creates a boleto (provider unknown)', async (t) => {
