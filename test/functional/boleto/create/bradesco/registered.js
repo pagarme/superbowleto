@@ -19,7 +19,9 @@ test('creates a boleto (provider success)', async (t) => {
 
   t.true(body.title_id != null)
   t.true(body.barcode != null)
+  t.true(body.issuer_response_code != null)
   t.true(typeof body.title_id === 'number')
+  t.true(typeof body.issuer_response_code === 'string')
 
   assert.containSubset(body, {
     status: 'registered',
