@@ -122,7 +122,10 @@ export const getProvider = ({ requestId } = defaultOptions) => {
       .tapCatch(err => logger.error({
         status: 'failed',
         metadata: {
-          err: pathOr(err, ['response', 'data'], err)
+          err: pathOr(err, ['response', 'data'], err),
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message
         }
       }))
   }

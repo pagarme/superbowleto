@@ -38,7 +38,15 @@ export const migrate = (event, context, callback) => {
       .then(() => callback(null))
       .catch(err => callback(err))
       .catch((err) => {
-        logger.error({ status: 'failed', metadata: { err } })
+        logger.error({
+          status: 'failed',
+          metadata: {
+            err,
+            error_name: err.name,
+            error_stack: err.stack,
+            error_message: err.message
+          }
+        })
         callback(err)
       })
   })

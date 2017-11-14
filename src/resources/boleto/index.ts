@@ -74,7 +74,13 @@ export const create = (event, context, callback) => {
         .catch((err) => {
           logger.info({
             sub_operation: 'send_to_background_queue', status: 'failed',
-            metadata: { err, boleto_id: boleto.id }
+            metadata: {
+              err,
+              error_name: err.name,
+              error_stack: err.stack,
+              error_message: err.message,
+              boleto_id: boleto.id
+            }
           })
           throw err
         })
@@ -97,7 +103,15 @@ export const create = (event, context, callback) => {
       })
     })
     .catch((err) => {
-      logger.error({ status: 'failed', metadata: { err } })
+      logger.error({
+        status: 'failed',
+        metadata: {
+          err,
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message
+        }
+      })
       return handleError(err)
     })
     .then(response => callback(null, response))
@@ -115,20 +129,29 @@ export const register = (event, context, callback) => {
   const removeBoletoFromQueueConditionally = (boleto) => {
     if (boleto.status === 'registered' || boleto.status === 'refused') {
       logger.info({
-        sub_operation: 'remove_from_background_queue', status: 'started',
+        sub_operation: 'remove_from_background_queue',
+        status: 'started',
         metadata: { boleto_id: boleto.id }
       })
       return BoletosToRegisterQueue.remove(sqsMessage)
         .then(() => {
           logger.info({
-            sub_operation: 'remove_from_background_queue', status: 'success',
+            sub_operation: 'remove_from_background_queue',
+            status: 'success',
             metadata: { boleto_id: boleto.id }
           })
         })
         .catch((err) => {
           logger.info({
-            sub_operation: 'remove_from_background_queue', status: 'failed',
-            metadata: { err, boleto_id: boleto.id }
+            sub_operation: 'remove_from_background_queue',
+            status: 'failed',
+            metadata: {
+              err,
+              error_name: err.name,
+              error_stack: err.stack,
+              error_message: err.message,
+              boleto_id: boleto.id
+            }
           })
           throw err
         })
@@ -164,7 +187,13 @@ export const register = (event, context, callback) => {
           logger.info({
             sub_operation: 'send_message_to_client_queue',
             status: 'failed',
-            metadata: { err, boleto_id: boleto.id }
+            metadata: {
+              err,
+              error_name: err.name,
+              error_stack: err.stack,
+              error_message: err.message,
+              boleto_id: boleto.id
+            }
           })
           throw err
         })
@@ -184,7 +213,15 @@ export const register = (event, context, callback) => {
       })
     })
     .catch((err) => {
-      logger.error({ status: 'failed', metadata: { err } })
+      logger.error({
+        status: 'failed',
+        metadata: {
+          err,
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message
+        }
+      })
       callback(err)
     })
     .then(boleto => callback(null, boleto))
@@ -281,6 +318,14 @@ export const processBoletosToRegister = (event, context, callback) => {
   const interval = setInterval(stopQueueWhenIdle, 5000)
 
   BoletosToRegisterQueue.on('error', (err) => {
-    logger.error({ status: 'failed', metadata: { err } })
+    logger.error({
+      status: 'failed',
+      metadata: {
+        err,
+        error_name: err.name,
+        error_stack: err.stack,
+        error_message: err.message
+      }
+    })
   })
 }

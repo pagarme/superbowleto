@@ -26,7 +26,15 @@ export default function boletoService ({ requestId }) {
           logger.info({ status: 'success', metadata: { boleto } })
         })
         .catch((err) => {
-          logger.error({ status: 'failed', metadata: { err } })
+          logger.error({
+            status: 'failed',
+            metadata: {
+              err,
+              error_name: err.name,
+              error_stack: err.stack,
+              error_message: err.message
+            }
+          })
           return handleDatabaseErrors(err)
         })
       )
@@ -71,7 +79,10 @@ export default function boletoService ({ requestId }) {
           message: 'Boleto register failed: will send to background registering',
           metadata: {
             boleto,
-            err
+            err,
+            error_name: err.name,
+            error_stack: err.stack,
+            error_message: err.message
           }
         })
 
@@ -83,7 +94,15 @@ export default function boletoService ({ requestId }) {
         logger.info({ status: 'success', metadata: { boleto } })
       })
       .catch((err) => {
-        logger.error({ status: 'failed', metadata: { err } })
+        logger.error({
+          status: 'failed',
+          metadata: {
+            err,
+            error_name: err.name,
+            error_stack: err.stack,
+            error_message: err.message
+          }
+        })
         throw err
       })
   }
@@ -209,7 +228,13 @@ export default function boletoService ({ requestId }) {
             logger.info({
               sub_operation: 'remove_from_background_queue',
               status: 'failed',
-              metadata: { err, boleto_id: boleto.id }
+              metadata: {
+                err,
+                boleto_id: boleto.id,
+                error_name: err.name,
+                error_stack: err.stack,
+                error_message: err.message
+              }
             })
             throw err
           })
@@ -245,7 +270,13 @@ export default function boletoService ({ requestId }) {
             logger.info({
               sub_operation: 'send_message_to_client_queue',
               status: 'failed',
-              metadata: { err, boleto_id: boleto.id }
+              metadata: {
+                err,
+                error_name: err.name,
+                error_stack: err.stack,
+                error_message: err.message,
+                boleto_id: boleto.id
+              }
             })
             throw err
           })
@@ -265,7 +296,15 @@ export default function boletoService ({ requestId }) {
         })
       })
       .catch((err) => {
-        logger.error({ status: 'failed', metadata: { err } })
+        logger.error({
+          status: 'failed',
+          metadata: {
+            err,
+            error_name: err.name,
+            error_stack: err.stack,
+            error_message: err.message
+          }
+        })
       })
   }
 

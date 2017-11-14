@@ -33,7 +33,15 @@ export const getCredentials = memoize((key: string): Promise<string> => {
     name: credstashKey
   })
     .catch((err) => {
-      logger.error({ status: 'failed', metadata: { err } })
+      logger.error({
+        status: 'failed',
+        metadata: {
+          err,
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message
+        }
+      })
       return Promise.reject(err)
     })
 })
