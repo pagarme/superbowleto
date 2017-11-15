@@ -75,11 +75,9 @@ export const create = (event, context, callback) => {
           logger.info({
             sub_operation: 'send_to_background_queue', status: 'failed',
             metadata: {
-              err,
               error_name: err.name,
               error_stack: err.stack,
-              error_message: err.message,
-              boleto_id: boleto.id
+              error_message: err.message
             }
           })
           throw err
@@ -106,7 +104,6 @@ export const create = (event, context, callback) => {
       logger.error({
         status: 'failed',
         metadata: {
-          err,
           error_name: err.name,
           error_stack: err.stack,
           error_message: err.message
@@ -146,11 +143,9 @@ export const register = (event, context, callback) => {
             sub_operation: 'remove_from_background_queue',
             status: 'failed',
             metadata: {
-              err,
               error_name: err.name,
               error_stack: err.stack,
-              error_message: err.message,
-              boleto_id: boleto.id
+              error_message: err.message
             }
           })
           throw err
@@ -188,11 +183,9 @@ export const register = (event, context, callback) => {
             sub_operation: 'send_message_to_client_queue',
             status: 'failed',
             metadata: {
-              err,
               error_name: err.name,
               error_stack: err.stack,
-              error_message: err.message,
-              boleto_id: boleto.id
+              error_message: err.message
             }
           })
           throw err
@@ -216,7 +209,6 @@ export const register = (event, context, callback) => {
       logger.error({
         status: 'failed',
         metadata: {
-          err,
           error_name: err.name,
           error_stack: err.stack,
           error_message: err.message
@@ -321,7 +313,6 @@ export const processBoletosToRegister = (event, context, callback) => {
     logger.error({
       status: 'failed',
       metadata: {
-        err,
         error_name: err.name,
         error_stack: err.stack,
         error_message: err.message
