@@ -29,7 +29,6 @@ export default function boletoService ({ requestId }) {
           logger.error({
             status: 'failed',
             metadata: {
-              err,
               error_name: err.name,
               error_stack: err.stack,
               error_message: err.message
@@ -79,7 +78,6 @@ export default function boletoService ({ requestId }) {
           message: 'Boleto register failed: will send to background registering',
           metadata: {
             boleto,
-            err,
             error_name: err.name,
             error_stack: err.stack,
             error_message: err.message
@@ -97,7 +95,6 @@ export default function boletoService ({ requestId }) {
         logger.error({
           status: 'failed',
           metadata: {
-            err,
             error_name: err.name,
             error_stack: err.stack,
             error_message: err.message
@@ -229,8 +226,6 @@ export default function boletoService ({ requestId }) {
               sub_operation: 'remove_from_background_queue',
               status: 'failed',
               metadata: {
-                err,
-                boleto_id: boleto.id,
                 error_name: err.name,
                 error_stack: err.stack,
                 error_message: err.message
@@ -271,11 +266,9 @@ export default function boletoService ({ requestId }) {
               sub_operation: 'send_message_to_client_queue',
               status: 'failed',
               metadata: {
-                err,
                 error_name: err.name,
                 error_stack: err.stack,
-                error_message: err.message,
-                boleto_id: boleto.id
+                error_message: err.message
               }
             })
             throw err
@@ -299,7 +292,6 @@ export default function boletoService ({ requestId }) {
         logger.error({
           status: 'failed',
           metadata: {
-            err,
             error_name: err.name,
             error_stack: err.stack,
             error_message: err.message

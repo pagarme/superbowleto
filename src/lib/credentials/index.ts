@@ -36,7 +36,6 @@ export const getCredentials = memoize((key: string): Promise<string> => {
       logger.error({
         status: 'failed',
         metadata: {
-          err,
           error_name: err.name,
           error_stack: err.stack,
           error_message: err.message
