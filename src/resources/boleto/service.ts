@@ -13,6 +13,11 @@ import { defaultCuidValue } from '../../lib/database/schema'
 const makeLogger = makeFromLogger('boleto/service')
 
 export default function boletoService ({ requestId }) {
+  const registeredOrRefused = {
+    registered: 'registered',
+    refused: 'refused'
+  }
+
   const create = (data) => {
     const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: requestId })
 
@@ -46,25 +51,19 @@ export default function boletoService ({ requestId }) {
 
     const logger = makeLogger({ operation: 'register' }, { id: requestId })
 
+    const pendingRegistration = 'pending_registration'
+
     const updateBoletoStatus = (response) => {
       const status = response.status
 
-      let newBoletoStatus
-
-      if (status === 'registered') {
-        newBoletoStatus = 'registered'
-      } else if (status === 'refused') {
-        newBoletoStatus = 'refused'
-      } else {
-        newBoletoStatus = 'pending_registration'
-      }
+      const newBoletoStatus = registeredOrRefused[status] || pendingRegistration
 
       return boleto.update({
         status: newBoletoStatus
       })
     }
 
-    if (boleto.status === 'refused' || boleto.status === 'registered') {
+    if (registeredOrRefused[boleto.status]) {
       return Promise.resolve(boleto)
     }
 
@@ -85,7 +84,7 @@ export default function boletoService ({ requestId }) {
         })
 
         boleto.update({
-          status: 'pending_registration'
+          status: pendingRegistration
         })
       })
       .tap((boleto) => {
@@ -207,7 +206,7 @@ export default function boletoService ({ requestId }) {
 
     // eslint-disable-next-line
     const removeBoletoFromQueueConditionally = (boleto) => {
-      if (boleto.status === 'registered' || boleto.status === 'refused') {
+      if (registeredOrRefused[boleto.status]) {
         logger.info({
           sub_operation: 'remove_from_background_queue',
           status: 'started',
@@ -237,7 +236,7 @@ export default function boletoService ({ requestId }) {
     }
 
     const sendMessageToUserQueueConditionally = (boleto) => {
-      if (boleto.status === 'registered' || boleto.status === 'refused') {
+      if (registeredOrRefused[boleto.status]) {
         logger.info({
           sub_operation: 'send_message_to_client_queue',
           status: 'started',
