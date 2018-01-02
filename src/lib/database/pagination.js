@@ -1,4 +1,4 @@
-import { clamp, dec, max } from 'ramda'
+const { clamp, dec, max } = require('ramda')
 
 const getPaginationLimit = (count) => {
   const minValue = 1
@@ -14,7 +14,7 @@ const getPaginationOffset = ({ count, page }) => {
   return dec(clamp(minValue, maxValue, page)) * count
 }
 
-export const getPaginationQuery = (options: any = {}) => {
+const getPaginationQuery = (options: any = {}) => {
   const { page = 1, count = 10 } = options
   const limit = getPaginationLimit(count)
   const offset = getPaginationOffset({ page, count })
@@ -23,4 +23,8 @@ export const getPaginationQuery = (options: any = {}) => {
     limit,
     offset
   }
+}
+
+module.exports = {
+  getPaginationQuery
 }

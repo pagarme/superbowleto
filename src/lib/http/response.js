@@ -1,17 +1,23 @@
-import { curryN, compose, objOf } from 'ramda'
-import { normalizeErrors } from '../errors/normalizer'
+const { curryN, compose, objOf } = require('ramda')
+const { normalizeErrors } = require('../errors/normalizer')
 
-export const buildErrorPayload = compose(
+const buildErrorPayload = compose(
   objOf('errors'),
   normalizeErrors
 )
 
-export const buildSuccessResponse = curryN(2, (statusCode, data) => ({
+const buildSuccessResponse = curryN(2, (statusCode, data) => ({
   statusCode,
   body: JSON.stringify(data)
 }))
 
-export const buildFailureResponse = curryN(2, (statusCode, data) => ({
+const buildFailureResponse = curryN(2, (statusCode, data) => ({
   statusCode,
   body: JSON.stringify(buildErrorPayload(data))
 }))
+
+module.exports = {
+  buildErrorPayload,
+  buildSuccessResponse,
+  buildFailureResponse
+}

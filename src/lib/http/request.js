@@ -1,8 +1,8 @@
-import { curryN } from 'ramda'
-import { validate } from 'joi'
-import { ValidationError, InvalidParameterError } from '../errors'
+const { curryN } = require('ramda')
+const { validate } = require('joi')
+const { ValidationError, InvalidParameterError } = require('../errors')
 
-export const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
+const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
   const options = {
     abortEarly: false
   }
@@ -20,3 +20,7 @@ export const parse = curryN(2, (schema, data) => new Promise((resolve, reject) =
 
   return reject(new ValidationError({ errors }))
 }))
+
+module.exports = {
+  parse
+}

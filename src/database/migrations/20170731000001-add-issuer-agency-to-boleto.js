@@ -1,6 +1,6 @@
-import { STRING } from 'sequelize'
+const { STRING } = require('sequelize')
 
-export default {
+module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface.addColumn('Boletos', 'issuer_agency', {
       type: STRING

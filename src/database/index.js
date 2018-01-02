@@ -1,8 +1,8 @@
-import Sequelize from 'sequelize'
-import * as Promise from 'bluebird'
-import getConfig from '../config/database'
-import * as rawModels from './models'
-import { getCredentials } from '../lib/credentials'
+const Sequelize = require('sequelize')
+const Promise = require('bluebird')
+const getConfig = require('../config/database')
+const rawModels = require('./models')
+const { getCredentials } = require('../lib/credentials')
 
 const config = getConfig()
 
@@ -14,7 +14,7 @@ const defaults = {
 
 let database = null
 
-export function getDatabase () {
+function getDatabase () {
   if (database) {
     return Promise.resolve(database)
   }
@@ -44,7 +44,12 @@ export function getDatabase () {
     })
 }
 
-export function getModel (modelName) {
+function getModel (modelName) {
   return getDatabase()
     .then(returnedDatabase => returnedDatabase.models[modelName])
+}
+
+module.exports = {
+  getDatabase,
+  getModel
 }

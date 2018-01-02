@@ -1,6 +1,6 @@
-import { STRING } from 'sequelize'
+const { STRING } = require('sequelize')
 
-export default {
+module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface.changeColumn('Boletos', 'company_name', {
       type: STRING,

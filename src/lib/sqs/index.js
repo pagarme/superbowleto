@@ -1,5 +1,5 @@
-import { SQS, Credentials } from 'aws-sdk'
-import getConfig from '../../config/sqs'
+const { SQS, Credentials } = require('aws-sdk')
+const getConfig = require('../../config/sqs')
 
 const config = getConfig()
 
@@ -13,4 +13,4 @@ const sqs = new SQS({
   })
 })
 
-export default sqs
+module.exports = sqs

@@ -1,6 +1,6 @@
-import { STRING, INTEGER, ENUM, TEXT, DATE } from 'sequelize'
+const { STRING, INTEGER, ENUM, TEXT, DATE } = require('sequelize')
 
-export default {
+module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Boletos', {
     id: {
       type: STRING,

@@ -1,9 +1,14 @@
-import * as Promise from 'bluebird'
-import * as cuid from 'cuid'
+const Promise = require('bluebird')
+const cuid = require('cuid')
 
-export const defaultCuidValue = (prefix = '') => () => `${prefix}${cuid()}`
+const defaultCuidValue = (prefix = '') => () => `${prefix}${cuid()}`
 
-export const responseObjectBuilder = fn => data =>
+const responseObjectBuilder = fn => data =>
   Array.isArray(data)
     ? Promise.map(data, fn)
     : Promise.resolve(fn(data))
+
+module.exports = {
+  defaultCuidValue,
+  responseObjectBuilder
+}
