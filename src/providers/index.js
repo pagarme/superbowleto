@@ -1,9 +1,9 @@
-import { always, cond, equals, T } from 'ramda'
-import * as bradesco from './bradesco'
-import * as development from './development'
-import { NotFoundError } from '../lib/errors/index'
+const { always, cond, equals, T } = require('ramda')
+const bradesco = require('./bradesco')
+const development = require('./development')
+const { NotFoundError } = require('../lib/errors/index')
 
-export const findProvider = cond([
+const findProvider = cond([
   [equals('bradesco'), always(bradesco)],
   [equals('development'), always(development)],
   [T, () => {
@@ -13,3 +13,6 @@ export const findProvider = cond([
   }]
 ])
 
+module.exports = {
+  findProvider
+}

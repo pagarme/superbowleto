@@ -1,6 +1,6 @@
-import * as Joi from 'joi'
+const Joi = require('joi')
 
-export const createSchema = {
+const createSchema = {
   queue_url: Joi
     .string()
     .required(),
@@ -119,7 +119,7 @@ export const createSchema = {
     .default(true)
 }
 
-export const updateSchema = {
+const updateSchema = {
   id: Joi
     .string()
     .required(),
@@ -132,7 +132,7 @@ export const updateSchema = {
     .string()
 }
 
-export const indexSchema = {
+const indexSchema = {
   token: Joi
     .string(),
 
@@ -146,4 +146,10 @@ export const indexSchema = {
   count: Joi
     .number()
     .integer()
+}
+
+module.exports = {
+  createSchema,
+  updateSchema,
+  indexSchema
 }

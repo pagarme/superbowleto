@@ -1,16 +1,16 @@
-import * as Promise from 'bluebird'
-import { both, complement, path, prop, propEq } from 'ramda'
-import sqs from '../../lib/sqs'
-import { buildSuccessResponse, buildFailureResponse } from '../../lib/http/response'
-import { ValidationError, NotFoundError, InternalServerError } from '../../lib/errors'
-import BoletoService from './service'
-import { parse } from '../../lib/http/request'
-import { createSchema, updateSchema, indexSchema } from './schema'
-import { makeFromLogger } from '../../lib/logger'
-import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
-import lambda from './lambda'
-import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
-import { buildModelResponse } from './model'
+const Promise = require('bluebird')
+const { both, complement, path, prop, propEq } = require('ramda')
+const sqs = require('../../lib/sqs')
+const { buildSuccessResponse, buildFailureResponse } = require('../../lib/http/response')
+const { ValidationError, NotFoundError, InternalServerError } = require('../../lib/errors')
+const BoletoService = require('./service')
+const { parse } = require('../../lib/http/request')
+const { createSchema, updateSchema, indexSchema } = require('./schema')
+const { makeFromLogger } = require('../../lib/logger')
+const { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } = require('./queues')
+const lambda = require('./lambda')
+const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
+const { buildModelResponse } = require('./model')
 
 const makeLogger = makeFromLogger('boleto/index')
 
@@ -31,7 +31,7 @@ const configureContext = (context: any = {}) => {
   context.callbackWaitsForEmptyEventLoop = false
 }
 
-export const create = (event, context, callback) => {
+const create = (event, context, callback) => {
   configureContext(context)
   const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
@@ -114,7 +114,7 @@ export const create = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
-export const register = (event, context, callback) => {
+const register = (event, context, callback) => {
   configureContext(context)
   const requestId = defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
@@ -219,7 +219,7 @@ export const register = (event, context, callback) => {
     .then(boleto => callback(null, boleto))
 }
 
-export const update = (event, context, callback) => {
+const update = (event, context, callback) => {
   configureContext(context)
   const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
@@ -237,7 +237,7 @@ export const update = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
-export const index = (event, context, callback) => {
+const index = (event, context, callback) => {
   configureContext(context)
   const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
@@ -258,7 +258,7 @@ export const index = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
-export const show = (event, context, callback) => {
+const show = (event, context, callback) => {
   configureContext(context)
   const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
@@ -273,7 +273,7 @@ export const show = (event, context, callback) => {
     .then(response => callback(null, response))
 }
 
-export const processBoletosToRegister = (event, context, callback) => {
+const processBoletosToRegister = (event, context, callback) => {
   configureContext(context)
   const requestId = defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
@@ -319,4 +319,13 @@ export const processBoletosToRegister = (event, context, callback) => {
       }
     })
   })
+}
+
+module.exports = {
+  create,
+  register,
+  update,
+  index,
+  show,
+  processBoletosToRegister
 }

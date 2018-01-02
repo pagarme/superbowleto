@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   0: {
     message: 'REGISTRO EFETUADO COM SUCESSO',
     status: 'registered'

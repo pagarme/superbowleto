@@ -10,7 +10,7 @@ class BaseError extends Error {
   }
 }
 
-export class NotFoundError extends BaseError {
+class NotFoundError extends BaseError {
   constructor (error: any = {}) {
     super(error.message)
 
@@ -20,7 +20,7 @@ export class NotFoundError extends BaseError {
   }
 }
 
-export class InvalidParameterError extends BaseError {
+class InvalidParameterError extends BaseError {
   constructor (error: any = {}) {
     super(error.message)
 
@@ -31,7 +31,7 @@ export class InvalidParameterError extends BaseError {
   }
 }
 
-export class ValidationError extends BaseError {
+class ValidationError extends BaseError {
   constructor (error: any = {}) {
     super(error.message)
 
@@ -42,7 +42,7 @@ export class ValidationError extends BaseError {
   }
 }
 
-export class DatabaseError extends BaseError {
+class DatabaseError extends BaseError {
   constructor (error: any = {}) {
     super(error.message)
 
@@ -52,7 +52,7 @@ export class DatabaseError extends BaseError {
   }
 }
 
-export class InternalServerError extends BaseError {
+class InternalServerError extends BaseError {
   constructor (error: any = {}) {
     super(error.message)
 
@@ -60,4 +60,12 @@ export class InternalServerError extends BaseError {
     this.name = 'InternalServerError'
     this.type = 'internal'
   }
+}
+
+module.exports = {
+  NotFoundError,
+  InvalidParameterError,
+  ValidationError,
+  DatabaseError,
+  InternalServerError
 }

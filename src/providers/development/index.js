@@ -1,6 +1,6 @@
-import * as Promise from 'bluebird'
-import { always, cond, equals, T } from 'ramda'
-import { makeFromLogger } from '../../lib/logger'
+const Promise = require('bluebird')
+const { always, cond, equals, T } = require('ramda')
+const { makeFromLogger } = require('../../lib/logger')
 
 const makeLogger = makeFromLogger('development/index')
 
@@ -8,7 +8,7 @@ const defaultOptions = {
   requestId: `req_${Date.now()}`
 }
 
-export const getProvider = ({ requestId } = defaultOptions) => {
+const getProvider = ({ requestId } = defaultOptions) => {
   const register = (boleto) => {
     const getStatusFromAmount = cond([
       [equals(5000003), always('pending_registration')],
@@ -44,4 +44,8 @@ export const getProvider = ({ requestId } = defaultOptions) => {
   return {
     register
   }
+}
+
+module.exports = {
+  getProvider
 }

@@ -1,4 +1,4 @@
-import {
+const {
   compose,
   cond,
   map,
@@ -7,7 +7,7 @@ import {
   pick,
   prop,
   T
-} from 'ramda'
+} = require('ramda')
 
 const hasErrors = compose(Array.isArray, prop('errors'))
 
@@ -26,7 +26,12 @@ const normalizeSingleError = compose(
 
 const normalizeMultipleErrors = map(normalizeSingleError)
 
-export const normalizeErrors = cond([
+const normalizeErrors = cond([
   [hasErrors, compose(normalizeMultipleErrors, prop('errors'))],
   [T, compose(normalizeMultipleErrors, of)]
 ])
+
+module.exports = {
+  normalizeErrors
+}
+

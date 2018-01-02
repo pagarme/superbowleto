@@ -1,6 +1,6 @@
-import { JSON } from 'sequelize'
+const { JSON } = require('sequelize')
 
-export default {
+module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface.addColumn('Boletos', 'payer_address', {
       type: JSON

@@ -1,6 +1,6 @@
-import { Lambda, Credentials } from 'aws-sdk'
+const { Lambda, Credentials } = require('aws-sdk')
 
-import getConfig from '../../config/lambda'
+const getConfig = require('../../config/lambda')
 
 const config = getConfig()
 
@@ -14,4 +14,4 @@ const lambda = new Lambda({
   })
 })
 
-export default lambda
+module.exports = lambda

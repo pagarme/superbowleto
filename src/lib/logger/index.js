@@ -1,6 +1,6 @@
-import * as log4js from 'log4js'
-import * as escriba from 'escriba'
-import { getEnv } from '../../config/index'
+const log4js = require('log4js')
+const escriba = require('escriba')
+const { getEnv } = require('../../config/index')
 
 if (getEnv() === 'test') {
   log4js.setGlobalLogLevel('OFF')
@@ -8,12 +8,12 @@ if (getEnv() === 'test') {
 
 const loggerEngine = log4js.getLogger()
 
-export const { logger } = escriba({
+const { logger } = escriba({
   loggerEngine,
   service: 'superbowleto'
 })
 
-export const makeLogger = (defaultData = {}, defaultConfig = {}) => {
+const makeLogger = (defaultData = {}, defaultConfig = {}) => {
   function makeLogFunction (name) {
     return (data = {}, config = {}) => {
       const mergedData = Object.assign({}, defaultData, data)
@@ -33,9 +33,15 @@ export const makeLogger = (defaultData = {}, defaultConfig = {}) => {
   }
 }
 
-export const makeFromLogger = from => (defaultData = {}, defaultConfig = {}) => {
+const makeFromLogger = from => (defaultData = {}, defaultConfig = {}) => {
   Object.assign(defaultConfig, { from })
 
   return makeLogger(defaultData, defaultConfig)
+}
+
+module.exports = {
+  logger,
+  makeLogger,
+  makeFromLogger
 }
 

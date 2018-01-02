@@ -1,6 +1,6 @@
-import * as Umzug from 'umzug'
-import { makeFromLogger } from '../../lib/logger'
-import { getDatabase } from '../../database'
+const Umzug = require('umzug')
+const { makeFromLogger } = require('../../lib/logger')
+const { getDatabase } = require('../../database')
 
 const makeLogger = makeFromLogger('database/index')
 
@@ -12,7 +12,7 @@ const getMigrationsPath = () => {
   return './build/database/migrations'
 }
 
-export const migrate = (event, context, callback) => {
+const migrate = (event, context, callback) => {
   const logger = makeLogger({ operation: 'migrate' })
 
   logger.info({ status: 'started' })
@@ -49,4 +49,8 @@ export const migrate = (event, context, callback) => {
         callback(err)
       })
   })
+}
+
+module.exports = {
+  migrate
 }
