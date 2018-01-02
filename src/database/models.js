@@ -1,1 +1,5 @@
-export { default as Boleto } from '../resources/boleto/model'
+const Boleto = require('../resources/boleto/model')
+
+module.exports = {
+  Boleto
+}

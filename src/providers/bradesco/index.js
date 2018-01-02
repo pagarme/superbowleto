@@ -1,7 +1,7 @@
-import axios from 'axios'
-import * as moment from 'moment'
-import * as Promise from 'bluebird'
-import {
+const axios = require('axios')
+const moment = require('moment')
+const Promise = require('bluebird')
+const {
   always,
   applySpec,
   compose,
@@ -9,19 +9,19 @@ import {
   path,
   pathOr,
   prop
-} from 'ramda'
-import { format } from './formatter'
-import getConfig from '../../config/providers'
-import { encodeBase64 } from '../../lib/encoding'
-import { makeFromLogger } from '../../lib/logger'
-import { getCredentials } from '../../lib/credentials'
-import responseCodeMap from './response-codes'
+} = require('ramda')
+const { format } = require('./formatter')
+const getConfig = require('../../config/providers')
+const { encodeBase64 } = require('../../lib/encoding')
+const { makeFromLogger } = require('../../lib/logger')
+const { getCredentials } = require('../../lib/credentials')
+const responseCodeMap = require('./response-codes')
 
 const { endpoint } = prop('bradesco', getConfig())
 
 const makeLogger = makeFromLogger('bradesco/index')
 
-export const buildHeaders = () =>
+const buildHeaders = () =>
   Promise.all([
     getCredentials('providers/bradesco/company_id'),
     getCredentials('providers/bradesco/api_key')
@@ -34,7 +34,7 @@ export const buildHeaders = () =>
       }
     })
 
-export const buildPayload = boleto =>
+const buildPayload = boleto =>
   Promise.resolve(getCredentials('providers/bradesco/company_id'))
     .then(merchantId => ({
       merchant_id: always(merchantId),
@@ -63,7 +63,7 @@ export const buildPayload = boleto =>
     }))
     .then(spec => applySpec(spec)(boleto))
 
-export const translateResponseCode = (response) => {
+const translateResponseCode = (response) => {
   const responseCode = response.data.status.codigo.toString()
 
   const defaultValue = {
@@ -78,7 +78,7 @@ const defaultOptions = {
   requestId: `req_${Date.now()}`
 }
 
-export const getProvider = ({ requestId } = defaultOptions) => {
+const getProvider = ({ requestId } = defaultOptions) => {
   const register = (boleto) => {
     const logger = makeLogger(
       {
@@ -134,3 +134,9 @@ export const getProvider = ({ requestId } = defaultOptions) => {
   }
 }
 
+module.exports = {
+  buildHeaders,
+  buildPayload,
+  translateResponseCode,
+  getProvider
+}

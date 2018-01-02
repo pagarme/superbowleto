@@ -1,18 +1,18 @@
-import * as Promise from 'bluebird'
-import { mergeAll } from 'ramda'
-import { getModel } from '../../database'
-import { NotFoundError } from '../../lib/errors'
-import { handleDatabaseErrors } from '../../lib/errors/database'
-import { getPaginationQuery } from '../../lib/database/pagination'
-import sqs from '../../lib/sqs'
-import { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } from './queues'
-import { findProvider } from '../../providers'
-import { makeFromLogger } from '../../lib/logger'
-import { defaultCuidValue } from '../../lib/database/schema'
+const Promise = require('bluebird')
+const { mergeAll } = require('ramda')
+const { getModel } = require('../../database')
+const { NotFoundError } = require('../../lib/errors')
+const { handleDatabaseErrors } = require('../../lib/errors/database')
+const { getPaginationQuery } = require('../../lib/database/pagination')
+const sqs = require('../../lib/sqs')
+const { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } = require('./queues')
+const { findProvider } = require('../../providers')
+const { makeFromLogger } = require('../../lib/logger')
+const { defaultCuidValue } = require('../../lib/database/schema')
 
 const makeLogger = makeFromLogger('boleto/service')
 
-export default function boletoService ({ requestId }) {
+module.exports = function boletoService ({ requestId }) {
   const create = (data) => {
     const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: requestId })
 

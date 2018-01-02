@@ -1,6 +1,10 @@
-import Sequelize from 'sequelize'
-import { compose, cond, T } from 'ramda'
-import { DatabaseError, InvalidParameterError, ValidationError } from './index'
+const Sequelize = require('sequelize')
+const { compose, cond, T } = require('ramda')
+const {
+  DatabaseError,
+  InvalidParameterError,
+  ValidationError
+} = require('./index')
 
 const isValidationError = err => err instanceof Sequelize.ValidationError
 const isSequelizeError = err => err instanceof Sequelize.Error
@@ -22,8 +26,12 @@ const throwError = (err) => {
   throw err
 }
 
-export const handleDatabaseErrors = cond([
+const handleDatabaseErrors = cond([
   [isValidationError, compose(throwError, handleValidationErrors)],
   [isSequelizeError, compose(throwError, handleGenericErrors)],
   [T, throwError]
 ])
+
+module.exports = {
+  handleDatabaseErrors
+}

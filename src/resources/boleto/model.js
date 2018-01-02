@@ -1,5 +1,5 @@
-import * as Promise from 'bluebird'
-import {
+const Promise = require('bluebird')
+const {
   __,
   T,
   all,
@@ -19,18 +19,18 @@ import {
   pipe,
   pick,
   values
-} from 'ramda'
+} = require('ramda')
 
-import { STRING, INTEGER, ENUM, TEXT, DATE, JSON } from 'sequelize'
-import { Boleto as NodeBoleto } from 'node-boleto'
-import { defaultCuidValue, responseObjectBuilder } from '../../lib/database/schema'
+const { STRING, INTEGER, ENUM, TEXT, DATE, JSON } = require('sequelize')
+const { Boleto as NodeBoleto } = require('node-boleto')
+const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
 
 const barcodeBank = cond([
   [equals('development'), always('bradesco')],
   [T, identity]
 ])
 
-export const generateBoletoCode = (boleto) => {
+const generateBoletoCode = (boleto) => {
   const nodeBoleto = new NodeBoleto({
     banco: barcodeBank(boleto.issuer),
     valor: boleto.amount,
@@ -47,7 +47,7 @@ export const generateBoletoCode = (boleto) => {
   }
 }
 
-export const buildModelResponse = responseObjectBuilder(boleto =>
+const buildModelResponse = responseObjectBuilder(boleto =>
   Promise.resolve(boleto)
     .then(pick([
       'id',
@@ -89,7 +89,7 @@ const addBoletoCode = (boleto) => {
   })
 }
 
-export const validateModel = (boleto) => {
+const validateModel = (boleto) => {
   if (!boleto.payer_address) {
     boleto.payer_address = {}
   }
@@ -274,6 +274,9 @@ function create (database) {
   })
 }
 
-export default {
+module.exports = {
+  generateBoletoCode,
+  buildModelResponse,
+  validateModel,
   create
 }

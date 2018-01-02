@@ -1,5 +1,5 @@
-import lambda from '../../lib/lambda'
-import { getEnv } from '../../config/index'
+const lambda = require('../../lib/lambda')
+const { getEnv } = require('../../config/index')
 
 function getFullLambdaFunctionName (shortName) {
   const stage = process.env.STAGE || 'test'
@@ -15,6 +15,6 @@ function register (payload) {
   }).promise()
 }
 
-export default {
+module.exports = {
   register
 }
