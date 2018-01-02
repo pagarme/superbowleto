@@ -5,17 +5,14 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build-production": "tsc && webpack",
-    "build-test": "tsc",
-    "lint": "npm run tslint && npm run eslint",
+    "lint": "npm run eslint",
     "eslint": "eslint 'test/**/*.js'",
     "tslint": "tslint 'src/**/*.ts'",
     "setup": "node ./script/setup",
-    "test": "npm run prepare-test && nyc ava --verbose --serial 'test/**/*.js'",
-    "test-functional": "npm run prepare-test && ava --verbose --serial 'test/functional/**/*.js'",
-    "test-integration": "npm run prepare-test && ava --verbose 'test/integration/**/*.js'",
-    "test-unit": "npm run build-test && ava --verbose 'test/unit/**/*.js'",
-    "prepare-test": "npm run build-test && npm run setup"
+    "test": "npm run setup && nyc ava --verbose --serial 'test/**/*.js'",
+    "test-functional": "npm run setup && ava --verbose --serial 'test/functional/**/*.js'",
+    "test-integration": "npm run setup && ava --verbose 'test/integration/**/*.js'",
+    "test-unit": "ava --verbose 'test/unit/**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -52,7 +49,6 @@
     "umzug": "2.0.1"
   },
   "devDependencies": {
-    "@types/node": "7.0.22",
     "ava": "0.18.2",
     "chai": "3.5.0",
     "chai-subset": "1.5.0",
@@ -60,10 +56,6 @@
     "eslint-config-airbnb-base": "11.1.2",
     "eslint-plugin-import": "2.2.0",
     "nyc": "10.3.2",
-    "serverless": "1.10.2",
-    "tslint": "5.5.0",
-    "tslint-config-airbnb": "5.2.1",
-    "typescript": "2.3.3",
-    "typescript-eslint-parser": "3.0.0",
+    "serverless": "1.10.2"
   }
 }
