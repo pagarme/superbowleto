@@ -5,9 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "lint": "npm run eslint",
-    "eslint": "eslint 'test/**/*.js'",
-    "tslint": "tslint 'src/**/*.ts'",
+    "lint": "eslint 'test/**/*.js' 'src/**/*.js'",
     "setup": "node ./script/setup",
     "test": "npm run setup && nyc ava --verbose --serial 'test/**/*.js'",
     "test-functional": "npm run setup && ava --verbose --serial 'test/functional/**/*.js'",
@@ -52,9 +50,9 @@
     "ava": "0.18.2",
     "chai": "3.5.0",
     "chai-subset": "1.5.0",
-    "eslint": "3.19.0",
-    "eslint-config-airbnb-base": "11.1.2",
-    "eslint-plugin-import": "2.2.0",
+    "eslint": "4.14.0",
+    "eslint-config-pagarme-base": "2.0.0",
+    "eslint-plugin-import": "2.8.0",
     "nyc": "10.3.2",
     "serverless": "1.10.2"
   }
