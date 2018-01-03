@@ -111,12 +111,12 @@ const createSchema = {
     state: Joi
       .string()
       .allow(null)
-      .allow('')
+      .allow(''),
   }),
 
   register: Joi
     .boolean()
-    .default(true)
+    .default(true),
 }
 
 const updateSchema = {
@@ -129,7 +129,7 @@ const updateSchema = {
     .integer(),
 
   bank_response_code: Joi
-    .string()
+    .string(),
 }
 
 const indexSchema = {
@@ -145,11 +145,11 @@ const indexSchema = {
 
   count: Joi
     .number()
-    .integer()
+    .integer(),
 }
 
 module.exports = {
   createSchema,
   updateSchema,
-  indexSchema
+  indexSchema,
 }

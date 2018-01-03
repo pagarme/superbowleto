@@ -11,8 +11,8 @@ test('shows an existing boleto', async (t) => {
 
   const { body, statusCode } = await show({
     pathParameters: {
-      id: boleto.id
-    }
+      id: boleto.id,
+    },
   })
 
   t.is(statusCode, 200)
@@ -30,15 +30,15 @@ test('shows an existing boleto', async (t) => {
     payer_document_number: mock.payer_document_number,
     queue_url: mock.queue_url,
     company_name: mock.company_name,
-    company_document_number: mock.company_document_number
+    company_document_number: mock.company_document_number,
   })
 })
 
 test('shows a non-existing boleto', async (t) => {
   const { statusCode } = await show({
     pathParameters: {
-      id: 'boleto_xxx'
-    }
+      id: 'boleto_xxx',
+    },
   })
 
   t.is(statusCode, 404)

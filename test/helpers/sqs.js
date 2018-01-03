@@ -2,7 +2,7 @@ import Promise from 'bluebird'
 import sqs from '../../src/lib/sqs'
 
 export const purgeQueue = queue => sqs.purgeQueue({
-  QueueUrl: queue.options.endpoint
+  QueueUrl: queue.options.endpoint,
 }).promise()
 
 export const findItemOnQueue = (queue, where) =>

@@ -2,7 +2,7 @@ import test from 'ava'
 import {
   buildModelResponse,
   generateBoletoCode,
-  validateModel
+  validateModel,
 } from '../../../../src/resources/boleto/model'
 
 test('buildResponse', async (t) => {
@@ -30,13 +30,13 @@ test('buildResponse', async (t) => {
       street_number: '308',
       neighborhood: 'Vila Olímpia',
       city: 'São Paulo',
-      state: 'SP'
+      state: 'SP',
     },
     company_name: 'Some Company',
     company_document_number: '98154524872',
     created_at: now,
     updated_at: now,
-    secret_field: 'this is secret'
+    secret_field: 'this is secret',
   }
 
   const output = await buildModelResponse(input)
@@ -65,12 +65,12 @@ test('buildResponse', async (t) => {
       street_number: '308',
       neighborhood: 'Vila Olímpia',
       city: 'São Paulo',
-      state: 'SP'
+      state: 'SP',
     },
     company_name: 'Some Company',
     company_document_number: '98154524872',
     created_at: now,
-    updated_at: now
+    updated_at: now,
   }, 'should be a boleto object')
 })
 
@@ -82,10 +82,10 @@ test('generateBoletoCode', (t) => {
     issuer_agency: '3381',
     issuer_wallet: '26',
     title_id: '1',
-    expiration_date: new Date('2017-05-26')
+    expiration_date: new Date('2017-05-26'),
   }
 
-  const { barcode, digitable_line } = generateBoletoCode(input)
+  const { barcode, digitable_line } = generateBoletoCode(input) // eslint-disable-line
 
   t.is(barcode, '23792717100000020003381260000000000100097210')
   t.is(digitable_line, '23793.38128 60000.000004 01000.972107 2 71710000002000')
@@ -93,7 +93,7 @@ test('generateBoletoCode', (t) => {
 
 test('validateModel: with empty address', async (t) => {
   const boleto = {
-    payer_address: {}
+    payer_address: {},
   }
 
   validateModel(boleto)
@@ -105,7 +105,7 @@ test('validateModel: with empty address', async (t) => {
     complementary: '9º andar, conjunto 91',
     neighborhood: 'Vila Olímpia',
     city: 'São Paulo',
-    state: 'SP'
+    state: 'SP',
   }, 'should use default address')
 })
 
@@ -118,8 +118,8 @@ test('validateModel: with complete address', async (t) => {
       complementary: 'Apt 101',
       neighborhood: 'Morro dos Ingleses',
       city: 'São Paulo',
-      state: 'SP'
-    }
+      state: 'SP',
+    },
   }
 
   validateModel(boleto)
@@ -131,7 +131,7 @@ test('validateModel: with complete address', async (t) => {
     complementary: 'Apt 101',
     neighborhood: 'Morro dos Ingleses',
     city: 'São Paulo',
-    state: 'SP'
+    state: 'SP',
   }, 'should use payer_address "as is"')
 })
 
@@ -144,8 +144,8 @@ test('validateModel: with incomplete address', async (t) => {
       complementary: 'Apt 101',
       neighborhood: 'Morro dos Ingleses',
       city: null,
-      state: null
-    }
+      state: null,
+    },
   }
 
   validateModel(boleto)
@@ -157,6 +157,6 @@ test('validateModel: with incomplete address', async (t) => {
     complementary: '9º andar, conjunto 91',
     neighborhood: 'Vila Olímpia',
     city: 'São Paulo',
-    state: 'SP'
+    state: 'SP',
   }, 'should use default address')
 })

@@ -4,16 +4,16 @@ import { getConfig } from '../../../src/config/index'
 const configMock = {
   development: {
     host: '172.171.344.32/development',
-    port: 5000
+    port: 5000,
   },
   test: {
     host: '172.171.344.32/test',
-    port: 3000
+    port: 3000,
   },
   production: {
     host: '172.171.344.32/production',
-    port: 5631
-  }
+    port: 5631,
+  },
 }
 
 test.afterEach(() => {
@@ -25,7 +25,7 @@ test('getConfig: with argument', (t) => {
 
   t.deepEqual(config, {
     host: '172.171.344.32/production',
-    port: 5631
+    port: 5631,
   }, 'should be the `production` config')
 })
 
@@ -35,7 +35,7 @@ test('getConfig: with process.env.NODE_ENV', (t) => {
 
   t.deepEqual(config, {
     host: '172.171.344.32/development',
-    port: 5000
+    port: 5000,
   }, 'should be the `development` config')
 })
 
@@ -45,7 +45,7 @@ test('getConfig: with no argument and no process.env.NODE_ENV', (t) => {
 
   t.deepEqual(config, {
     host: '172.171.344.32/test',
-    port: 3000
+    port: 3000,
   }, 'should be the default `test` config')
 })
 

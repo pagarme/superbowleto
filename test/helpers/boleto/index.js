@@ -23,11 +23,11 @@ export const mock = {
     complementary: '11º andar',
     neighborhood: 'Brooklin',
     city: 'São Paulo',
-    state: 'SP'
+    state: 'SP',
   },
   queue_url: userQueueUrl,
   company_name: 'Some Company',
-  company_document_number: '98154524872'
+  company_document_number: '98154524872',
 }
 
 export const createBoleto = (data = {}) => {
@@ -51,5 +51,5 @@ export const mockFunction = (obj, name, fn) => {
 
 export const userQueue = new Queue({
   sqs,
-  endpoint: userQueueUrl
+  endpoint: userQueueUrl,
 })

@@ -35,15 +35,15 @@ test('shows all boletos with default pagination', async (t) => {
     payer_document_number: '98154524872',
     queue_url: userQueueUrl,
     company_name: 'Some Company',
-    company_document_number: '98154524872'
+    company_document_number: '98154524872',
   }, 'result must have the shape of a boleto')
 })
 
 test('shows all boletos with custom pagination', async (t) => {
   const { body, statusCode } = await indexBoleto({
     queryStringParameters: {
-      count: 2
-    }
+      count: 2,
+    },
   })
 
   const item = body[0]
@@ -63,19 +63,19 @@ test('shows all boletos with custom pagination', async (t) => {
     payer_document_number: '98154524872',
     queue_url: userQueueUrl,
     company_name: 'Some Company',
-    company_document_number: '98154524872'
+    company_document_number: '98154524872',
   }, 'result must have the shape of a boleto')
 })
 
 test('shows a boleto with a specific token', async (t) => {
   await createBoleto({
-    token: 'sandbox_3r3regdgdsggdgdzgzd'
+    token: 'sandbox_3r3regdgdsggdgdzgzd',
   })
 
   const { body, statusCode } = await indexBoleto({
     queryStringParameters: {
-      token: 'sandbox_3r3regdgdsggdgdzgzd'
-    }
+      token: 'sandbox_3r3regdgdsggdgdzgzd',
+    },
   })
 
   const item = body[0]
@@ -101,10 +101,10 @@ test('shows a boleto with a specific token', async (t) => {
       complementary: '9º andar, conjunto 91',
       neighborhood: 'Vila Olímpia',
       city: 'São Paulo',
-      state: 'SP'
+      state: 'SP',
     },
     queue_url: userQueueUrl,
     company_name: 'Some Company',
-    company_document_number: '98154524872'
+    company_document_number: '98154524872',
   }, 'result must have the shape of a boleto')
 })

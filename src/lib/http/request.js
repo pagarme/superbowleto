@@ -4,7 +4,7 @@ const { ValidationError, InvalidParameterError } = require('../errors')
 
 const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
   const options = {
-    abortEarly: false
+    abortEarly: false,
   }
 
   const { error, value } = validate(data, schema, options)
@@ -15,12 +15,12 @@ const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
 
   const errors = error.details.map(err => new InvalidParameterError({
     message: err.message,
-    field: err.path
+    field: err.path,
   }))
 
   return reject(new ValidationError({ errors }))
 }))
 
 module.exports = {
-  parse
+  parse,
 }

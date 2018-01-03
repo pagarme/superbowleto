@@ -5,7 +5,7 @@ import { handleDatabaseErrors } from '../../../../src/lib/errors/database'
 import {
   DatabaseError,
   InvalidParameterError,
-  ValidationError
+  ValidationError,
 } from '../../../../src/lib/errors'
 import { getModel } from '../../../../src/database'
 
@@ -20,7 +20,7 @@ test('handleDatabaseErrors: ValidationError', async (t) => {
     .catch(handleDatabaseErrors)
     .catch(identity)
 
-  const errors = err.errors
+  const { errors } = err
 
   t.true(err instanceof ValidationError, 'is a ValidationError')
   t.true(Array.isArray(errors), 'has an array of errors')

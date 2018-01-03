@@ -9,8 +9,8 @@ const sqs = new SQS({
   credentials: new Credentials({
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey,
-    sessionToken: config.sessionToken
-  })
+    sessionToken: config.sessionToken,
+  }),
 })
 
 module.exports = sqs

@@ -1,17 +1,15 @@
 const { STRING } = require('sequelize')
 
 module.exports = {
-  up: (queryInterface, Sequelize) =>
+  up: queryInterface =>
     queryInterface.changeColumn('Boletos', 'company_document_number', {
       type: STRING,
-      allowNull: true
-    }
-  ),
+      allowNull: true,
+    }),
 
-  down: (queryInterface, Sequelize) =>
+  down: queryInterface =>
     queryInterface.changeColumn('Boletos', 'company_document_number', {
       type: STRING,
-      allowNull: false
-    }
-  )
+      allowNull: false,
+    }),
 }
