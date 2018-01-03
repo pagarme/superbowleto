@@ -1,6 +1,5 @@
 {
   "extends": ["airbnb-base"],
-  "parser": "typescript-eslint-parser",
   "env": {
     "node": true
   },
