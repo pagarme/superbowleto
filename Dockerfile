@@ -1,4 +1,4 @@
-FROM node:7.8-alpine
+FROM node:8.9-alpine
 
 COPY package.json /superbowleto/package.json
 WORKDIR /superbowleto
