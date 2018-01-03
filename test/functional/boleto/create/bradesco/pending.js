@@ -14,7 +14,7 @@ test.before(async () => {
   mockFunction(Provider, 'getProvider', () => ({
     register () {
       return Promise.resolve({ status: 'unknown' })
-    }
+    },
   }))
 
   await purgeQueue(BoletosToRegisterQueue)
@@ -28,7 +28,7 @@ test('creates a boleto (provider unknown)', async (t) => {
   const payload = mock
 
   const { body, statusCode } = await create({
-    body: payload
+    body: payload,
   })
 
   const sqsItem = await findItemOnQueue(
@@ -56,6 +56,6 @@ test('creates a boleto (provider unknown)', async (t) => {
     payer_document_number: payload.payer_document_number,
     company_name: payload.company_name,
     company_document_number: payload.company_document_number,
-    queue_url: payload.queue_url
+    queue_url: payload.queue_url,
   })
 })

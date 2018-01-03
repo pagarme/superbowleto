@@ -7,14 +7,14 @@ const config = getConfig({
     dialect: 'postgres',
     database: 'postgres',
     username: 'postgres',
-    logging: true
+    logging: true,
   },
   production: {
     host: process.env.DATABASE_ENDPOINT,
     dialect: 'postgres',
     database: process.env.DATABASE_NAME,
     username: process.env.DATABASE_USERNAME,
-    logging: false
+    logging: false,
   },
   test: {
     host: process.env.DB_HOST || 'postgres',
@@ -22,8 +22,8 @@ const config = getConfig({
     dialect: 'postgres',
     database: 'postgres',
     username: 'postgres',
-    logging: false
-  }
+    logging: false,
+  },
 })
 
 module.exports = config

@@ -7,8 +7,7 @@ const {
   compose,
   defaultTo,
   path,
-  pathOr,
-  prop
+  prop,
 } = require('ramda')
 const { format } = require('./formatter')
 const getConfig = require('../../config/providers')
@@ -24,13 +23,13 @@ const makeLogger = makeFromLogger('bradesco/index')
 const buildHeaders = () =>
   Promise.all([
     getCredentials('providers/bradesco/company_id'),
-    getCredentials('providers/bradesco/api_key')
+    getCredentials('providers/bradesco/api_key'),
   ])
     .spread((merchantId, securityKey) => {
       const authorization = encodeBase64(`${merchantId}:${securityKey}`)
 
       return {
-        Authorization: `Basic ${authorization}`
+        Authorization: `Basic ${authorization}`,
       }
     })
 
@@ -56,10 +55,10 @@ const buildPayload = boleto =>
             complemento: path(['payer_address', 'complementary']),
             bairro: path(['payer_address', 'neighborhood']),
             cidade: path(['payer_address', 'city']),
-            uf: path(['payer_address', 'state'])
-          }
-        }
-      }
+            uf: path(['payer_address', 'state']),
+          },
+        },
+      },
     }))
     .then(spec => applySpec(spec)(boleto))
 
@@ -68,14 +67,14 @@ const translateResponseCode = (response) => {
 
   const defaultValue = {
     message: 'CÓDIGO INEXISTENTE',
-    status: 'unknown'
+    status: 'unknown',
   }
 
   return defaultTo(defaultValue, prop(responseCode, responseCodeMap))
 }
 
 const defaultOptions = {
-  requestId: `req_${Date.now()}`
+  requestId: `req_${Date.now()}`,
 }
 
 const getProvider = ({ requestId } = defaultOptions) => {
@@ -83,40 +82,40 @@ const getProvider = ({ requestId } = defaultOptions) => {
     const logger = makeLogger(
       {
         operation: 'register_boleto_on_provider',
-        provider: 'bradesco'
+        provider: 'bradesco',
       },
       { id: requestId }
     )
 
     return Promise.all([
       buildHeaders(),
-      buildPayload(boleto)
+      buildPayload(boleto),
     ])
       .spread((headers, payload) => ({
         headers,
         data: payload,
         url: endpoint,
-        method: 'POST'
+        method: 'POST',
       }))
       .tap((request) => {
         logger.info({
           status: 'started',
           metadata: {
-            request: { body: request.data }
-          }
+            request: { body: request.data },
+          },
         })
       })
       .then(axios.request)
       .tap(response => logger.info({
         metadata: {
-          response: response.data
-        }
+          response: response.data,
+        },
       }))
       .then(translateResponseCode)
       .tap((response) => {
         logger.info({
           status: 'success',
-          metadata: { status: response.status, data: response.data }
+          metadata: { status: response.status, data: response.data },
         })
       })
       .tapCatch(err => logger.error({
@@ -124,13 +123,13 @@ const getProvider = ({ requestId } = defaultOptions) => {
         metadata: {
           error_name: err.name,
           error_stack: err.stack,
-          error_message: err.message
-        }
+          error_message: err.message,
+        },
       }))
   }
 
   return {
-    register
+    register,
   }
 }
 
@@ -138,5 +137,5 @@ module.exports = {
   buildHeaders,
   buildPayload,
   translateResponseCode,
-  getProvider
+  getProvider,
 }

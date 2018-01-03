@@ -2,7 +2,7 @@ import test from 'ava'
 import {
   buildSuccessResponse,
   buildFailureResponse,
-  buildErrorPayload
+  buildErrorPayload,
 } from '../../../../src/lib/http/response'
 
 test('buildSuccessResponse', async (t) => {
@@ -29,7 +29,7 @@ test('buildErrorPayload', async (t) => {
     errors: [{
       type: 'unknown_error',
       message: '',
-      field: null
-    }]
+      field: null,
+    }],
   }, 'should have an `errors` object')
 })

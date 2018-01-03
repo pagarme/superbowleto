@@ -5,7 +5,7 @@ import { normalizeErrors } from '../../../../src/lib/errors/normalizer'
 test('normalizeErrors: with one single error', async (t) => {
   const errors = normalizeErrors(new InvalidParameterError({
     message: 'Resource not found',
-    field: 'resource'
+    field: 'resource',
   }))
 
   t.true(Array.isArray(errors), 'is an array')
@@ -20,8 +20,8 @@ test('normalizeErrors: with multiple errors', async (t) => {
   const errors = normalizeErrors({
     errors: [
       new Error(),
-      new InvalidParameterError({ message: 'Resource not found', field: 'resource' })
-    ]
+      new InvalidParameterError({ message: 'Resource not found', field: 'resource' }),
+    ],
   })
 
   t.true(Array.isArray(errors), 'is an array')

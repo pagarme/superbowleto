@@ -1,21 +1,23 @@
-const { STRING, INTEGER, ENUM, TEXT, DATE } = require('sequelize')
+const {
+  STRING, INTEGER, ENUM, TEXT, DATE,
+} = require('sequelize')
 
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Boletos', {
+  up: queryInterface => queryInterface.createTable('Boletos', {
     id: {
       type: STRING,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
 
     token: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
     },
 
     queue_url: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
     },
 
     status: {
@@ -25,93 +27,93 @@ module.exports = {
         'issued',
         'pending_registration',
         'registered',
-        'refused'
+        'refused',
       ],
-      defaultValue: 'issued'
+      defaultValue: 'issued',
     },
 
     expiration_date: {
       type: DATE,
-      allowNull: false
+      allowNull: false,
     },
 
     amount: {
       type: INTEGER,
-      allowNull: false
+      allowNull: false,
     },
 
     paid_amount: {
       type: INTEGER,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
     },
 
     instructions: {
-      type: TEXT
+      type: TEXT,
     },
 
     issuer: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
     },
 
     issuer_id: {
-      type: STRING
+      type: STRING,
     },
 
     title_id: {
       type: INTEGER,
       allowNull: false,
-      autoIncrement: true
+      autoIncrement: true,
     },
 
     reference_id: {
-      type: STRING
+      type: STRING,
     },
 
     barcode: {
-      type: STRING
+      type: STRING,
     },
 
     payer_name: {
-      type: STRING
+      type: STRING,
     },
 
     payer_document_type: {
       type: ENUM,
-      values: ['cpf', 'cnpj']
+      values: ['cpf', 'cnpj'],
     },
 
     payer_document_number: {
-      type: STRING
+      type: STRING,
     },
 
     company_name: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
     },
 
     company_document_number: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
     },
 
     bank_response_code: {
-      type: STRING
+      type: STRING,
     },
 
     created_at: {
       type: DATE,
-      allowNull: false
+      allowNull: false,
     },
 
     updated_at: {
       type: DATE,
-      allowNull: false
-    }
+      allowNull: false,
+    },
   })
-  .then(() => queryInterface.addIndex('Boletos', ['queue_url']))
-  .then(() => queryInterface.addIndex('Boletos', ['status'])),
+    .then(() => queryInterface.addIndex('Boletos', ['queue_url']))
+    .then(() => queryInterface.addIndex('Boletos', ['status'])),
 
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Boletos')
+  down: queryInterface => queryInterface.dropTable('Boletos'),
 }

@@ -1,12 +1,11 @@
 const { STRING } = require('sequelize')
 
 module.exports = {
-  up: (queryInterface, Sequelize) =>
+  up: queryInterface =>
     queryInterface.addColumn('Boletos', 'issuer_wallet', {
-      type: STRING
-    }
-  ),
+      type: STRING,
+    }),
 
-  down: (queryInterface, Sequelize) =>
-    queryInterface.removeColumn('Boletos', 'issuer_wallet')
+  down: queryInterface =>
+    queryInterface.removeColumn('Boletos', 'issuer_wallet'),
 }

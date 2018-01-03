@@ -1,14 +1,14 @@
 import { promisify } from 'bluebird'
 
 const parseHandlerEvent = event => Object.assign({}, event, {
-  body: JSON.parse(event.body)
+  body: JSON.parse(event.body),
 })
 
 const computeHandlerEvent = event => Object.assign({}, event, {
   headers: {
-    'x-request-id': 'req_a872b1c123'
+    'x-request-id': 'req_a872b1c123',
   },
-  body: JSON.stringify(event.body)
+  body: JSON.stringify(event.body),
 })
 
 export const normalizeHandler = fn => (event = {}, context) => {

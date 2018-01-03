@@ -7,7 +7,7 @@ test('buildHeaders', async (t) => {
   const headers = await buildHeaders()
 
   t.deepEqual(headers, {
-    Authorization: 'Basic MTAwMDA1MjU0OmJiRTlYTjhSaE95QTktNzlISFBuYkoxLVFxeTdrem9LR2RSLU5qbWk5Zmc='
+    Authorization: 'Basic MTAwMDA1MjU0OmJiRTlYTjhSaE95QTktNzlISFBuYkoxLVFxeTdrem9LR2RSLU5qbWk5Zmc=',
   })
 })
 
@@ -35,10 +35,10 @@ test('buildPayload', async (t) => {
           complemento: '9º andar, conjunto 91',
           bairro: 'Vila Olímpia',
           cidade: 'São Paulo',
-          uf: 'SP'
-        }
-      }
-    }
+          uf: 'SP',
+        },
+      },
+    },
   })
 })
 
@@ -50,13 +50,13 @@ test('translateResponseCode: with a "registered" code', (t) => {
         nosso_numero: '14692108005',
         numero_documento: '1469210800',
         data_requisicao: '2016-07-22T15:06:40',
-        data_registro: '2017-01-22T15:06:40'
+        data_registro: '2017-01-22T15:06:40',
       },
       status: {
         codigo: 0,
-        mensagem: 'REGISTRO REALIZADO COM SUCESSO'
-      }
-    }
+        mensagem: 'REGISTRO REALIZADO COM SUCESSO',
+      },
+    },
   })
 
   t.is(response.status, 'registered')
@@ -70,13 +70,13 @@ test('translateResponseCode: with a "refused" code', (t) => {
         nosso_numero: '14692108005',
         numero_documento: '1469210800',
         data_requisicao: '2016-07-22T15:06:40',
-        data_registro: '2017-01-22T15:06:40'
+        data_registro: '2017-01-22T15:06:40',
       },
       status: {
         codigo: 930057,
-        mensagem: 'NOSSO NUMERO INVALIDO'
-      }
-    }
+        mensagem: 'NOSSO NUMERO INVALIDO',
+      },
+    },
   })
 
   t.is(response.status, 'refused')
@@ -90,12 +90,12 @@ test('translateResponseCode: with a "unknown" code', (t) => {
         nosso_numero: '14692108005',
         numero_documento: '1469210800',
         data_requisicao: '2016-07-22T15:06:40',
-        data_registro: '2017-01-22T15:06:40'
+        data_registro: '2017-01-22T15:06:40',
       },
       status: {
-        codigo: 8
-      }
-    }
+        codigo: 8,
+      },
+    },
   })
 
   t.is(response.status, 'unknown')

@@ -1,8 +1,7 @@
 import test from 'ava'
-import Promise from 'bluebird'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
-import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
+import { mock } from '../../../../helpers/boleto'
 import boletoHandler from '../../../../../src/resources/boleto'
 
 const create = normalizeHandler(boletoHandler.create)
@@ -11,7 +10,7 @@ test('creates a boleto (provider success)', async (t) => {
   const payload = mock
 
   const { body, statusCode } = await create({
-    body: payload
+    body: payload,
   })
 
   t.is(statusCode, 201)
@@ -33,6 +32,6 @@ test('creates a boleto (provider success)', async (t) => {
     payer_document_number: payload.payer_document_number,
     company_name: payload.company_name,
     company_document_number: payload.company_document_number,
-    queue_url: payload.queue_url
+    queue_url: payload.queue_url,
   })
 })

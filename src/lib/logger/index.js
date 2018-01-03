@@ -10,7 +10,7 @@ const loggerEngine = log4js.getLogger()
 
 const { logger } = escriba({
   loggerEngine,
-  service: 'superbowleto'
+  service: 'superbowleto',
 })
 
 const makeLogger = (defaultData = {}, defaultConfig = {}) => {
@@ -29,7 +29,7 @@ const makeLogger = (defaultData = {}, defaultConfig = {}) => {
     error: makeLogFunction('error'),
     debug: makeLogFunction('debug'),
     fatal: makeLogFunction('fatal'),
-    trace: makeLogFunction('trace')
+    trace: makeLogFunction('trace'),
   }
 }
 
@@ -42,6 +42,6 @@ const makeFromLogger = from => (defaultData = {}, defaultConfig = {}) => {
 module.exports = {
   logger,
   makeLogger,
-  makeFromLogger
+  makeFromLogger,
 }
 

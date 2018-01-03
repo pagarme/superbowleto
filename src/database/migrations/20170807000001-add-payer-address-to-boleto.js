@@ -1,12 +1,11 @@
 const { JSON } = require('sequelize')
 
 module.exports = {
-  up: (queryInterface, Sequelize) =>
+  up: queryInterface =>
     queryInterface.addColumn('Boletos', 'payer_address', {
-      type: JSON
-    }
-  ),
+      type: JSON,
+    }),
 
-  down: (queryInterface, Sequelize) =>
-    queryInterface.removeColumn('Boletos', 'payer_address')
+  down: queryInterface =>
+    queryInterface.removeColumn('Boletos', 'payer_address'),
 }

@@ -50,5 +50,5 @@ module.exports = {
   InvalidParameterError,
   ValidationError,
   DatabaseError,
-  InternalServerError
+  InternalServerError,
 }

@@ -10,36 +10,36 @@ const schema = {
     .required(),
 
   security_number: Joi
-    .number()
+    .number(),
 }
 
 test('parse: with valid schema', async (t) => {
   const value = await parse(schema, {
     name: 'David Bowie',
-    security_number: 42
+    security_number: 42,
   })
 
   t.deepEqual(value, {
     name: 'David Bowie',
-    security_number: 42
+    security_number: 42,
   }, 'should have the correct parsed parameters and no errors')
 })
 
 test('parse: with valid schema and coercion', async (t) => {
   const value = await parse(schema, {
     name: 'David Bowie',
-    security_number: '42'
+    security_number: '42',
   })
 
   t.deepEqual(value, {
     name: 'David Bowie',
-    security_number: 42
+    security_number: 42,
   }, 'should have the correct parsed, coerced parameters and no errors')
 })
 
 test('parse: with invalid schema', async (t) => {
   const validationError = await parse(schema, {
-    security_number: true
+    security_number: true,
   }).catch(err => err)
 
   const { errors } = validationError
@@ -51,12 +51,12 @@ test('parse: with invalid schema', async (t) => {
   assert.containSubset(errors[0], {
     message: '"name" is required',
     type: 'invalid_parameter',
-    field: 'name'
+    field: 'name',
   }, 'should have an error because `name` is invalid')
 
   assert.containSubset(errors[1], {
     message: '"security_number" must be a number',
     type: 'invalid_parameter',
-    field: 'security_number'
+    field: 'security_number',
   }, 'should have an error because `security_number` is invalid')
 })

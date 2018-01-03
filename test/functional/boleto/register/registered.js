@@ -1,10 +1,9 @@
 import test from 'ava'
-import { Promise, promisify } from 'bluebird'
-import { mock, mockFunction, restoreFunction, userQueueUrl, userQueue } from '../../../helpers/boleto'
+import { promisify } from 'bluebird'
+import { mock, userQueue } from '../../../helpers/boleto'
 import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
 import { normalizeHandler } from '../../../helpers/normalizer'
 import boletoHandler from '../../../../src/resources/boleto'
-import provider from '../../../../src/providers/bradesco'
 
 const create = normalizeHandler(boletoHandler.create)
 
@@ -16,14 +15,14 @@ test.before(async () => {
 
 test('registers a boleto (provider success)', async (t) => {
   const { body } = await create({
-    body: mock
+    body: mock,
   })
 
   const payload = {
     boleto_id: body.id,
     sqsMessage: {
-      ReceiptHandle: 'abc'
-    }
+      ReceiptHandle: 'abc',
+    },
   }
 
   const boleto = await register(payload, {})
@@ -42,14 +41,14 @@ test('registers a boleto (provider success)', async (t) => {
 
 test('try to register already registered boleto', async (t) => {
   const { body } = await create({
-    body: mock
+    body: mock,
   })
 
   const payload = {
     boleto_id: body.id,
     sqsMessage: {
-      ReceiptHandle: 'abc'
-    }
+      ReceiptHandle: 'abc',
+    },
   }
 
   const boleto = await register(payload, {})

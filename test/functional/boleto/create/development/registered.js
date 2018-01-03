@@ -1,5 +1,4 @@
 import test from 'ava'
-import Promise from 'bluebird'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock } from '../../../../helpers/boleto'
@@ -14,7 +13,7 @@ test('creates a boleto (provider success)', async (t) => {
   payload.issuer = 'development'
 
   const { body, statusCode } = await create({
-    body: payload
+    body: payload,
   })
 
   t.is(statusCode, 201)
@@ -36,6 +35,6 @@ test('creates a boleto (provider success)', async (t) => {
     payer_document_number: payload.payer_document_number,
     company_name: payload.company_name,
     company_document_number: payload.company_document_number,
-    queue_url: payload.queue_url
+    queue_url: payload.queue_url,
   })
 })

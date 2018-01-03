@@ -8,8 +8,8 @@ const config = getConfig()
 
 const defaults = {
   define: {
-    underscored: true
-  }
+    underscored: true,
+  },
 }
 
 let database = null
@@ -22,12 +22,12 @@ function getDatabase () {
   return getCredentials('database/password')
     .then((password) => {
       database = new Sequelize(Object.assign({}, defaults, config, {
-        password
+        password,
       }))
 
       const createInstance = model => ({
         model,
-        instance: model.create(database)
+        instance: model.create(database),
       })
 
       const associateModels = ({ model, instance }) => {
@@ -51,5 +51,5 @@ function getModel (modelName) {
 
 module.exports = {
   getDatabase,
-  getModel
+  getModel,
 }

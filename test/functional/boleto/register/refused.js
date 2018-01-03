@@ -1,6 +1,6 @@
 import test from 'ava'
 import { Promise, promisify } from 'bluebird'
-import { mock, mockFunction, restoreFunction, userQueueUrl, userQueue } from '../../../helpers/boleto'
+import { mock, mockFunction, restoreFunction, userQueue } from '../../../helpers/boleto'
 import { normalizeHandler } from '../../../helpers/normalizer'
 import boletoHandler from '../../../../src/resources/boleto'
 import Provider from '../../../../src/providers/bradesco'
@@ -13,7 +13,7 @@ test.before(() => {
   mockFunction(Provider, 'getProvider', () => ({
     register () {
       return Promise.resolve({ status: 'refused' })
-    }
+    },
   }))
 
   purgeQueue(userQueue)
@@ -25,14 +25,14 @@ test.after(() => {
 
 test('registers a boleto (provider refused)', async (t) => {
   const { body } = await create({
-    body: mock
+    body: mock,
   })
 
   const payload = {
     boleto_id: body.id,
     sqsMessage: {
-      ReceiptHandle: 'abc'
-    }
+      ReceiptHandle: 'abc',
+    },
   }
 
   const boleto = await register(payload, {})
@@ -49,14 +49,14 @@ test('registers a boleto (provider refused)', async (t) => {
 
 test('try to register already refused boleto', async (t) => {
   const { body } = await create({
-    body: mock
+    body: mock,
   })
 
   const payload = {
     boleto_id: body.id,
     sqsMessage: {
-      ReceiptHandle: 'abc'
-    }
+      ReceiptHandle: 'abc',
+    },
   }
 
   const boleto = await register(payload, {})
