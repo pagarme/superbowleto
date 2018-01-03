@@ -1,6 +1,6 @@
 import test from 'ava'
 import { createBoleto } from '../../../helpers/boleto'
-import * as Provider from '../../../../build/providers/bradesco'
+import * as Provider from '../../../../src/providers/bradesco'
 
 const { register } = Provider.getProvider()
 

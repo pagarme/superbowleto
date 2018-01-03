@@ -1,5 +1,5 @@
 import test from 'ava'
-import { encodeBase64, decodeBase64 } from '../../../../build/lib/encoding'
+import { encodeBase64, decodeBase64 } from '../../../../src/lib/encoding'
 
 test('encodeBase64', async (t) => {
   const result = encodeBase64('bowie')

@@ -3,7 +3,7 @@ import Promise from 'bluebird'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
-import * as boletoHandler from '../../../../../build/resources/boleto'
+import * as boletoHandler from '../../../../../src/resources/boleto'
 
 const create = normalizeHandler(boletoHandler.create)
 

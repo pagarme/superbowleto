@@ -9,7 +9,7 @@ const getMigrationsPath = () => {
     return './dist/migrations'
   }
 
-  return './build/database/migrations'
+  return './src/database/migrations'
 }
 
 const migrate = (event, context, callback) => {

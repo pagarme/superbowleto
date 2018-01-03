@@ -1,8 +1,8 @@
 import sinon from 'sinon'
 import { Queue } from 'sqs-quooler'
-import sqs from '../../../build/lib/sqs'
-import { getModel } from '../../../build/database'
-import { buildModelResponse } from '../../../build/resources/boleto/model'
+import sqs from '../../../src/lib/sqs'
+import { getModel } from '../../../src/database'
+import { buildModelResponse } from '../../../src/resources/boleto/model'
 
 export const userQueueUrl = `http://${process.env.SQS_HOST || 'yopa'}:47195/queue/test`
 

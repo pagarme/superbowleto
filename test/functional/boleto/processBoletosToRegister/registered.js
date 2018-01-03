@@ -2,12 +2,12 @@ import test from 'ava'
 import Promise, { promisify } from 'bluebird'
 import { assert } from '../../../helpers/chai'
 import { normalizeHandler } from '../../../helpers/normalizer'
-import * as boletoHandler from '../../../../build/resources/boleto'
+import * as boletoHandler from '../../../../src/resources/boleto'
 import { mock, userQueue, mockFunction, restoreFunction } from '../../../helpers/boleto'
-import * as Provider from '../../../../build/providers/bradesco'
+import * as Provider from '../../../../src/providers/bradesco'
 import { findItemOnQueue, purgeQueue } from '../../../helpers/sqs'
-import lambda from '../../../../build/resources/boleto/lambda'
-import { BoletosToRegisterQueue } from '../../../../build/resources/boleto/queues'
+import lambda from '../../../../src/resources/boleto/lambda'
+import { BoletosToRegisterQueue } from '../../../../src/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
 
