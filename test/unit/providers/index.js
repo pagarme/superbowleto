@@ -1,8 +1,8 @@
 import test from 'ava'
-import { findProvider } from '../../../build/providers'
-import * as bradesco from '../../../build/providers/bradesco'
-import * as development from '../../../build/providers/development'
-import { NotFoundError } from '../../../build/lib/errors/index'
+import { findProvider } from '../../../src/providers'
+import * as bradesco from '../../../src/providers/bradesco'
+import * as development from '../../../src/providers/development'
+import { NotFoundError } from '../../../src/lib/errors/index'
 
 test('findProvider: with bradesco provider', (t) => {
   const bradescoProvider = findProvider('bradesco')

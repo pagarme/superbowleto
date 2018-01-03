@@ -2,7 +2,7 @@ import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { mock, createBoleto } from '../../helpers/boleto'
-import * as boletoHandler from '../../../build/resources/boleto'
+import * as boletoHandler from '../../../src/resources/boleto'
 
 const show = normalizeHandler(boletoHandler.show)
 

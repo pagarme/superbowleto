@@ -5,7 +5,7 @@ import {
   ValidationError,
   DatabaseError,
   InternalServerError
-} from '../../../../build/lib/errors'
+} from '../../../../src/lib/errors'
 
 test('NotFoundError', async (t) => {
   const error = new NotFoundError({

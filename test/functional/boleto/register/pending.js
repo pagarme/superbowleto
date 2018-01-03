@@ -2,8 +2,8 @@ import test from 'ava'
 import { Promise, promisify } from 'bluebird'
 import { mock, mockFunction, restoreFunction } from '../../../helpers/boleto'
 import { normalizeHandler } from '../../../helpers/normalizer'
-import * as boletoHandler from '../../../../build/resources/boleto'
-import * as Provider from '../../../../build/providers/bradesco'
+import * as boletoHandler from '../../../../src/resources/boleto'
+import * as Provider from '../../../../src/providers/bradesco'
 
 test.before(async () => {
   mockFunction(Provider, 'getProvider', () => ({
