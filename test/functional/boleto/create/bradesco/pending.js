@@ -3,10 +3,10 @@ import Promise from 'bluebird'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
-import * as boletoHandler from '../../../../../build/resources/boleto'
-import * as Provider from '../../../../../build/providers/bradesco'
+import * as boletoHandler from '../../../../../src/resources/boleto'
+import * as Provider from '../../../../../src/providers/bradesco'
 import { findItemOnQueue, purgeQueue } from '../../../../helpers/sqs'
-import { BoletosToRegisterQueue } from '../../../../../build/resources/boleto/queues'
+import { BoletosToRegisterQueue } from '../../../../../src/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
 

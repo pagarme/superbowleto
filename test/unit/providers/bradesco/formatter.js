@@ -4,7 +4,7 @@ import {
   date,
   documentType,
   format
-} from '../../../../build/providers/bradesco/formatter'
+} from '../../../../src/providers/bradesco/formatter'
 
 test('date: when timezones are in different days', (t) => {
   const timestamp = moment('2017-04-03T00:00:00-00:00').format()

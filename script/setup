@@ -1,6 +1,6 @@
 #!usr/bin/env node
 
-const { migrate } = require('../build/functions/database')
+const { migrate } = require('../src/functions/database')
 
 console.log('Migration started')
 

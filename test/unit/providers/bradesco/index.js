@@ -1,7 +1,7 @@
 import test from 'ava'
 import moment from 'moment'
 import { createBoleto } from '../../../helpers/boleto'
-import { buildHeaders, buildPayload, translateResponseCode } from '../../../../build/providers/bradesco'
+import { buildHeaders, buildPayload, translateResponseCode } from '../../../../src/providers/bradesco'
 
 test('buildHeaders', async (t) => {
   const headers = await buildHeaders()

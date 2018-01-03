@@ -3,7 +3,7 @@ import {
   buildModelResponse,
   generateBoletoCode,
   validateModel
-} from '../../../../build/resources/boleto/model'
+} from '../../../../src/resources/boleto/model'
 
 test('buildResponse', async (t) => {
   const now = new Date()
