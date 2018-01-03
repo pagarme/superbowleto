@@ -15,7 +15,6 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 script:
-  - docker-compose run test yarn run build-production
   - docker-compose run test yarn run lint
   - docker-compose run test
 
