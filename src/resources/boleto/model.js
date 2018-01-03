@@ -1,6 +1,5 @@
 const Promise = require('bluebird')
 const {
-  __,
   T,
   all,
   always,
@@ -9,25 +8,25 @@ const {
   complement,
   cond,
   equals,
-  has,
   identity,
   ifElse,
   intersection,
   isNil,
   keys,
-  map,
   pipe,
   pick,
-  values
+  values,
 } = require('ramda')
 
-const { STRING, INTEGER, ENUM, TEXT, DATE, JSON } = require('sequelize')
+const {
+  STRING, INTEGER, ENUM, TEXT, DATE, JSON,
+} = require('sequelize')
 const { Boleto: NodeBoleto } = require('node-boleto')
 const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
 
 const barcodeBank = cond([
   [equals('development'), always('bradesco')],
-  [T, identity]
+  [T, identity],
 ])
 
 const generateBoletoCode = (boleto) => {
@@ -38,12 +37,12 @@ const generateBoletoCode = (boleto) => {
     data_vencimento: boleto.expiration_date,
     agencia: boleto.issuer_agency,
     codigo_cedente: boleto.issuer_account,
-    carteira: boleto.issuer_wallet
+    carteira: boleto.issuer_wallet,
   })
 
   return {
     barcode: nodeBoleto.barcode_data,
-    digitable_line: nodeBoleto.linha_digitavel
+    digitable_line: nodeBoleto.linha_digitavel,
   }
 }
 
@@ -76,23 +75,22 @@ const buildModelResponse = responseObjectBuilder(boleto =>
       'bank_response_code',
       'reference_id',
       'created_at',
-      'updated_at'
+      'updated_at',
     ]))
-    .then(assoc('object', 'boleto'))
-)
+    .then(assoc('object', 'boleto')))
 
 const addBoletoCode = (boleto) => {
-  const { barcode, digitable_line } = generateBoletoCode(boleto)
+  const { barcode, digitable_line } = generateBoletoCode(boleto) // eslint-disable-line
 
   boleto.updateAttributes({
     barcode,
-    digitable_line
+    digitable_line,
   })
 }
 
 const validateModel = (boleto) => {
   if (!boleto.payer_address) {
-    boleto.payer_address = {}
+    boleto.payer_address = {} // eslint-disable-line
   }
 
   const defaultAddress = {
@@ -102,7 +100,7 @@ const validateModel = (boleto) => {
     complementary: '9º andar, conjunto 91',
     neighborhood: 'Vila Olímpia',
     city: 'São Paulo',
-    state: 'SP'
+    state: 'SP',
   }
 
   const requiredAddressFields = [
@@ -111,7 +109,7 @@ const validateModel = (boleto) => {
     'street_number',
     'neighborhood',
     'city',
-    'state'
+    'state',
   ]
 
   const hasAllRequiredFields = pipe(
@@ -138,7 +136,7 @@ const validateModel = (boleto) => {
     always(defaultAddress)
   )
 
-  boleto.payer_address = getAddress(boleto.payer_address)
+  boleto.payer_address = getAddress(boleto.payer_address) // eslint-disable-line
 }
 
 function create (database) {
@@ -147,18 +145,18 @@ function create (database) {
       type: STRING,
       primaryKey: true,
       allowNull: false,
-      defaultValue: defaultCuidValue('bol_')
+      defaultValue: defaultCuidValue('bol_'),
     },
 
     token: {
       type: STRING,
       allowNull: false,
-      defaultValue: defaultCuidValue(`${process.env.STAGE}_`)
+      defaultValue: defaultCuidValue(`${process.env.STAGE}_`),
     },
 
     queue_url: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
     },
 
     status: {
@@ -168,114 +166,113 @@ function create (database) {
         'issued',
         'pending_registration',
         'registered',
-        'refused'
+        'refused',
       ],
-      defaultValue: 'issued'
+      defaultValue: 'issued',
     },
 
     expiration_date: {
       type: DATE,
-      allowNull: false
+      allowNull: false,
     },
 
     amount: {
       type: INTEGER,
-      allowNull: false
+      allowNull: false,
     },
 
     paid_amount: {
       type: INTEGER,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
     },
 
     instructions: {
-      type: TEXT
+      type: TEXT,
     },
 
     issuer: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
     },
 
     issuer_id: {
-      type: STRING
+      type: STRING,
     },
 
     issuer_wallet: {
-      type: STRING
+      type: STRING,
     },
 
     issuer_agency: {
-      type: STRING
+      type: STRING,
     },
 
     issuer_account: {
-      type: STRING
+      type: STRING,
     },
 
     title_id: {
       type: INTEGER,
       allowNull: false,
-      autoIncrement: true
+      autoIncrement: true,
     },
 
     reference_id: {
-      type: STRING
+      type: STRING,
     },
 
     barcode: {
-      type: STRING
+      type: STRING,
     },
 
     digitable_line: {
-      type: STRING
+      type: STRING,
     },
 
     payer_name: {
-      type: STRING
+      type: STRING,
     },
 
     payer_document_type: {
       type: ENUM,
-      values: ['cpf', 'cnpj']
+      values: ['cpf', 'cnpj'],
     },
 
     payer_document_number: {
-      type: STRING
+      type: STRING,
     },
 
     payer_address: {
-      type: JSON
+      type: JSON,
     },
 
     company_name: {
       type: STRING,
-      allowNull: true
+      allowNull: true,
     },
 
     company_document_number: {
       type: STRING,
-      allowNull: true
+      allowNull: true,
     },
 
     bank_response_code: {
-      type: STRING
+      type: STRING,
     },
 
     issuer_response_code: {
-      type: STRING
-    }
-  // tslint:disable-next-line:align
+      type: STRING,
+    },
   }, {
     indexes: [
       { fields: ['queue_url'] },
-      { fields: ['status'] }
+      { fields: ['status'] },
     ],
     hooks: {
       afterCreate: addBoletoCode,
-      beforeValidate: validateModel
-    }
+      beforeValidate: validateModel,
+    },
   })
 }
 
@@ -283,5 +280,5 @@ module.exports = {
   generateBoletoCode,
   buildModelResponse,
   validateModel,
-  create
+  create,
 }

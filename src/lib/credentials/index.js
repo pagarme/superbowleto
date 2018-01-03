@@ -1,4 +1,3 @@
-// tslint:disable:max-line-length
 const { memoize, prop } = require('ramda')
 const { getEnv } = require('../../config')
 const { makeFromLogger } = require('../../lib/logger')
@@ -8,7 +7,7 @@ const Credstash = require('nodecredstash')
 
 const credstash = new Credstash({
   table: 'credential-store',
-  awsOpts: { region: 'us-east-1' }
+  awsOpts: { region: 'us-east-1' },
 })
 
 const stage = process.env.STAGE
@@ -16,7 +15,7 @@ const stage = process.env.STAGE
 const localCredstashTable = {
   [`superbowleto/${stage}/database/password`]: 'touchdown1!',
   [`superbowleto/${stage}/providers/bradesco/company_id`]: '100005254',
-  [`superbowleto/${stage}/providers/bradesco/api_key`]: 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg'
+  [`superbowleto/${stage}/providers/bradesco/api_key`]: 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg',
 }
 
 const getCredentials = memoize((key) => {
@@ -30,7 +29,7 @@ const getCredentials = memoize((key) => {
   }
 
   return credstash.getSecret({
-    name: credstashKey
+    name: credstashKey,
   })
     .catch((err) => {
       logger.error({
@@ -38,13 +37,13 @@ const getCredentials = memoize((key) => {
         metadata: {
           error_name: err.name,
           error_stack: err.stack,
-          error_message: err.message
-        }
+          error_message: err.message,
+        },
       })
       return Promise.reject(err)
     })
 })
 
 module.exports = {
-  getCredentials
+  getCredentials,
 }

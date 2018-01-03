@@ -9,7 +9,7 @@ test.before(async () => {
   mockFunction(Provider, 'getProvider', () => ({
     register () {
       return Promise.resolve({ status: 'unknown' })
-    }
+    },
   }))
 })
 
@@ -23,14 +23,14 @@ const register = promisify(boletoHandler.register)
 
 test('registers a boleto (provider pending)', async (t) => {
   const { body } = await create({
-    body: mock
+    body: mock,
   })
 
   const payload = {
     boleto_id: body.id,
     sqsMessage: {
-      ReceiptHandle: 'abc'
-    }
+      ReceiptHandle: 'abc',
+    },
   }
 
   const boleto = await register(payload, {})

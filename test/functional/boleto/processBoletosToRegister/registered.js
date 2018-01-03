@@ -1,6 +1,5 @@
 import test from 'ava'
 import Promise, { promisify } from 'bluebird'
-import { assert } from '../../../helpers/chai'
 import { normalizeHandler } from '../../../helpers/normalizer'
 import boletoHandler from '../../../../src/resources/boleto'
 import { mock, userQueue, mockFunction, restoreFunction } from '../../../helpers/boleto'
@@ -11,13 +10,14 @@ import { BoletosToRegisterQueue } from '../../../../src/resources/boleto/queues'
 
 const create = normalizeHandler(boletoHandler.create)
 
+// eslint-disable-next-line
 const processBoletosToRegister = promisify(boletoHandler.processBoletosToRegister)
 
 test.before(async () => {
   mockFunction(Provider, 'getProvider', () => ({
     register () {
       return Promise.resolve({ status: 'unknown' })
-    }
+    },
   }))
 
   await purgeQueue(BoletosToRegisterQueue)
@@ -33,8 +33,7 @@ test.before(async () => {
 
         return resolve(data)
       })
-    })
-  )
+    }))
 })
 
 test.after(async () => {
@@ -46,7 +45,7 @@ test('process many boletos (provider registered)', async (t) => {
   mockFunction(Provider, 'getProvider', () => ({
     register () {
       return Promise.resolve({ status: 'registered' })
-    }
+    },
   }))
 
   await processBoletosToRegister({}, {})

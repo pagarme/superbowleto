@@ -12,12 +12,12 @@ test(`Update boleto's paid_amount and bank_response_code`, async (t) => {
 
   const { statusCode, body } = await updateBoleto({
     pathParameters: {
-      id: boleto.id
+      id: boleto.id,
     },
     body: {
       paid_amount: 300,
-      bank_response_code: 'brc_973927'
-    }
+      bank_response_code: 'brc_973927',
+    },
   })
 
   t.is(statusCode, 200)
@@ -34,7 +34,7 @@ test(`Update boleto's paid_amount and bank_response_code`, async (t) => {
     payer_document_number: '98154524872',
     company_name: 'Some Company',
     company_document_number: '98154524872',
-    bank_response_code: 'brc_973927'
+    bank_response_code: 'brc_973927',
   }, 'result must have the shape of a boleto')
 })
 
@@ -44,11 +44,11 @@ test(`Update boleto's paid_amount`, async (t) => {
 
   const { statusCode, body } = await updateBoleto({
     pathParameters: {
-      id: boleto.id
+      id: boleto.id,
     },
     body: {
-      paid_amount: 300
-    }
+      paid_amount: 300,
+    },
   })
 
   t.is(statusCode, 200)
@@ -65,6 +65,6 @@ test(`Update boleto's paid_amount`, async (t) => {
     payer_document_number: '98154524872',
     company_name: 'Some Company',
     company_document_number: '98154524872',
-    bank_response_code: null
+    bank_response_code: null,
   }, 'result must have the shape of a boleto')
 })

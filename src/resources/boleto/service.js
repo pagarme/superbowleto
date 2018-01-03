@@ -5,10 +5,9 @@ const { NotFoundError } = require('../../lib/errors')
 const { handleDatabaseErrors } = require('../../lib/errors/database')
 const { getPaginationQuery } = require('../../lib/database/pagination')
 const sqs = require('../../lib/sqs')
-const { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } = require('./queues')
+const { BoletosToRegisterQueue } = require('./queues')
 const { findProvider } = require('../../providers')
 const { makeFromLogger } = require('../../lib/logger')
-const { defaultCuidValue } = require('../../lib/database/schema')
 
 const makeLogger = makeFromLogger('boleto/service')
 
@@ -21,22 +20,21 @@ module.exports = function boletoService ({ requestId }) {
     return getModel('Boleto')
       .then(Boleto =>
         Promise.resolve(data)
-        .then(Boleto.create.bind(Boleto))
-        .tap((boleto) => {
-          logger.info({ status: 'success', metadata: { boleto } })
-        })
-        .catch((err) => {
-          logger.error({
-            status: 'failed',
-            metadata: {
-              error_name: err.name,
-              error_stack: err.stack,
-              error_message: err.message
-            }
+          .then(Boleto.create.bind(Boleto))
+          .tap((boleto) => {
+            logger.info({ status: 'success', metadata: { boleto } })
           })
-          return handleDatabaseErrors(err)
-        })
-      )
+          .catch((err) => {
+            logger.error({
+              status: 'failed',
+              metadata: {
+                error_name: err.name,
+                error_stack: err.stack,
+                error_message: err.message,
+              },
+            })
+            return handleDatabaseErrors(err)
+          }))
   }
 
   const register = (boleto) => {
@@ -59,7 +57,7 @@ module.exports = function boletoService ({ requestId }) {
 
       return boleto.update({
         issuer_response_code,
-        status: newBoletoStatus
+        status: newBoletoStatus,
       })
     }
 
@@ -79,15 +77,15 @@ module.exports = function boletoService ({ requestId }) {
             boleto,
             error_name: err.name,
             error_stack: err.stack,
-            error_message: err.message
-          }
+            error_message: err.message,
+          },
         })
 
         boleto.update({
-          status: 'pending_registration'
+          status: 'pending_registration',
         })
       })
-      .tap((boleto) => {
+      .tap((boleto) => { // eslint-disable-line
         logger.info({ status: 'success', metadata: { boleto } })
       })
       .catch((err) => {
@@ -96,8 +94,8 @@ module.exports = function boletoService ({ requestId }) {
           metadata: {
             error_name: err.name,
             error_stack: err.stack,
-            error_message: err.message
-          }
+            error_message: err.message,
+          },
         })
         throw err
       })
@@ -107,8 +105,8 @@ module.exports = function boletoService ({ requestId }) {
     getModel('Boleto')
       .then(Boleto => Boleto.findOne({
         where: {
-          id
-        }
+          id,
+        },
       }))
       .then(register)
 
@@ -116,14 +114,14 @@ module.exports = function boletoService ({ requestId }) {
     const logger = makeLogger({ operation: 'update' }, { id: requestId })
     logger.info({ status: 'started', metadata: { data } })
 
-    const id = data.id
+    const { id } = data
     const bankResponseCode = data.bank_response_code
     const paidAmount = data.paid_amount
 
     const query = {
       where: {
-        id
-      }
+        id,
+      },
     }
 
     return getModel('Boleto')
@@ -131,13 +129,13 @@ module.exports = function boletoService ({ requestId }) {
         .then((boleto) => {
           if (!boleto) {
             throw new NotFoundError({
-              message: 'Boleto not found'
+              message: 'Boleto not found',
             })
           }
 
           return boleto.update({
             paid_amount: paidAmount || boleto.paid_amount,
-            bank_response_code: bankResponseCode || boleto.bank_response_code
+            bank_response_code: bankResponseCode || boleto.bank_response_code,
           })
         })
         .tap((boleto) => {
@@ -146,18 +144,24 @@ module.exports = function boletoService ({ requestId }) {
         .catch(handleDatabaseErrors))
   }
 
-  const index = ({ page, count, token, title_id }) => {
+  const index = ({
+    page,
+    count,
+    token,
+    title_id, // eslint-disable-line
+  }) => {
     const whereQuery = {
       where: {
-      }
+      },
     }
 
     const orderQuery = {
-      order: 'id DESC'
+      order: 'id DESC',
     }
 
     const possibleFields = { token, title_id }
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const field in possibleFields) {
       if (possibleFields[field]) {
         whereQuery.where[field] = possibleFields[field]
@@ -170,7 +174,7 @@ module.exports = function boletoService ({ requestId }) {
       {},
       paginationQuery,
       whereQuery,
-      orderQuery
+      orderQuery,
     ])
 
     return getModel('Boleto')
@@ -181,8 +185,8 @@ module.exports = function boletoService ({ requestId }) {
   const show = (id) => {
     const query = {
       where: {
-        id
-      }
+        id,
+      },
     }
 
     return getModel('Boleto')
@@ -190,7 +194,7 @@ module.exports = function boletoService ({ requestId }) {
         .then((boleto) => {
           if (!boleto) {
             throw new NotFoundError({
-              message: 'Boleto not found'
+              message: 'Boleto not found',
             })
           }
 
@@ -200,7 +204,7 @@ module.exports = function boletoService ({ requestId }) {
   }
 
   const processBoleto = (item, sqsMessage) => {
-    const { boleto_id } = item
+    const { boleto_id } = item // eslint-disable-line
 
     const logger = makeLogger({ operation: 'process_boleto' }, { id: requestId })
 
@@ -210,14 +214,14 @@ module.exports = function boletoService ({ requestId }) {
         logger.info({
           sub_operation: 'remove_from_background_queue',
           status: 'started',
-          metadata: { boleto_id: boleto.id }
+          metadata: { boleto_id: boleto.id },
         })
         return BoletosToRegisterQueue.remove(sqsMessage)
           .then(() => {
             logger.info({
               sub_operation: 'remove_from_background_queue',
               status: 'success',
-              metadata: { boleto_id: boleto.id }
+              metadata: { boleto_id: boleto.id },
             })
           })
           .catch((err) => {
@@ -227,29 +231,30 @@ module.exports = function boletoService ({ requestId }) {
               metadata: {
                 error_name: err.name,
                 error_stack: err.stack,
-                error_message: err.message
-              }
+                error_message: err.message,
+              },
             })
             throw err
           })
       }
     }
 
+    // eslint-disable-next-line
     const sendMessageToUserQueueConditionally = (boleto) => {
       if (boleto.status === 'registered' || boleto.status === 'refused') {
         logger.info({
           sub_operation: 'send_message_to_client_queue',
           status: 'started',
-          metadata: { boleto_id: boleto.id }
+          metadata: { boleto_id: boleto.id },
         })
 
         const params = {
           MessageBody: JSON.stringify({
             boleto_id: boleto.id,
             status: boleto.status,
-            reference_id: boleto.reference_id
+            reference_id: boleto.reference_id,
           }),
-          QueueUrl: boleto.queue_url
+          QueueUrl: boleto.queue_url,
         }
 
         return sqs.sendMessage(params).promise()
@@ -257,7 +262,7 @@ module.exports = function boletoService ({ requestId }) {
             logger.info({
               sub_operation: 'send_message_to_client_queue',
               status: 'success',
-              metadata: { boleto_id: boleto.id }
+              metadata: { boleto_id: boleto.id },
             })
           })
           .catch((err) => {
@@ -267,8 +272,8 @@ module.exports = function boletoService ({ requestId }) {
               metadata: {
                 error_name: err.name,
                 error_stack: err.stack,
-                error_message: err.message
-              }
+                error_message: err.message,
+              },
             })
             throw err
           })
@@ -284,7 +289,7 @@ module.exports = function boletoService ({ requestId }) {
       .tap((response) => {
         logger.info({
           status: 'success',
-          metadata: { body: response.body, statusCode: response.statusCode }
+          metadata: { body: response.body, statusCode: response.statusCode },
         })
       })
       .catch((err) => {
@@ -293,8 +298,8 @@ module.exports = function boletoService ({ requestId }) {
           metadata: {
             error_name: err.name,
             error_stack: err.stack,
-            error_message: err.message
-          }
+            error_message: err.message,
+          },
         })
       })
   }
@@ -306,6 +311,6 @@ module.exports = function boletoService ({ requestId }) {
     update,
     index,
     show,
-    processBoleto
+    processBoleto,
   }
 }

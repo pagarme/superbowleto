@@ -21,16 +21,16 @@ const migrate = (event, context, callback) => {
     const umzug = new Umzug({
       storage: 'sequelize',
       storageOptions: {
-        sequelize: database
+        sequelize: database,
       },
       migrations: {
         params: [
           database.getQueryInterface(),
-          database.constructor
+          database.constructor,
         ],
         path: getMigrationsPath(),
-        pattern: /\.js$/
-      }
+        pattern: /\.js$/,
+      },
     })
 
     umzug.up()
@@ -43,8 +43,8 @@ const migrate = (event, context, callback) => {
           metadata: {
             error_name: err.name,
             error_stack: err.stack,
-            error_message: err.message
-          }
+            error_message: err.message,
+          },
         })
         callback(err)
       })
@@ -52,5 +52,5 @@ const migrate = (event, context, callback) => {
 }
 
 module.exports = {
-  migrate
+  migrate,
 }

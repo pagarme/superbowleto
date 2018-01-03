@@ -3,7 +3,7 @@ import moment from 'moment'
 import {
   date,
   documentType,
-  format
+  format,
 } from '../../../../src/providers/bradesco/formatter'
 
 test('date: when timezones are in different days', (t) => {

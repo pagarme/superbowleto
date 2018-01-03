@@ -4,5 +4,5 @@ const decodeBase64 = str => Buffer.from(`${str}`, 'base64').toString('ascii')
 
 module.exports = {
   encodeBase64,
-  decodeBase64
+  decodeBase64,
 }

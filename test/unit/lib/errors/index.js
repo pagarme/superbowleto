@@ -4,12 +4,12 @@ import {
   InvalidParameterError,
   ValidationError,
   DatabaseError,
-  InternalServerError
+  InternalServerError,
 } from '../../../../src/lib/errors'
 
 test('NotFoundError', async (t) => {
   const error = new NotFoundError({
-    message: 'User not found'
+    message: 'User not found',
   })
 
   t.is(error.name, 'NotFoundError', 'has a `name` property')
@@ -21,7 +21,7 @@ test('NotFoundError', async (t) => {
 test('InvalidParameterError', async (t) => {
   const error = new InvalidParameterError({
     message: 'Resource not found',
-    field: 'resource'
+    field: 'resource',
   })
 
   t.is(error.name, 'InvalidParameterError', 'has a `name` property')
@@ -37,21 +37,21 @@ test('ValidationError', async (t) => {
     errors: [
       new InvalidParameterError({
         message: 'User not found',
-        field: 'user'
+        field: 'user',
       }),
       new InvalidParameterError({
         message: 'Resource not found',
-        field: 'resource'
-      })
-    ]
+        field: 'resource',
+      }),
+    ],
   })
 
   const cases = [{
     message: 'User not found',
-    field: 'user'
+    field: 'user',
   }, {
     message: 'Resource not found',
-    field: 'resource'
+    field: 'resource',
   }]
 
   t.is(error.name, 'ValidationError', 'has a `name` property')
@@ -69,7 +69,7 @@ test('ValidationError', async (t) => {
 
 test('DatabaseError', async (t) => {
   const error = new DatabaseError({
-    message: 'Database is not online, or credentials are wrong'
+    message: 'Database is not online, or credentials are wrong',
   })
 
   t.is(error.name, 'DatabaseError', 'has a `name` property')

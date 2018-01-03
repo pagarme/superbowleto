@@ -1,5 +1,10 @@
 const Promise = require('bluebird')
-const { both, complement, path, prop, propEq } = require('ramda')
+const {
+  both,
+  complement,
+  path,
+  propEq,
+} = require('ramda')
 const sqs = require('../../lib/sqs')
 const { buildSuccessResponse, buildFailureResponse } = require('../../lib/http/response')
 const { ValidationError, NotFoundError, InternalServerError } = require('../../lib/errors')
@@ -8,8 +13,7 @@ const { parse } = require('../../lib/http/request')
 const { createSchema, updateSchema, indexSchema } = require('./schema')
 const { makeFromLogger } = require('../../lib/logger')
 const { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } = require('./queues')
-const lambda = require('./lambda')
-const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
+const { defaultCuidValue } = require('../../lib/database/schema')
 const { buildModelResponse } = require('./model')
 
 const makeLogger = makeFromLogger('boleto/index')
@@ -59,26 +63,29 @@ const create = (event, context, callback) => {
 
     if (shouldSendBoletoToQueue(boleto)) {
       logger.info({
-        sub_operation: 'send_to_background_queue', status: 'started',
-        metadata: { boleto_id: boleto.id }
+        sub_operation: 'send_to_background_queue',
+        status: 'started',
+        metadata: { boleto_id: boleto.id },
       })
       return BoletosToRegisterQueue.push({
-        boleto_id: boleto.id
+        boleto_id: boleto.id,
       })
         .then(() => {
           logger.info({
-            sub_operation: 'send_to_background_queue', status: 'success',
-            metadata: { boleto_id: boleto.id }
+            sub_operation: 'send_to_background_queue',
+            status: 'success',
+            metadata: { boleto_id: boleto.id },
           })
         })
         .catch((err) => {
           logger.info({
-            sub_operation: 'send_to_background_queue', status: 'failed',
+            sub_operation: 'send_to_background_queue',
+            status: 'failed',
             metadata: {
               error_name: err.name,
               error_stack: err.stack,
-              error_message: err.message
-            }
+              error_message: err.message,
+            },
           })
           throw err
         })
@@ -97,7 +104,7 @@ const create = (event, context, callback) => {
     .tap((response) => {
       logger.info({
         status: 'success',
-        metadata: { body: response.body, statusCode: response.statusCode }
+        metadata: { body: response.body, statusCode: response.statusCode },
       })
     })
     .catch((err) => {
@@ -106,8 +113,8 @@ const create = (event, context, callback) => {
         metadata: {
           error_name: err.name,
           error_stack: err.stack,
-          error_message: err.message
-        }
+          error_message: err.message,
+        },
       })
       return handleError(err)
     })
@@ -120,7 +127,7 @@ const register = (event, context, callback) => {
   const service = BoletoService({ requestId })
 
   const logger = makeLogger({ operation: 'register' }, { id: requestId })
-  const { boleto_id, sqsMessage } = event
+  const { boleto_id, sqsMessage } = event // eslint-disable-line
 
   // eslint-disable-next-line
   const removeBoletoFromQueueConditionally = (boleto) => {
@@ -128,14 +135,14 @@ const register = (event, context, callback) => {
       logger.info({
         sub_operation: 'remove_from_background_queue',
         status: 'started',
-        metadata: { boleto_id: boleto.id }
+        metadata: { boleto_id: boleto.id },
       })
       return BoletosToRegisterQueue.remove(sqsMessage)
         .then(() => {
           logger.info({
             sub_operation: 'remove_from_background_queue',
             status: 'success',
-            metadata: { boleto_id: boleto.id }
+            metadata: { boleto_id: boleto.id },
           })
         })
         .catch((err) => {
@@ -145,29 +152,29 @@ const register = (event, context, callback) => {
             metadata: {
               error_name: err.name,
               error_stack: err.stack,
-              error_message: err.message
-            }
+              error_message: err.message,
+            },
           })
           throw err
         })
     }
   }
 
-  const sendMessageToUserQueueConditionally = (boleto) => {
+  const sendMessageToUserQueueConditionally = (boleto) => { // eslint-disable-line
     if (boleto.status === 'registered' || boleto.status === 'refused') {
       logger.info({
         sub_operation: 'send_message_to_client_queue',
         status: 'started',
-        metadata: { boleto_id: boleto.id }
+        metadata: { boleto_id: boleto.id },
       })
 
       const params = {
         MessageBody: JSON.stringify({
           boleto_id: boleto.id,
           status: boleto.status,
-          reference_id: boleto.reference_id
+          reference_id: boleto.reference_id,
         }),
-        QueueUrl: boleto.queue_url
+        QueueUrl: boleto.queue_url,
       }
 
       return sqs.sendMessage(params).promise()
@@ -175,7 +182,7 @@ const register = (event, context, callback) => {
           logger.info({
             sub_operation: 'send_message_to_client_queue',
             status: 'success',
-            metadata: { boleto_id: boleto.id }
+            metadata: { boleto_id: boleto.id },
           })
         })
         .catch((err) => {
@@ -185,8 +192,8 @@ const register = (event, context, callback) => {
             metadata: {
               error_name: err.name,
               error_stack: err.stack,
-              error_message: err.message
-            }
+              error_message: err.message,
+            },
           })
           throw err
         })
@@ -202,7 +209,7 @@ const register = (event, context, callback) => {
     .tap((response) => {
       logger.info({
         status: 'success',
-        metadata: { body: response.body, statusCode: response.statusCode }
+        metadata: { body: response.body, statusCode: response.statusCode },
       })
     })
     .catch((err) => {
@@ -211,8 +218,8 @@ const register = (event, context, callback) => {
         metadata: {
           error_name: err.name,
           error_stack: err.stack,
-          error_message: err.message
-        }
+          error_message: err.message,
+        },
       })
       callback(err)
     })
@@ -225,7 +232,7 @@ const update = (event, context, callback) => {
   const service = BoletoService({ requestId })
 
   const body = JSON.parse(event.body || JSON.stringify({}))
-  const { bank_response_code, paid_amount } = body
+  const { bank_response_code, paid_amount } = body // eslint-disable-line
   const id = path(['pathParameters', 'id'], event)
 
   return Promise.resolve({ id, bank_response_code, paid_amount })
@@ -245,11 +252,12 @@ const index = (event, context, callback) => {
   const page = path(['queryStringParameters', 'page'], event)
   const count = path(['queryStringParameters', 'count'], event)
 
-  // tslint:disable-next-line
-  const title_id = path(['queryStringParameters', 'title_id'], event)
+  const title_id = path(['queryStringParameters', 'title_id'], event) // eslint-disable-line
   const token = path(['queryStringParameters', 'token'], event)
 
-  return Promise.resolve({ page, count, token, title_id })
+  return Promise.resolve({
+    page, count, token, title_id,
+  })
     .then(parse(indexSchema))
     .then(service.index)
     .then(buildModelResponse)
@@ -283,13 +291,13 @@ const processBoletosToRegister = (event, context, callback) => {
   logger.info({ status: 'started' })
 
   BoletosToRegisterQueue.startProcessing(service.processBoleto, {
-    keepMessages: true
+    keepMessages: true,
   })
 
   function stopQueueWhenIdle () {
     const params = {
       QueueUrl: BoletosToRegisterQueueUrl,
-      AttributeNames: ['ApproximateNumberOfMessages']
+      AttributeNames: ['ApproximateNumberOfMessages'],
     }
 
     sqs.getQueueAttributes(params, (err, data) => {
@@ -301,7 +309,7 @@ const processBoletosToRegister = (event, context, callback) => {
 
       if (Number(ApproximateNumberOfMessages) < 1) {
         BoletosToRegisterQueue.stopProcessing()
-        clearInterval(interval)
+        clearInterval(interval) // eslint-disable-line
         callback(null)
       }
     })
@@ -315,8 +323,8 @@ const processBoletosToRegister = (event, context, callback) => {
       metadata: {
         error_name: err.name,
         error_stack: err.stack,
-        error_message: err.message
-      }
+        error_message: err.message,
+      },
     })
   })
 }
@@ -327,5 +335,5 @@ module.exports = {
   update,
   index,
   show,
-  processBoletosToRegister
+  processBoletosToRegister,
 }

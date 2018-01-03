@@ -21,10 +21,10 @@ const getPaginationQuery = (options = {}) => {
 
   return {
     limit,
-    offset
+    offset,
   }
 }
 
 module.exports = {
-  getPaginationQuery
+  getPaginationQuery,
 }

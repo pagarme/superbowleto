@@ -13,9 +13,9 @@ test.before(() => {
     register () {
       return Promise.resolve({
         status: 'refused',
-        issuer_response_code: '930056'
+        issuer_response_code: '930056',
       })
-    }
+    },
   }))
 })
 
@@ -27,7 +27,7 @@ test('creates a boleto (provider refused)', async (t) => {
   const payload = mock
 
   const { body, statusCode } = await create({
-    body: payload
+    body: payload,
   })
 
   t.is(statusCode, 201)
@@ -50,6 +50,6 @@ test('creates a boleto (provider refused)', async (t) => {
     payer_document_number: payload.payer_document_number,
     company_name: payload.company_name,
     company_document_number: payload.company_document_number,
-    queue_url: payload.queue_url
+    queue_url: payload.queue_url,
   })
 })

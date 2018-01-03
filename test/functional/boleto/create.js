@@ -10,11 +10,11 @@ test('creates a boleto with invalid data', async (t) => {
   const payload = {
     expiration_date: true,
     issuer: 100,
-    payer_document_type: 'xxx'
+    payer_document_type: 'xxx',
   }
 
   const { body, statusCode } = await create({
-    body: payload
+    body: payload,
   })
 
   t.is(statusCode, 400)
@@ -22,32 +22,32 @@ test('creates a boleto with invalid data', async (t) => {
     errors: [{
       type: 'invalid_parameter',
       message: '"queue_url" is required',
-      field: 'queue_url'
+      field: 'queue_url',
     }, {
       type: 'invalid_parameter',
       message: '"expiration_date" must be a number of milliseconds or valid date string',
-      field: 'expiration_date'
+      field: 'expiration_date',
     }, {
       type: 'invalid_parameter',
       message: '"amount" is required',
-      field: 'amount'
+      field: 'amount',
     }, {
       type: 'invalid_parameter',
       message: '"issuer" must be a string',
-      field: 'issuer'
+      field: 'issuer',
     }, {
       type: 'invalid_parameter',
       message: '"payer_name" is required',
-      field: 'payer_name'
+      field: 'payer_name',
     }, {
       type: 'invalid_parameter',
       message: '"payer_document_type" must be one of [cpf, cnpj]',
-      field: 'payer_document_type'
+      field: 'payer_document_type',
     }, {
       type: 'invalid_parameter',
       message: '"payer_document_number" is required',
-      field: 'payer_document_number'
-    }]
+      field: 'payer_document_number',
+    }],
   })
 })
 
@@ -66,11 +66,11 @@ test('creates a non-registrable boleto', async (t) => {
     token: 'live_az1sx2dc3fv4gb5gb6hn7',
     company_name: 'Some Company',
     company_document_number: '98154524872',
-    reference_id: 'ref_niidkanfikenafi'
+    reference_id: 'ref_niidkanfikenafi',
   }
 
   const { body, statusCode } = await create({
-    body: payload
+    body: payload,
   })
 
   t.is(statusCode, 201)
@@ -95,6 +95,6 @@ test('creates a non-registrable boleto', async (t) => {
     payer_document_number: null,
     queue_url: payload.queue_url,
     company_name: payload.company_name,
-    company_document_number: payload.company_document_number
+    company_document_number: payload.company_document_number,
   })
 })
