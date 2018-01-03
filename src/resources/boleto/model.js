@@ -22,7 +22,7 @@ const {
 } = require('ramda')
 
 const { STRING, INTEGER, ENUM, TEXT, DATE, JSON } = require('sequelize')
-const { Boleto as NodeBoleto } = require('node-boleto')
+const { Boleto: NodeBoleto } = require('node-boleto')
 const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
 
 const barcodeBank = cond([

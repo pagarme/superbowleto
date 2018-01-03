@@ -1,7 +1,7 @@
 import test from 'ava'
 import { findProvider } from '../../../src/providers'
-import * as bradesco from '../../../src/providers/bradesco'
-import * as development from '../../../src/providers/development'
+import bradesco from '../../../src/providers/bradesco'
+import development from '../../../src/providers/development'
 import { NotFoundError } from '../../../src/lib/errors/index'
 
 test('findProvider: with bradesco provider', (t) => {

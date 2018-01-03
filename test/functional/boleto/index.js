@@ -2,7 +2,7 @@ import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createBoleto, userQueueUrl } from '../../helpers/boleto'
-import * as boletoHandler from '../../../src/resources/boleto'
+import boletoHandler from '../../../src/resources/boleto'
 import { getModel } from '../../../src/database'
 
 let Boleto

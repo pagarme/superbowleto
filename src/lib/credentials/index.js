@@ -19,7 +19,7 @@ const localCredstashTable = {
   [`superbowleto/${stage}/providers/bradesco/api_key`]: 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg'
 }
 
-const getCredentials = memoize((key: string): Promise<string> => {
+const getCredentials = memoize((key) => {
   const logger = makeLogger({ operation: 'getCredentials' })
   const credstashKey = `superbowleto/${stage}/${key}`
 

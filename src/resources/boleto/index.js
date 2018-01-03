@@ -26,7 +26,7 @@ const handleError = (err) => {
   return buildFailureResponse(500, new InternalServerError())
 }
 
-const configureContext = (context: any = {}) => {
+const configureContext = (context = {}) => {
   // eslint-disable-next-line no-param-reassign
   context.callbackWaitsForEmptyEventLoop = false
 }
