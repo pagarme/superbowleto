@@ -46,9 +46,7 @@ export default function boletoService ({ requestId }) {
 
     const logger = makeLogger({ operation: 'register' }, { id: requestId })
 
-    const updateBoletoStatus = (response) => {
-      const status = response.status
-
+    const updateBoletoStatus = ({ issuer_response_code, status }) => {
       let newBoletoStatus
 
       if (status === 'registered') {
@@ -60,6 +58,7 @@ export default function boletoService ({ requestId }) {
       }
 
       return boleto.update({
+        issuer_response_code,
         status: newBoletoStatus
       })
     }

@@ -11,7 +11,10 @@ const create = normalizeHandler(boletoHandler.create)
 test.before(() => {
   mockFunction(Provider, 'getProvider', () => ({
     register () {
-      return Promise.resolve({ status: 'refused' })
+      return Promise.resolve({
+        status: 'refused',
+        issuer_response_code: '930056'
+      })
     }
   }))
 })
@@ -36,6 +39,7 @@ test('creates a boleto (provider refused)', async (t) => {
 
   assert.containSubset(body, {
     status: 'refused',
+    issuer_response_code: '930056',
     paid_amount: 0,
     amount: payload.amount,
     instructions: payload.instructions,

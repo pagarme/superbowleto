@@ -13,7 +13,10 @@ const create = normalizeHandler(boletoHandler.create)
 test.before(async () => {
   mockFunction(Provider, 'getProvider', () => ({
     register () {
-      return Promise.resolve({ status: 'unknown' })
+      return Promise.resolve({
+        status: 'unknown',
+        issuer_response_code: 'unknown'
+      })
     }
   }))
 
@@ -46,6 +49,7 @@ test('creates a boleto (provider unknown)', async (t) => {
 
   assert.containSubset(body, {
     status: 'pending_registration',
+    issuer_response_code: 'unknown',
     paid_amount: 0,
     amount: payload.amount,
     instructions: payload.instructions,

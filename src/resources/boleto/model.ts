@@ -63,6 +63,7 @@ export const buildModelResponse = responseObjectBuilder(boleto =>
       'issuer_agency',
       'issuer_wallet',
       'issuer_id',
+      'issuer_response_code',
       'title_id',
       'barcode',
       'digitable_line',
@@ -259,6 +260,10 @@ function create (database) {
     },
 
     bank_response_code: {
+      type: STRING
+    },
+
+    issuer_response_code: {
       type: STRING
     }
   // tslint:disable-next-line:align
