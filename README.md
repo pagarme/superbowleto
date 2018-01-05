@@ -27,12 +27,11 @@
 Here's a brief overview of our technology stack:
 
 - **[Docker](https://docs.docker.com)** and **[Docker Compose](https://docs.docker.com/compose/)** to create our development and test environments.
-- **[Serverless Framework](https://serverless.com)** to manage and deploy our **[AWS Lambda](https://aws.amazon.com/documentation/lambda/)** functions.
+- **[Deployer](https://github.com/pagarme/deployer)** to manage and deploy our **[AWS Lambda](https://aws.amazon.com/documentation/lambda/)** functions.
 - **[AWS SQS](https://aws.amazon.com/documentation/sqs/)** as a queue manager to process things like boletos to register.
 - **[Postgres](https://www.postgresql.org)** as to store our data **[Sequelize](http://docs.sequelizejs.com)** as a Node.js ORM.
 - **[Babel](https://babeljs.io/)** to transpile our code written in modern Javascript and we use multiple **[Webpack](http://webpack.js.org)** configurations to bundle our code for production, test and development.
 - **[Ava](https://github.com/avajs/ava)** as a test runner and **[Chai](http://chaijs.com)** to do some more advanced test assertions.
-- **[Yarn](https://yarnpkg.com/en/)** to install npm dependencies.
 
 ## Developing
 
@@ -64,17 +63,17 @@ Tests are separate in `functional`, `integration` and `unit`. You can either run
 
 - **Run only `functional` tests:**
   ```sh
-  $ docker-compose run test yarn run test-functional
+  $ docker-compose run test npm run test-functional
   ```
 
 - **Run only `integration` tests:**
   ```sh
-  $ docker-compose run test yarn run test-integration
+  $ docker-compose run test npm run test-integration
   ```
 
 - **Run only `unit` tests:**
   ```sh
-  $ docker-compose run test yarn run test-unit
+  $ docker-compose run test npm run test-unit
   ```
 
 ### Installing new dependencies
@@ -88,7 +87,7 @@ However, **if you need to install any new dependency**, you **must rebuild the i
 **You can install dependencies and rebuild the image by running:**
 
 ```sh
-$ docker-compose run test yarn add jquery
+$ docker-compose run test npm install --save ramda
 $ docker-compose build test
 ```
 
