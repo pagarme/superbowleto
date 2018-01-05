@@ -44,7 +44,7 @@ module.exports = function boletoService ({ requestId }) {
 
     const logger = makeLogger({ operation: 'register' }, { id: requestId })
 
-    const updateBoletoStatus = ({ issuer_response_code, status }) => {
+    const updateBoletoStatus = ({ issuer_response_code, status }) => { // eslint-disable-line
       let newBoletoStatus
 
       if (status === 'registered') {

@@ -1,12 +1,11 @@
-import { STRING } from 'sequelize'
+const { STRING } = require('sequelize')
 
-export default {
-  up: (queryInterface, Sequelize) =>
+module.exports = {
+  up: queryInterface =>
     queryInterface.addColumn('Boletos', 'issuer_response_code', {
-      type: STRING
-    }
-  ),
+      type: STRING,
+    }),
 
-  down: (queryInterface, Sequelize) =>
-    queryInterface.removeColumn('Boletos', 'issuer_response_code')
+  down: queryInterface =>
+    queryInterface.removeColumn('Boletos', 'issuer_response_code'),
 }
