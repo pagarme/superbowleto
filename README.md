@@ -27,7 +27,7 @@
 Here's a brief overview of our technology stack:
 
 - **[Docker](https://docs.docker.com)** and **[Docker Compose](https://docs.docker.com/compose/)** to create our development and test environments.
-- **[Serverless Framework](https://serverless.com)** to manage and deploy our **[AWS Lambda](https://aws.amazon.com/documentation/lambda/)** functions.
+- **[Deployer](https://github.com/pagarme/deployer)** to manage and deploy our **[AWS Lambda](https://aws.amazon.com/documentation/lambda/)** functions.
 - **[AWS SQS](https://aws.amazon.com/documentation/sqs/)** as a queue manager to process things like boletos to register.
 - **[Postgres](https://www.postgresql.org)** as to store our data **[Sequelize](http://docs.sequelizejs.com)** as a Node.js ORM.
 - **[Babel](https://babeljs.io/)** to transpile our code written in modern Javascript and we use multiple **[Webpack](http://webpack.js.org)** configurations to bundle our code for production, test and development.
