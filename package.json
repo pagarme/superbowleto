@@ -5,7 +5,6 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "dev": "node ./src/bin/server.js",
     "lint": "eslint 'test/**/*.js' 'src/**/*.js'",
     "setup": "node ./script/setup",
     "test": "npm run setup && nyc ava --verbose --serial 'test/**/*.js'",

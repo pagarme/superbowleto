@@ -47,10 +47,35 @@ If you never developed in this repo before:
   $ git clone git@github.com:pagarme/superbowleto
   ```
 
-2. **Build the base image:**
+2. **Build the base images:**
   ```sh
-  $ docker-compose build test
+  $ docker-compose build web-server
   ```
+
+### Running the server
+
+To run the server, you will have to start the database and run the migrations.
+
+1. **Start database and run migrations in one command:**
+```sh
+$ make setup-db
+```
+
+2. **Or start database and run migrations separately:**
+  - **Start database (postgres):**
+    ```sh
+    $ make start-db
+    ```
+
+  - **Run the migrations:**
+    ```sh
+    $ make migrate
+    ```
+
+3. **Then finally run the server:**
+```sh
+$ make web-server
+```
 
 ### Running tests
 
