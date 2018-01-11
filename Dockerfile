@@ -4,3 +4,5 @@ COPY package.json /superbowleto/package.json
 WORKDIR /superbowleto
 
 RUN npm install
+
+EXPOSE 3000
