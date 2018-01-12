@@ -25,3 +25,18 @@ test-integration:
 test-unit:
 	@docker-compose run test-unit
 .PHONY: test-unit
+
+start-db:
+	@docker-compose up -d postgres
+.PHONY: start-db
+
+migrate:
+	@docker-compose run web-server ./script/setup
+.PHONY: migrate
+
+setup-db: start-db migrate
+.PHONY: setup-db
+
+web-server:
+	@docker-compose up web-server
+.PHONY: web-server

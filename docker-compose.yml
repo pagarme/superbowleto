@@ -6,6 +6,7 @@ services:
     ports:
       - 5432
     environment:
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=touchdown1!
 
   yopa:
@@ -43,3 +44,21 @@ services:
       - /superbowleto/node_modules
     depends_on:
       - test-dependencies
+
+  web-server:
+    build: .
+    command: node src/bin/server.js
+    ports:
+      - "3000:3000"
+    environment:
+      - API_ENV=test
+      - PORT=3000
+    volumes:
+      - .:/superbowleto
+      - /superbowleto/node_modules
+    depends_on:
+      - postgres
+      - yopa
+    links:
+      - postgres
+      - yopa
