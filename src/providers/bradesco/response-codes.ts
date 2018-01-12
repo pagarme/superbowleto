@@ -88,7 +88,7 @@ export default {
     status: 'refused'
   },
   9300522: {
-    message: 'DATA LIMITE OBRIGATORIA PARA BONIFICACAO',
+    message: 'DATA LIMITE OBRIGATORIA PARA BONIFICACAO REGISTRO BOLETO BANCÁRIO BRADESCO',
     status: 'refused'
   },
   9300523: {
@@ -256,7 +256,7 @@ export default {
     status: 'refused'
   },
   9300564: {
-    message: 'DATA EMISSAO MAIOR OU IGUAL DATA VENCIMENTO',
+    message: 'DATA EMISSAO MAIOR OU IGUAL DATA VENCIMENTO REGISTRO BOLETO BANCÁRIO BRADESCO',
     status: 'refused'
   },
   9300565: {
@@ -424,7 +424,7 @@ export default {
     status: 'refused'
   },
   93005106: {
-    message: 'NAO E POSSIVEL REGISTRAR O TITULO',
+    message: 'NAO E POSSIVEL REGISTRAR O TITULO BOLETO BANCÁRIO BRADESCO',
     status: 'refused'
   },
   93005107: {
@@ -464,7 +464,7 @@ export default {
     status: 'refused'
   },
   93005116: {
-    message: 'SISTEMA INDISPONIVEL NO MOMENTO',
+    message: 'SISTEMA INDISPONIVEL NO MOMENTO - ERRO NA FORMATACAO DOS DADOS DE EMISSAO',
     status: 'unknown'
   },
   93005117: {
@@ -482,5 +482,9 @@ export default {
   93005120: {
     message: 'CARTEIRA DE COBRANCA NAO ACEITA',
     status: 'refused'
+  },
+  93005999: {
+    message: 'BOLETO GERADO COM SUCESSO - REGISTRO EM PROCESSAMENTO',
+    status: 'registered'
   }
 }
