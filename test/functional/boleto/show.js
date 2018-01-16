@@ -10,7 +10,7 @@ test('shows an existing boleto', async (t) => {
   const boleto = await createBoleto()
 
   const { body, statusCode } = await show({
-    pathParameters: {
+    params: {
       id: boleto.id,
     },
   })
@@ -36,7 +36,7 @@ test('shows an existing boleto', async (t) => {
 
 test('shows a non-existing boleto', async (t) => {
   const { statusCode } = await show({
-    pathParameters: {
+    params: {
       id: 'boleto_xxx',
     },
   })

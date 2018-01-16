@@ -8,12 +8,12 @@ const buildErrorPayload = compose(
 
 const buildSuccessResponse = curryN(2, (statusCode, data) => ({
   statusCode,
-  body: JSON.stringify(data),
+  body: data,
 }))
 
 const buildFailureResponse = curryN(2, (statusCode, data) => ({
   statusCode,
-  body: JSON.stringify(buildErrorPayload(data)),
+  body: buildErrorPayload(data),
 }))
 
 module.exports = {

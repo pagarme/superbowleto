@@ -41,7 +41,7 @@ test('shows all boletos with default pagination', async (t) => {
 
 test('shows all boletos with custom pagination', async (t) => {
   const { body, statusCode } = await indexBoleto({
-    queryStringParameters: {
+    query: {
       count: 2,
     },
   })
@@ -73,7 +73,7 @@ test('shows a boleto with a specific token', async (t) => {
   })
 
   const { body, statusCode } = await indexBoleto({
-    queryStringParameters: {
+    query: {
       token: 'sandbox_3r3regdgdsggdgdzgzd',
     },
   })

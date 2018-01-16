@@ -1,20 +1,23 @@
-import { promisify } from 'bluebird'
+import { merge } from 'ramda'
 
-const parseHandlerEvent = event => Object.assign({}, event, {
-  body: JSON.parse(event.body),
-})
+const populateReq = merge({
+  get: (headerName) => {
+    const headers = {
+      'x-request-id': 'req_a872b1c123',
+    }
 
-const computeHandlerEvent = event => Object.assign({}, event, {
-  headers: {
-    'x-request-id': 'req_a872b1c123',
+    return headers[headerName]
   },
-  body: JSON.stringify(event.body),
+  query: {},
+  params: {},
+  body: {},
 })
 
-export const normalizeHandler = fn => (event = {}, context) => {
-  const handler = promisify(fn)
-  const computedEvent = computeHandlerEvent(event)
+const createMockRes = () => ({
+  status: () => ({
+    send: () => undefined,
+  }),
+})
 
-  return handler(computedEvent, context)
-    .then(parseHandlerEvent)
-}
+export const normalizeHandler = handler => (req = {}) =>
+  handler(populateReq(req), createMockRes())

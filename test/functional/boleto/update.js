@@ -11,7 +11,7 @@ test(`Update boleto's paid_amount and bank_response_code`, async (t) => {
   const boleto = await createBoleto()
 
   const { statusCode, body } = await updateBoleto({
-    pathParameters: {
+    params: {
       id: boleto.id,
     },
     body: {
@@ -43,7 +43,7 @@ test(`Update boleto's paid_amount`, async (t) => {
   const boleto = await createBoleto()
 
   const { statusCode, body } = await updateBoleto({
-    pathParameters: {
+    params: {
       id: boleto.id,
     },
     body: {
