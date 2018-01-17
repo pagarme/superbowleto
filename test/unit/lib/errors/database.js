@@ -7,13 +7,9 @@ import {
   InvalidParameterError,
   ValidationError,
 } from '../../../../src/lib/errors'
-import { getModel } from '../../../../src/database'
+import database from '../../../../src/database'
 
-let Boleto
-
-test.before(async () => {
-  Boleto = await getModel('Boleto')
-})
+const { Boleto } = database.models
 
 test('handleDatabaseErrors: ValidationError', async (t) => {
   const err = await Boleto.create({})
