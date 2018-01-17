@@ -1,6 +1,6 @@
 const Promise = require('bluebird')
 const { mergeAll } = require('ramda')
-const { getModel } = require('../../database')
+const database = require('../../database')
 const { NotFoundError } = require('../../lib/errors')
 const { handleDatabaseErrors } = require('../../lib/errors/database')
 const { getPaginationQuery } = require('../../lib/database/pagination')
@@ -8,6 +8,8 @@ const sqs = require('../../lib/sqs')
 const { BoletosToRegisterQueue } = require('./queues')
 const { findProvider } = require('../../providers')
 const { makeFromLogger } = require('../../lib/logger')
+
+const { Boleto } = database.models
 
 const makeLogger = makeFromLogger('boleto/service')
 
@@ -17,24 +19,22 @@ module.exports = function boletoService ({ requestId }) {
 
     logger.info({ status: 'started', metadata: { data } })
 
-    return getModel('Boleto')
-      .then(Boleto =>
-        Promise.resolve(data)
-          .then(Boleto.create.bind(Boleto))
-          .tap((boleto) => {
-            logger.info({ status: 'success', metadata: { boleto } })
-          })
-          .catch((err) => {
-            logger.error({
-              status: 'failed',
-              metadata: {
-                error_name: err.name,
-                error_stack: err.stack,
-                error_message: err.message,
-              },
-            })
-            return handleDatabaseErrors(err)
-          }))
+    return Promise.resolve(data)
+      .then(Boleto.create.bind(Boleto))
+      .tap((boleto) => {
+        logger.info({ status: 'success', metadata: { boleto } })
+      })
+      .catch((err) => {
+        logger.error({
+          status: 'failed',
+          metadata: {
+            error_name: err.name,
+            error_stack: err.stack,
+            error_message: err.message,
+          },
+        })
+        return handleDatabaseErrors(err)
+      })
   }
 
   const register = (boleto) => {
@@ -102,12 +102,11 @@ module.exports = function boletoService ({ requestId }) {
   }
 
   const registerById = id =>
-    getModel('Boleto')
-      .then(Boleto => Boleto.findOne({
-        where: {
-          id,
-        },
-      }))
+    Boleto.findOne({
+      where: {
+        id,
+      },
+    })
       .then(register)
 
   const update = (data) => {
@@ -124,24 +123,23 @@ module.exports = function boletoService ({ requestId }) {
       },
     }
 
-    return getModel('Boleto')
-      .then(Boleto => Boleto.findOne(query)
-        .then((boleto) => {
-          if (!boleto) {
-            throw new NotFoundError({
-              message: 'Boleto not found',
-            })
-          }
-
-          return boleto.update({
-            paid_amount: paidAmount || boleto.paid_amount,
-            bank_response_code: bankResponseCode || boleto.bank_response_code,
+    return Boleto.findOne(query)
+      .then((boleto) => {
+        if (!boleto) {
+          throw new NotFoundError({
+            message: 'Boleto not found',
           })
+        }
+
+        return boleto.update({
+          paid_amount: paidAmount || boleto.paid_amount,
+          bank_response_code: bankResponseCode || boleto.bank_response_code,
         })
-        .tap((boleto) => {
-          logger.info({ status: 'success', metadata: { boleto } })
-        })
-        .catch(handleDatabaseErrors))
+      })
+      .tap((boleto) => {
+        logger.info({ status: 'success', metadata: { boleto } })
+      })
+      .catch(handleDatabaseErrors)
   }
 
   const index = ({
@@ -177,9 +175,8 @@ module.exports = function boletoService ({ requestId }) {
       orderQuery,
     ])
 
-    return getModel('Boleto')
-      .then(Boleto => Boleto.findAll(query)
-        .catch(handleDatabaseErrors))
+    return Boleto.findAll(query)
+      .catch(handleDatabaseErrors)
   }
 
   const show = (id) => {
@@ -189,18 +186,17 @@ module.exports = function boletoService ({ requestId }) {
       },
     }
 
-    return getModel('Boleto')
-      .then(Boleto => Boleto.findOne(query)
-        .then((boleto) => {
-          if (!boleto) {
-            throw new NotFoundError({
-              message: 'Boleto not found',
-            })
-          }
+    return Boleto.findOne(query)
+      .then((boleto) => {
+        if (!boleto) {
+          throw new NotFoundError({
+            message: 'Boleto not found',
+          })
+        }
 
-          return boleto
-        })
-        .catch(handleDatabaseErrors))
+        return boleto
+      })
+      .catch(handleDatabaseErrors)
   }
 
   const processBoleto = (item, sqsMessage) => {

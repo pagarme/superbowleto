@@ -3,14 +3,12 @@ import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
 import { createBoleto, userQueueUrl } from '../../helpers/boleto'
 import boletoHandler from '../../../src/resources/boleto'
-import { getModel } from '../../../src/database'
+import database from '../../../src/database'
 
-let Boleto
-
+const { Boleto } = database.models
 const indexBoleto = normalizeHandler(boletoHandler.index)
 
 test.before(async () => {
-  Boleto = await getModel('Boleto')
   await Boleto.destroy({ where: {} })
   await Promise.all([...Array(15)].map(createBoleto))
 })
