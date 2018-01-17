@@ -8,6 +8,7 @@
     "lint": "eslint 'test/**/*.js' 'src/**/*.js'",
     "setup": "node ./script/setup",
     "test": "npm run setup && nyc ava --verbose --serial 'test/**/*.js'",
+    "test-e2e": "npm run setup && ava --verbose --serial 'test/e2e/**/*.js'",
     "test-functional": "npm run setup && ava --verbose --serial 'test/functional/**/*.js'",
     "test-integration": "npm run setup && ava --verbose 'test/integration/**/*.js'",
     "test-unit": "ava --verbose 'test/unit/**/*.js'"
