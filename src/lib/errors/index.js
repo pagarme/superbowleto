@@ -27,6 +27,15 @@ class ValidationError extends Error {
   }
 }
 
+class MethodNotAllowedError extends Error {
+  constructor (error = {}) {
+    super(error.message)
+
+    this.name = 'MethodNotAllowedError'
+    this.type = 'method_not_allowed'
+  }
+}
+
 class DatabaseError extends Error {
   constructor (error = {}) {
     super(error.message)
@@ -49,6 +58,7 @@ module.exports = {
   NotFoundError,
   InvalidParameterError,
   ValidationError,
+  MethodNotAllowedError,
   DatabaseError,
   InternalServerError,
 }

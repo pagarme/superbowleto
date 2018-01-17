@@ -10,7 +10,7 @@ test('buildSuccessResponse', async (t) => {
   const { body, statusCode } = buildSuccessResponse(200, input)
 
   t.is(statusCode, 200, 'should have the correct `statusCode`')
-  t.is(body, JSON.stringify(input), 'should have a stringified `body`')
+  t.is(body, input, 'should have the correct `body`')
 })
 
 test('buildFailureResponse', async (t) => {
@@ -19,7 +19,11 @@ test('buildFailureResponse', async (t) => {
   const { body, statusCode } = buildFailureResponse(400, error)
 
   t.is(statusCode, 400, 'should have the correct `statusCode`')
-  t.is(body, JSON.stringify(errorPayload), 'should have a stringified `error` payload as the `body`')
+  t.deepEqual(
+    body,
+    errorPayload,
+    'should have the `error` payload as the `body`'
+  )
 })
 
 test('buildErrorPayload', async (t) => {

@@ -2,12 +2,16 @@ const Promise = require('bluebird')
 const {
   both,
   complement,
-  path,
   propEq,
 } = require('ramda')
 const sqs = require('../../lib/sqs')
 const { buildSuccessResponse, buildFailureResponse } = require('../../lib/http/response')
-const { ValidationError, NotFoundError, InternalServerError } = require('../../lib/errors')
+const {
+  MethodNotAllowedError,
+  ValidationError,
+  NotFoundError,
+  InternalServerError,
+} = require('../../lib/errors')
 const BoletoService = require('./service')
 const { parse } = require('../../lib/http/request')
 const { createSchema, updateSchema, indexSchema } = require('./schema')
@@ -27,6 +31,10 @@ const handleError = (err) => {
     return buildFailureResponse(404, err)
   }
 
+  if (err instanceof MethodNotAllowedError) {
+    return buildFailureResponse(405, err)
+  }
+
   return buildFailureResponse(500, new InternalServerError())
 }
 
@@ -35,15 +43,13 @@ const configureContext = (context = {}) => {
   context.callbackWaitsForEmptyEventLoop = false
 }
 
-const create = (event, context, callback) => {
-  configureContext(context)
-  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
+const create = (req, res) => {
+  const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
 
-  const body = JSON.parse(event.body || JSON.stringify({}))
   const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: requestId })
 
-  const shouldRegister = () => body.register !== 'false' && body.register !== false
+  const shouldRegister = () => req.body.register !== 'false' && req.body.register !== false
 
   const registerBoletoConditionally = (boleto) => {
     if (shouldRegister()) {
@@ -92,9 +98,9 @@ const create = (event, context, callback) => {
     }
   }
 
-  logger.info({ status: 'started', metadata: { body } })
+  logger.info({ status: 'started', metadata: { body: req.body } })
 
-  return Promise.resolve(body)
+  return Promise.resolve(req.body)
     .then(parse(createSchema))
     .then(service.create)
     .tap(registerBoletoConditionally)
@@ -118,7 +124,7 @@ const create = (event, context, callback) => {
       })
       return handleError(err)
     })
-    .then(response => callback(null, response))
+    .tap(({ body, statusCode }) => res.status(statusCode).send(body))
 }
 
 const register = (event, context, callback) => {
@@ -226,59 +232,48 @@ const register = (event, context, callback) => {
     .then(boleto => callback(null, boleto))
 }
 
-const update = (event, context, callback) => {
-  configureContext(context)
-  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
+const update = (req, res) => {
+  const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
 
-  const body = JSON.parse(event.body || JSON.stringify({}))
-  const { bank_response_code, paid_amount } = body // eslint-disable-line
-  const id = path(['pathParameters', 'id'], event)
+  const { params: { id } } = req
 
-  return Promise.resolve({ id, bank_response_code, paid_amount })
+  return Promise.resolve({ id, ...req.body })
     .then(parse(updateSchema))
     .then(service.update)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))
     .catch(handleError)
-    .then(response => callback(null, response))
+    .tap(({ body, statusCode }) => res.status(statusCode).send(body))
 }
 
-const index = (event, context, callback) => {
-  configureContext(context)
-  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
+const index = (req, res) => {
+  const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
 
-  const page = path(['queryStringParameters', 'page'], event)
-  const count = path(['queryStringParameters', 'count'], event)
+  const { query } = req
 
-  const title_id = path(['queryStringParameters', 'title_id'], event) // eslint-disable-line
-  const token = path(['queryStringParameters', 'token'], event)
-
-  return Promise.resolve({
-    page, count, token, title_id,
-  })
+  return Promise.resolve(query)
     .then(parse(indexSchema))
     .then(service.index)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))
     .catch(handleError)
-    .then(response => callback(null, response))
+    .tap(({ body, statusCode }) => res.status(statusCode).send(body))
 }
 
-const show = (event, context, callback) => {
-  configureContext(context)
-  const requestId = event.headers['x-request-id'] || defaultCuidValue('req_')()
+const show = (req, res) => {
+  const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
   const service = BoletoService({ requestId })
 
-  const id = path(['pathParameters', 'id'], event)
+  const { params: { id } } = req
 
   return Promise.resolve(id)
     .then(service.show)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))
     .catch(handleError)
-    .then(response => callback(null, response))
+    .tap(({ body, statusCode }) => res.status(statusCode).send(body))
 }
 
 const processBoletosToRegister = (event, context, callback) => {
@@ -329,6 +324,27 @@ const processBoletosToRegister = (event, context, callback) => {
   })
 }
 
+const defaultHandler = (req, res) => {
+  const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
+  const logger = makeLogger({ operation: 'handle_default_boleto_request' }, { id: requestId })
+
+  return Promise.reject(new MethodNotAllowedError({
+    message: `${req.method} method is not allowed for boleto resource`,
+  }))
+    .catch((err) => {
+      logger.error({
+        status: 'failed',
+        metadata: {
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message,
+        },
+      })
+      return handleError(err)
+    })
+    .tap(({ body, statusCode }) => res.status(statusCode).send(body))
+}
+
 module.exports = {
   create,
   register,
@@ -336,4 +352,5 @@ module.exports = {
   index,
   show,
   processBoletosToRegister,
+  defaultHandler,
 }
