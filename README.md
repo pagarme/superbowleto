@@ -49,7 +49,7 @@ If you never developed in this repo before:
 
 2. **Build the base images:**
   ```sh
-  $ docker-compose build web-server
+  $ docker-compose build superbowleto-web
   ```
 
 ### Running the server
@@ -74,7 +74,7 @@ $ make setup-db
 
 3. **Then finally run the server:**
 ```sh
-$ make web-server
+$ make superbowleto-web
 ```
 
 ### Running tests

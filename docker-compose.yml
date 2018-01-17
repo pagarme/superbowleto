@@ -45,7 +45,7 @@ services:
     depends_on:
       - test-dependencies
 
-  web-server:
+  superbowleto-web:
     build: .
     command: node src/bin/server.js
     ports:

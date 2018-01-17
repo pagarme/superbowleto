@@ -31,12 +31,12 @@ start-db:
 .PHONY: start-db
 
 migrate:
-	@docker-compose run web-server ./script/setup
+	@docker-compose run superbowleto-web ./script/setup
 .PHONY: migrate
 
 setup-db: start-db migrate
 .PHONY: setup-db
 
-web-server:
-	@docker-compose up web-server
-.PHONY: web-server
+superbowleto-web:
+	@docker-compose up superbowleto-web
+.PHONY: superbowleto-web
