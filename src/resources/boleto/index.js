@@ -6,7 +6,12 @@ const {
 } = require('ramda')
 const sqs = require('../../lib/sqs')
 const { buildSuccessResponse, buildFailureResponse } = require('../../lib/http/response')
-const { ValidationError, NotFoundError, InternalServerError } = require('../../lib/errors')
+const {
+  MethodNotAllowedError,
+  ValidationError,
+  NotFoundError,
+  InternalServerError,
+} = require('../../lib/errors')
 const BoletoService = require('./service')
 const { parse } = require('../../lib/http/request')
 const { createSchema, updateSchema, indexSchema } = require('./schema')
@@ -24,6 +29,10 @@ const handleError = (err) => {
 
   if (err instanceof NotFoundError) {
     return buildFailureResponse(404, err)
+  }
+
+  if (err instanceof MethodNotAllowedError) {
+    return buildFailureResponse(405, err)
   }
 
   return buildFailureResponse(500, new InternalServerError())
@@ -315,6 +324,27 @@ const processBoletosToRegister = (event, context, callback) => {
   })
 }
 
+const defaultHandler = (req, res) => {
+  const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
+  const logger = makeLogger({ operation: 'handle_default_boleto_request' }, { id: requestId })
+
+  return Promise.reject(new MethodNotAllowedError({
+    message: `${req.method} method is not allowed for boleto resource`,
+  }))
+    .catch((err) => {
+      logger.error({
+        status: 'failed',
+        metadata: {
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message,
+        },
+      })
+      return handleError(err)
+    })
+    .tap(({ body, statusCode }) => res.status(statusCode).send(body))
+}
+
 module.exports = {
   create,
   register,
@@ -322,4 +352,5 @@ module.exports = {
   index,
   show,
   processBoletosToRegister,
+  defaultHandler,
 }

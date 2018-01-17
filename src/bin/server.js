@@ -5,6 +5,7 @@ const {
   index,
   show,
   update,
+  defaultHandler,
 } = require('../resources/boleto')
 
 const app = express()
@@ -19,6 +20,7 @@ app.post('/boletos', create)
 app.get('/boletos', index)
 app.get('/boletos/:id', show)
 app.patch('/boletos/:id', update)
+app.all('/boletos', defaultHandler)
 
 app.listen(
   PORT,
