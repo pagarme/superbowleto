@@ -7,6 +7,7 @@ const {
   update,
   defaultHandler,
 } = require('../resources/boleto')
+const { defaultResourceHandler } = require('../resources')
 
 const app = express()
 
@@ -21,6 +22,8 @@ app.get('/boletos', index)
 app.get('/boletos/:id', show)
 app.patch('/boletos/:id', update)
 app.all('/boletos', defaultHandler)
+
+app.all('*', defaultResourceHandler)
 
 app.listen(
   PORT,
