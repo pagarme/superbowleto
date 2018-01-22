@@ -33,6 +33,8 @@ services:
         condition: service_started
       yopa:
         condition: service_healthy
+      superbowleto-web:
+        condition: service_started
 
   test:
     build: .
@@ -45,7 +47,7 @@ services:
     depends_on:
       - test-dependencies
 
-  web-server:
+  superbowleto-web:
     build: .
     command: node src/bin/server.js
     ports:
