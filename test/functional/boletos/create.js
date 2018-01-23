@@ -9,6 +9,9 @@ test('POST /boletos', async (t) => {
     route: '/boletos',
     method: 'POST',
     data: mock,
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   t.is(statusCode, 201)
@@ -49,6 +52,9 @@ test('POST /boletos with invalid parameters', async (t) => {
     route: '/boletos',
     method: 'POST',
     data: wrongBoleto,
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   t.is(statusCode, 400)

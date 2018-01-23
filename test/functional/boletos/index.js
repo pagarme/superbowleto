@@ -19,6 +19,9 @@ test('GET /boletos', async (t) => {
   const { body, statusCode } = await request({
     route: '/boletos',
     method: 'GET',
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   t.is(statusCode, 200)
@@ -49,6 +52,9 @@ test('GET /boletos with count', async (t) => {
   const { body, statusCode } = await request({
     route: '/boletos?count=2',
     method: 'GET',
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   t.is(statusCode, 200)

@@ -1,5 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+
+const { authentication } = require('../middlewares/authentication')
 const {
   create,
   index,
@@ -17,6 +19,7 @@ app.use(bodyParser.json())
 
 app.get('/', (req, res) => res.json({ ok: 'ok' }))
 
+app.use('/boletos', authentication)
 app.post('/boletos', create)
 app.get('/boletos', index)
 app.get('/boletos/:id', show)

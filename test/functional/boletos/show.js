@@ -9,11 +9,17 @@ test('GET /boletos/:id with valid id', async (t) => {
     route: '/boletos',
     method: 'POST',
     data: mock,
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   const { body, statusCode } = await request({
     route: `/boletos/${id}`,
     method: 'GET',
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   t.is(statusCode, 200)
@@ -43,6 +49,9 @@ test('GET /boletos/:id with invalid id', async (t) => {
   const { body, statusCode } = await request({
     route: `/boletos/${INVALID_ID}`,
     method: 'GET',
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   t.is(statusCode, 404)

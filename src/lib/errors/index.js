@@ -36,6 +36,15 @@ class MethodNotAllowedError extends Error {
   }
 }
 
+class AuthorizationError extends Error {
+  constructor (error = {}) {
+    super(error.message)
+
+    this.name = 'AuthorizationError'
+    this.type = 'authorization'
+  }
+}
+
 class DatabaseError extends Error {
   constructor (error = {}) {
     super(error.message)
@@ -59,6 +68,7 @@ module.exports = {
   InvalidParameterError,
   ValidationError,
   MethodNotAllowedError,
+  AuthorizationError,
   DatabaseError,
   InternalServerError,
 }
