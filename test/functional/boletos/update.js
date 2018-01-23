@@ -9,6 +9,9 @@ test('PATCH /boletos/:id', async (t) => {
     route: '/boletos',
     method: 'POST',
     data: mock,
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   const { body, statusCode } = await request({
@@ -17,6 +20,9 @@ test('PATCH /boletos/:id', async (t) => {
     data: {
       paid_amount: 1234,
       bank_response_code: '4321',
+    },
+    headers: {
+      'x-api-key': 'abc123',
     },
   })
 
@@ -47,6 +53,9 @@ test('PATCH /boletos/:id with invalid parameters', async (t) => {
     route: '/boletos',
     method: 'POST',
     data: mock,
+    headers: {
+      'x-api-key': 'abc123',
+    },
   })
 
   const { body, statusCode } = await request({
@@ -56,6 +65,9 @@ test('PATCH /boletos/:id with invalid parameters', async (t) => {
       paid_amount: 1234,
       bank_response_code: '4321',
       amount: 5000,
+    },
+    headers: {
+      'x-api-key': 'abc123',
     },
   })
 
@@ -82,6 +94,9 @@ test('PATCH /boletos/:id with invalid id', async (t) => {
     data: {
       paid_amount: 1234,
       bank_response_code: '4321',
+    },
+    headers: {
+      'x-api-key': 'abc123',
     },
   })
 

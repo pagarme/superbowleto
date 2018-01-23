@@ -19,5 +19,7 @@ const createMockRes = () => ({
   }),
 })
 
+const createMockNext = () => () => {}
+
 export const normalizeHandler = handler => (req = {}) =>
-  handler(populateReq(req), createMockRes())
+  handler(populateReq(req), createMockRes(), createMockNext())

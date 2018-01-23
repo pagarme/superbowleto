@@ -1,3 +1,4 @@
+const Promise = require('bluebird')
 const { memoize, prop } = require('ramda')
 const { getEnv } = require('../../config')
 const { makeFromLogger } = require('../../lib/logger')
@@ -15,6 +16,7 @@ const stage = process.env.STAGE
 const localCredstashTable = {
   [`superbowleto/${stage}/providers/bradesco/company_id`]: '100005254',
   [`superbowleto/${stage}/providers/bradesco/api_key`]: 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg',
+  [`superbowleto/${stage}/accounts/pagarme/api_key`]: 'abc123',
 }
 
 const getCredentials = memoize((key) => {
