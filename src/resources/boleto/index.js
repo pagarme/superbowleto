@@ -45,7 +45,7 @@ const configureContext = (context = {}) => {
 
 const create = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
-  const service = BoletoService({ requestId })
+  const service = BoletoService({ operationId: requestId })
 
   const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: requestId })
 
@@ -130,7 +130,7 @@ const create = (req, res) => {
 const register = (event, context, callback) => {
   configureContext(context)
   const requestId = defaultCuidValue('req_')()
-  const service = BoletoService({ requestId })
+  const service = BoletoService({ operationId: requestId })
 
   const logger = makeLogger({ operation: 'register' }, { id: requestId })
   const { boleto_id, sqsMessage } = event // eslint-disable-line
@@ -234,7 +234,7 @@ const register = (event, context, callback) => {
 
 const update = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
-  const service = BoletoService({ requestId })
+  const service = BoletoService({ operationId: requestId })
 
   const { params: { id } } = req
 
@@ -249,7 +249,7 @@ const update = (req, res) => {
 
 const index = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
-  const service = BoletoService({ requestId })
+  const service = BoletoService({ operationId: requestId })
 
   const { query } = req
 
@@ -264,7 +264,7 @@ const index = (req, res) => {
 
 const show = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
-  const service = BoletoService({ requestId })
+  const service = BoletoService({ operationId: requestId })
 
   const { params: { id } } = req
 
@@ -279,7 +279,7 @@ const show = (req, res) => {
 const processBoletosToRegister = (event, context, callback) => {
   configureContext(context)
   const requestId = defaultCuidValue('req_')()
-  const service = BoletoService({ requestId })
+  const service = BoletoService({ operationId: requestId })
 
   const logger = makeLogger({ operation: 'process_background_queue' }, { id: requestId })
 
