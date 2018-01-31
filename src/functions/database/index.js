@@ -1,6 +1,8 @@
+const Promise = require('bluebird')
 const Umzug = require('umzug')
 const { makeFromLogger } = require('../../lib/logger')
 const database = require('../../database')
+const { DatabaseError } = require('../../lib/errors')
 
 const makeLogger = makeFromLogger('database/index')
 
@@ -49,6 +51,25 @@ const migrate = (event, context, callback) => {
     })
 }
 
+const ensureDatabaseIsConnected = (db) => {
+  const MAX_RETRIES = 10
+  const RETRY_TIMEOUT = 1000
+
+  const tryToConnect = (retry = 1) =>
+    db.authenticate()
+      .catch((err) => {
+        if (retry <= MAX_RETRIES) {
+          return Promise.delay(RETRY_TIMEOUT)
+            .then(() => tryToConnect(retry + 1))
+        }
+
+        return Promise.reject(new DatabaseError(err))
+      })
+
+  return tryToConnect()
+}
+
 module.exports = {
+  ensureDatabaseIsConnected,
   migrate,
 }
