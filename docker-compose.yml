@@ -64,3 +64,18 @@ services:
     links:
       - postgres
       - yopa
+
+  superbowleto-worker:
+    build: .
+    command: node src/bin/worker.js
+    environment:
+      - API_ENV=test
+    volumes:
+      - .:/superbowleto
+      - /superbowleto/node_modules
+    depends_on:
+      - postgres
+      - yopa
+    links:
+      - postgres
+      - yopa

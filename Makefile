@@ -40,3 +40,7 @@ setup-db: start-db migrate
 superbowleto-web:
 	@docker-compose up superbowleto-web
 .PHONY: superbowleto-web
+
+superbowleto-worker:
+	@docker-compose up superbowleto-worker
+.PHONY: superbowleto-worker

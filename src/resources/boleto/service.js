@@ -13,9 +13,9 @@ const { Boleto } = database.models
 
 const makeLogger = makeFromLogger('boleto/service')
 
-module.exports = function boletoService ({ requestId }) {
+module.exports = function boletoService ({ operationId }) {
   const create = (data) => {
-    const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: requestId })
+    const logger = makeLogger({ operation: 'handle_boleto_request' }, { id: operationId })
 
     logger.info({ status: 'started', metadata: { data } })
 
@@ -39,10 +39,10 @@ module.exports = function boletoService ({ requestId }) {
 
   const register = (boleto) => {
     const Provider = findProvider(boleto.issuer)
-    const provider = Provider.getProvider({ requestId })
+    const provider = Provider.getProvider({ operationId })
     const timeoutMs = process.env.NODE_ENV === 'production' ? 6000 : 25000
 
-    const logger = makeLogger({ operation: 'register' }, { id: requestId })
+    const logger = makeLogger({ operation: 'register' }, { id: operationId })
 
     const updateBoletoStatus = ({ issuer_response_code, status }) => { // eslint-disable-line
       let newBoletoStatus
@@ -110,7 +110,7 @@ module.exports = function boletoService ({ requestId }) {
       .then(register)
 
   const update = (data) => {
-    const logger = makeLogger({ operation: 'update' }, { id: requestId })
+    const logger = makeLogger({ operation: 'update' }, { id: operationId })
     logger.info({ status: 'started', metadata: { data } })
 
     const { id } = data
@@ -202,7 +202,7 @@ module.exports = function boletoService ({ requestId }) {
   const processBoleto = (item, sqsMessage) => {
     const { boleto_id } = item // eslint-disable-line
 
-    const logger = makeLogger({ operation: 'process_boleto' }, { id: requestId })
+    const logger = makeLogger({ operation: 'process_boleto' }, { id: operationId })
 
     // eslint-disable-next-line
     const removeBoletoFromQueueConditionally = (boleto) => {
