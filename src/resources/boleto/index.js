@@ -4,7 +4,6 @@ const {
   complement,
   propEq,
 } = require('ramda')
-const sqs = require('../../lib/sqs')
 const { buildSuccessResponse, buildFailureResponse } = require('../../lib/http/response')
 const {
   MethodNotAllowedError,
@@ -16,7 +15,7 @@ const BoletoService = require('./service')
 const { parse } = require('../../lib/http/request')
 const { createSchema, updateSchema, indexSchema } = require('./schema')
 const { makeFromLogger } = require('../../lib/logger')
-const { BoletosToRegisterQueue, BoletosToRegisterQueueUrl } = require('./queues')
+const { BoletosToRegisterQueue } = require('./queues')
 const { defaultCuidValue } = require('../../lib/database/schema')
 const { buildModelResponse } = require('./model')
 
@@ -36,11 +35,6 @@ const handleError = (err) => {
   }
 
   return buildFailureResponse(500, new InternalServerError())
-}
-
-const configureContext = (context = {}) => {
-  // eslint-disable-next-line no-param-reassign
-  context.callbackWaitsForEmptyEventLoop = false
 }
 
 const create = (req, res) => {
@@ -127,111 +121,6 @@ const create = (req, res) => {
     .tap(({ body, statusCode }) => res.status(statusCode).send(body))
 }
 
-const register = (event, context, callback) => {
-  configureContext(context)
-  const requestId = defaultCuidValue('req_')()
-  const service = BoletoService({ operationId: requestId })
-
-  const logger = makeLogger({ operation: 'register' }, { id: requestId })
-  const { boleto_id, sqsMessage } = event // eslint-disable-line
-
-  // eslint-disable-next-line
-  const removeBoletoFromQueueConditionally = (boleto) => {
-    if (boleto.status === 'registered' || boleto.status === 'refused') {
-      logger.info({
-        sub_operation: 'remove_from_background_queue',
-        status: 'started',
-        metadata: { boleto_id: boleto.id },
-      })
-      return BoletosToRegisterQueue.remove(sqsMessage)
-        .then(() => {
-          logger.info({
-            sub_operation: 'remove_from_background_queue',
-            status: 'success',
-            metadata: { boleto_id: boleto.id },
-          })
-        })
-        .catch((err) => {
-          logger.info({
-            sub_operation: 'remove_from_background_queue',
-            status: 'failed',
-            metadata: {
-              error_name: err.name,
-              error_stack: err.stack,
-              error_message: err.message,
-            },
-          })
-          throw err
-        })
-    }
-  }
-
-  const sendMessageToUserQueueConditionally = (boleto) => { // eslint-disable-line
-    if (boleto.status === 'registered' || boleto.status === 'refused') {
-      logger.info({
-        sub_operation: 'send_message_to_client_queue',
-        status: 'started',
-        metadata: { boleto_id: boleto.id },
-      })
-
-      const params = {
-        MessageBody: JSON.stringify({
-          boleto_id: boleto.id,
-          status: boleto.status,
-          reference_id: boleto.reference_id,
-        }),
-        QueueUrl: boleto.queue_url,
-      }
-
-      return sqs.sendMessage(params).promise()
-        .then(() => {
-          logger.info({
-            sub_operation: 'send_message_to_client_queue',
-            status: 'success',
-            metadata: { boleto_id: boleto.id },
-          })
-        })
-        .catch((err) => {
-          logger.info({
-            sub_operation: 'send_message_to_client_queue',
-            status: 'failed',
-            metadata: {
-              error_name: err.name,
-              error_stack: err.stack,
-              error_message: err.message,
-            },
-          })
-          throw err
-        })
-    }
-  }
-
-  logger.info({ status: 'started', metadata: event })
-
-  return Promise.resolve(boleto_id)
-    .then(service.registerById)
-    .tap(removeBoletoFromQueueConditionally)
-    .tap(sendMessageToUserQueueConditionally)
-    .tap((response) => {
-      logger.info({
-        status: 'success',
-        metadata: { body: response.body, statusCode: response.statusCode },
-      })
-    })
-    .catch((err) => {
-      logger.error({
-        status: 'failed',
-        metadata: {
-          error_name: err.name,
-          error_stack: err.stack,
-          error_message: err.message,
-        },
-      })
-      callback(err)
-    })
-    .then(boleto => callback(null, boleto))
-}
-
 const update = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
   const service = BoletoService({ operationId: requestId })
@@ -276,54 +165,6 @@ const show = (req, res) => {
     .tap(({ body, statusCode }) => res.status(statusCode).send(body))
 }
 
-const processBoletosToRegister = (event, context, callback) => {
-  configureContext(context)
-  const requestId = defaultCuidValue('req_')()
-  const service = BoletoService({ operationId: requestId })
-
-  const logger = makeLogger({ operation: 'process_background_queue' }, { id: requestId })
-
-  logger.info({ status: 'started' })
-
-  BoletosToRegisterQueue.startProcessing(service.processBoleto, {
-    keepMessages: true,
-  })
-
-  function stopQueueWhenIdle () {
-    const params = {
-      QueueUrl: BoletosToRegisterQueueUrl,
-      AttributeNames: ['ApproximateNumberOfMessages'],
-    }
-
-    sqs.getQueueAttributes(params, (err, data) => {
-      if (err) {
-        return
-      }
-
-      const { ApproximateNumberOfMessages } = data.Attributes
-
-      if (Number(ApproximateNumberOfMessages) < 1) {
-        BoletosToRegisterQueue.stopProcessing()
-        clearInterval(interval) // eslint-disable-line
-        callback(null)
-      }
-    })
-  }
-
-  const interval = setInterval(stopQueueWhenIdle, 5000)
-
-  BoletosToRegisterQueue.on('error', (err) => {
-    logger.error({
-      status: 'failed',
-      metadata: {
-        error_name: err.name,
-        error_stack: err.stack,
-        error_message: err.message,
-      },
-    })
-  })
-}
-
 const defaultHandler = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
   const logger = makeLogger({ operation: 'handle_default_boleto_request' }, { id: requestId })
@@ -347,10 +188,8 @@ const defaultHandler = (req, res) => {
 
 module.exports = {
   create,
-  register,
   update,
   index,
   show,
-  processBoletosToRegister,
   defaultHandler,
 }
