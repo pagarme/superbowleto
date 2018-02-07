@@ -37,7 +37,9 @@ services:
         condition: service_started
 
   test:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.development
     command: npm test
     environment:
       - API_ENV=test
@@ -48,7 +50,9 @@ services:
       - test-dependencies
 
   superbowleto-web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.development
     command: node src/bin/server.js
     ports:
       - "3000:3000"
@@ -66,7 +70,9 @@ services:
       - yopa
 
   superbowleto-worker:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.development
     command: node src/bin/worker.js
     environment:
       - API_ENV=test
