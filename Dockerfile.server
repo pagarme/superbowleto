@@ -17,3 +17,5 @@ COPY src $HOME/superbowleto/src
 EXPOSE 3000
 
 USER quarterback
+
+CMD ["node", "src/bin/server.js"]

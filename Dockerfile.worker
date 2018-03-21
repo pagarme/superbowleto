@@ -1,0 +1,21 @@
+FROM node:8.9-alpine
+
+RUN addgroup -S players && \
+    adduser -S quarterback -G players
+
+ENV HOME /home/quarterback
+
+COPY package.json $HOME/superbowleto/package.json
+COPY package-lock.json $HOME/superbowleto/package-lock.json
+
+WORKDIR $HOME/superbowleto
+
+RUN npm install --production
+
+COPY src $HOME/superbowleto/src
+
+EXPOSE 3000
+
+USER quarterback
+
+CMD ["node", "src/bin/worker.js"]
