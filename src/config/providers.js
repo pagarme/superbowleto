@@ -10,9 +10,9 @@ const config = getConfig({
   },
   production: {
     bradesco: {
-      api_key: 'PLACEHOLDER',
-      endpoint: 'PLACEHOLDER',
-      merchant_id: 'PLACEHOLDER',
+      api_key: process.env.BRADESCO_API_KEY,
+      endpoint: process.env.BRADESCO_ENDPOINT,
+      merchant_id: process.env.BRADESCO_MERCHANT_ID,
     },
   },
   test: {

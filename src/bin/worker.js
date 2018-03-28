@@ -1,3 +1,4 @@
+const dotenv = require('dotenv')
 const BoletoService = require('../resources/boleto/service')
 const { BoletosToRegisterQueue } = require('../resources/boleto/queues')
 const { defaultCuidValue } = require('../lib/database/schema')
@@ -7,6 +8,10 @@ const makeLogger = makeFromLogger('boleto/worker')
 
 const queueItemId = defaultCuidValue('qi_')()
 const service = BoletoService({ operationId: queueItemId })
+
+if (process.env.NODE_ENV === 'production' && process.env.DOTENV_PATH) {
+  dotenv.config({ path: process.env.DOTENV_PATH })
+}
 
 const logger = makeLogger(
   { operation: 'process_background_queue' },
