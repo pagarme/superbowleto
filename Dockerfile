@@ -1,4 +1,4 @@
-FROM node:8.9-alpine
+FROM pagarme/docker-nodejs:8.9
 
 COPY package.json /superbowleto/package.json
 WORKDIR /superbowleto
