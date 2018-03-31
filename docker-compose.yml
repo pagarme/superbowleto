@@ -38,7 +38,17 @@ services:
 
   test:
     build: .
-    command: npm test
+    entrypoint: npm test
+    environment:
+      - API_ENV=test
+    volumes:
+      - .:/superbowleto
+      - /superbowleto/node_modules
+    depends_on:
+      - test-dependencies
+  lint:
+    build: .
+    entrypoint: npm run lint
     environment:
       - API_ENV=test
     volumes:
@@ -49,7 +59,7 @@ services:
 
   superbowleto-web:
     build: .
-    command: node src/bin/server.js
+    entrypoint: node src/bin/server.js
     ports:
       - "3000:3000"
     environment:
@@ -67,7 +77,7 @@ services:
 
   superbowleto-worker:
     build: .
-    command: node src/bin/worker.js
+    entrypoint: node src/bin/worker.js
     environment:
       - API_ENV=test
     volumes:
