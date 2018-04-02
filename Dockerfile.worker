@@ -1,21 +1,25 @@
-FROM node:8.9-alpine
+FROM pagarme/docker-nodejs:8.9
 
-RUN addgroup -S players && \
-    adduser -S quarterback -G players
+# Copy package definition files
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
 
-ENV HOME /home/quarterback
+WORKDIR /app
 
-COPY package.json $HOME/superbowleto/package.json
-COPY package-lock.json $HOME/superbowleto/package-lock.json
+# Install dependencies and npm dependencies
+RUN apk update && \
+    apk add python make g++ && \
+    npm install --production
 
-WORKDIR $HOME/superbowleto
+FROM pagarme/docker-nodejs:8.9
 
-RUN npm install --production
+ENV APP_NAME 'superbowleto'
 
-COPY src $HOME/superbowleto/src
+# Copy dependencies from the previous image
+COPY --from=0 /app /app
+COPY . /app
+
+WORKDIR /app
 
 EXPOSE 3000
-
-USER quarterback
-
 CMD ["node", "src/bin/worker.js"]
