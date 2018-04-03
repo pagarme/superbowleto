@@ -11,15 +11,17 @@ curl -sSL -o ~/.local/bin/jq https://github.com/stedolan/jq/releases/download/jq
 #waiting for pr https://github.com/silinternational/ecs-deploy/pull/129
 curl -sSL -o ~/.local/bin/ecs-deploy https://raw.githubusercontent.com/kakakakakku/ecs-deploy/675e0e064bc20ad81634efdfe41d802fbe3c30e3/ecs-deploy && sudo chmod +x ~/.local/bin/ecs-deploy
 if [[ $TRAVIS_TAG =~ ^v([0-9]+).([0-9]+).([0-9]+)-rc([0-9]+)$ ]]; then
-  AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
-  AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
-  AWS_ACCOUNT=$STG_AWS_ACCOUNT
-  CLUSTER=$STG_CLUSTER
+  echo 'configure staging deploy'
+  export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
+  export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
+  export AWS_ACCOUNT=$STG_AWS_ACCOUNT
+  export CLUSTER=$STG_CLUSTER
 elif [[ $TRAVIS_TAG =~ ^v([0-9]+).([0-9]+).([0-9]+)$ ]]; then
-  AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
-  AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
-  AWS_ACCOUNT=$PRD_AWS_ACCOUNT
-  CLUSTER=$PRD_CLUSTER
+  echo 'configure production deploy'
+  export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
+  export AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
+  export AWS_ACCOUNT=$PRD_AWS_ACCOUNT
+  export CLUSTER=$PRD_CLUSTER
 else
   echo "INVALID TAG!"
   exit 125
