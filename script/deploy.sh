@@ -16,6 +16,10 @@ if [[ $TRAVIS_TAG =~ ^v([0-9]+).([0-9]+).([0-9]+)-rc([0-9]+)$ ]]; then
   export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
   export AWS_ACCOUNT=$STG_AWS_ACCOUNT
   export CLUSTER=$STG_CLUSTER
+  echo $AWS_ACCESS_KEY_ID
+  echo $AWS_SECRET_ACCESS_KEY
+  echo $AWS_ACCOUNT
+  echo $CLUSTER
 elif [[ $TRAVIS_TAG =~ ^v([0-9]+).([0-9]+).([0-9]+)$ ]]; then
   echo 'configure production deploy'
   export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
