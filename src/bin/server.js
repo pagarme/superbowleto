@@ -1,4 +1,8 @@
-const dotenv = require('dotenv')
+if (process.env.NODE_ENV === 'production' && process.env.DOTENV_PATH) {
+  require('dotenv').config({ path: process.env.DOTENV_PATH })
+} else {
+  require('dotenv')
+}
 const { DatabaseError } = require('../lib/errors')
 const database = require('../database')
 const { ensureDatabaseIsConnected } = require('../functions/database')
@@ -8,10 +12,6 @@ const { setupGracefulShutdown } = require('../server/shutdown')
 const { PORT = 3000 } = process.env
 
 const startServer = app => app.listen(PORT)
-
-if (process.env.NODE_ENV === 'production' && process.env.DOTENV_PATH) {
-  dotenv.config({ path: process.env.DOTENV_PATH })
-}
 
 const handleInitializationErrors = (err) => {
   if (err instanceof DatabaseError) {
