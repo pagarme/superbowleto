@@ -1,3 +1,9 @@
+const dotenv = require('dotenv')
+
+if (process.env.NODE_ENV === 'production' && process.env.DOTENV_PATH) {
+  dotenv.config({ path: process.env.DOTENV_PATH })
+}
+
 const Sequelize = require('sequelize')
 const getConfig = require('../config/database')
 const rawModels = require('./models')
