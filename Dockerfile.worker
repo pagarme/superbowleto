@@ -18,8 +18,9 @@ ENV APP_NAME 'superbowleto'
 # Copy dependencies from the previous image
 COPY --from=0 /app /app
 COPY . /app
+COPY script/start_worker.sh /app
 
 WORKDIR /app
 
 EXPOSE 3000
-CMD ["node", "src/bin/worker.js"]
+ENTRYPOINT ["sh", "-c", "/app/start_worker.sh"]

@@ -10,14 +10,17 @@ const {
   defaultHandler,
 } = require('../resources/boleto')
 const { defaultResourceHandler } = require('../resources')
+const redirectHttp = require('../middlewares/redirect-http')
 
 const app = express()
+const allRoutesExceptHealthCheck = /^\/(?!_health_check(\/|$)).*$/i
 
 
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => res.json({ ok: 'ok' }))
-
+app.disable('x-powered-by')
+app.get('/_health_check', (req, res) => res.send(200))
+app.use(allRoutesExceptHealthCheck, redirectHttp)
 app.use('/boletos', authentication)
 app.post('/boletos', create)
 app.get('/boletos', index)
