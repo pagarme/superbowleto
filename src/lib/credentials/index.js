@@ -7,19 +7,17 @@ const makeLogger = makeFromLogger('lib/credentials')
 const Credstash = require('nodecredstash')
 
 const credstash = new Credstash({
-  table: 'credential-store',
+  table: `sblto-${getEnv()}`,
   awsOpts: { region: 'us-east-1' },
 })
 
-const stage = process.env.STAGE
-
 const localCredstashTable = {
-  [`superbowleto/${stage}/accounts/pagarme/api_key`]: 'abc123',
+  'accounts/pagarme/api_key': 'abc123',
 }
 
 const getCredentials = memoize((key) => {
   const logger = makeLogger({ operation: 'getCredentials' })
-  const credstashKey = `superbowleto/${stage}/${key}`
+  const credstashKey = `${key}`
 
   logger.info({ status: 'started', metadata: { credstashKey } })
 
