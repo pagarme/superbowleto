@@ -91,6 +91,13 @@ const getProvider = ({ requestId } = defaultOptions) => {
       { id: requestId }
     )
 
+    logger.error({
+      status: 'processing',
+      metadata: {
+        endpoint,
+      },
+    })
+
     const headers = buildHeaders()
     const payload = buildPayload(boleto)
 
