@@ -40,7 +40,7 @@ module.exports = function boletoService ({ operationId }) {
   const register = (boleto) => {
     const Provider = findProvider(boleto.issuer)
     const provider = Provider.getProvider({ operationId })
-    const timeoutMs = process.env.NODE_ENV === 'production' ? 6000 : 25000
+    const timeoutMs = process.env.STAGE === 'live' ? 6000 : 25000
 
     const logger = makeLogger({ operation: 'register' }, { id: operationId })
 
