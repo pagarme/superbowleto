@@ -6,10 +6,11 @@ const { makeFromLogger } = require('../../lib/logger')
 const makeLogger = makeFromLogger('lib/credentials')
 const Credstash = require('nodecredstash')
 
-const stage = process.env.STAGE
+const appEnv = process.env.APP_ENV
+const appName = process.env.APP_NAME
 
 const credstash = new Credstash({
-  table: `sblto-${stage}`,
+  table: `${appName}-${appEnv}`,
   awsOpts: { region: 'us-east-1' },
 })
 
