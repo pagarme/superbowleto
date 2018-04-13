@@ -39,6 +39,7 @@
     "log4js": "1.1.1",
     "moment": "2.18.1",
     "moment-timezone": "0.5.13",
+    "newrelic": "^2.7.1",
     "node-boleto": "2.0.2",
     "nodecredstash": "1.1.0",
     "pg": "6.1.5",
