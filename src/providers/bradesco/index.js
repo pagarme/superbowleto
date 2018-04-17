@@ -78,17 +78,17 @@ const translateResponseCode = (response) => {
 }
 
 const defaultOptions = {
-  requestId: `req_${Date.now()}`,
+  operationId: `req_${Date.now()}`,
 }
 
-const getProvider = ({ requestId } = defaultOptions) => {
+const getProvider = ({ operationId } = defaultOptions) => {
   const register = (boleto) => {
     const logger = makeLogger(
       {
         operation: 'register_boleto_on_provider',
         provider: 'bradesco',
       },
-      { id: requestId }
+      { id: operationId }
     )
 
     const headers = buildHeaders()
