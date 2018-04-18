@@ -10,7 +10,7 @@ const loggerEngine = log4js.getLogger()
 
 const { logger } = escriba({
   loggerEngine,
-  service: 'superbowleto',
+  service: 'sbwl',
 })
 
 const makeLogger = (defaultData = {}, defaultConfig = {}) => {
