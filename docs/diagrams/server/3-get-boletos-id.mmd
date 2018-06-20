@@ -3,8 +3,7 @@ sequenceDiagram
     participant API
     participant Database
 
-    Client ->>+ API: HTTP GET /boletos/id
-        Note over Client,API: Lambda triggered by: HTTP
+    Client ->>+ API: HTTP GET /boletos/:id
     API ->>+ Database: db.findById(id)
     Database -->>- API: boleto
     API -->>- Client: 200 ok
