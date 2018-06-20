@@ -1,0 +1,16 @@
+sequenceDiagram
+    Participant SQS
+    participant Worker
+    participant Database
+    Participant Provider
+    SQS ->> Worker: queue item(boleto, message) from 'boletos-to-register' queue
+    Worker ->>+ Database: db.findById(boleto.id)
+        Note over Worker,Database: Find boleto on Database to ensure this boleto has not been processed by another Lambda.
+    Database ->>- Worker: boleto
+    Note over Worker: Check status to see if boleto can be registered.
+    Worker ->>+ Provider: register()
+    Provider -->>- Worker: status
+    Worker ->>+ Database: db.update(status)
+    Database -->>- Worker: "updated"
+    Worker ->> SQS: send(boleto.queue, status)
+        Note over Worker,SQS: Send an SQS Message to the boleto's registered queue (to notify the boleto owner of the new boleto status)

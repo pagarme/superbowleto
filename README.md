@@ -13,25 +13,26 @@
 	- [Running tests](#running-tests)
 	- [Installing new dependencies](#installing-new-dependencies)
 - [Testing](#testing)
-- [Lambdas and Data Flow](#lambdas-and-data-flow)
-	- [1. Boleto: create](#4-boleto-create)
-		- [a) Provider **could** process the boleto](#a-provider-could-process-the-boleto)
-		- [b) Provider **could not** process the boleto](#b-provider-could-not-process-the-boleto)
-	- [2. Boleto: index](#5-boleto-index)
-	- [3. Boleto: show](#6-boleto-show)
-	- [4. Boleto: process `boletos-to-register` queue](#7-boleto-process-boletos-to-register-queue)
-	- [5. Boleto: register](#8-boleto-register)
+- [Data Flow](#data-flow)
+	- [Server](#server)
+		- [1. POST /boletos](#post-boletos)
+			- [a) Provider **could** process the boleto](#a-provider-could-process-the-boleto)
+			- [b) Provider **could not** process the boleto](#b-provider-could-not-process-the-boleto)
+		- [2. GET /boletos](#get-boletos)
+		- [3. GET /boletos/:id](#get-boletosid)
+	- [Worker](#worker)
+		- [1. Process `boletos-to-register` queue](#process-boletos-to-register-queue)
 
 ## Technology
 
 Here's a brief overview of our technology stack:
 
 - **[Docker](https://docs.docker.com)** and **[Docker Compose](https://docs.docker.com/compose/)** to create our development and test environments.
-- **[Deployer](https://github.com/pagarme/deployer)** to manage and deploy our **[AWS Lambda](https://aws.amazon.com/documentation/lambda/)** functions.
-- **[AWS SQS](https://aws.amazon.com/documentation/sqs/)** as a queue manager to process things like boletos to register.
-- **[Postgres](https://www.postgresql.org)** as to store our data **[Sequelize](http://docs.sequelizejs.com)** as a Node.js ORM.
-- **[Babel](https://babeljs.io/)** to transpile our code written in modern Javascript and we use multiple **[Webpack](http://webpack.js.org)** configurations to bundle our code for production, test and development.
+- **[AWS Fargate](https://aws.amazon.com/fargate/)** to manage and deploy our containers.
+- **[AWS SQS](https://aws.amazon.com/documentation/sqs/)** as a queue manager to process things like boletos to register and **[SQS Quooler](https://github.com/pagarme/sqs-quooler)** as a package to make the interaction with queues more easy.
+- **[Postgres](https://www.postgresql.org)** as to store our data and **[Sequelize](http://docs.sequelizejs.com)** as a Node.js ORM.
 - **[Ava](https://github.com/avajs/ava)** as a test runner and **[Chai](http://chaijs.com)** to do some more advanced test assertions.
+- **[Express](https://github.com/expressjs/express)** as a tool to build the web server that handles our boleto endpoints.
 
 ## Developing
 
@@ -126,9 +127,9 @@ Tests are found inside the `test/` directory and are separate by type: `function
 
     ```
     ├── src
-    │   ├── index.js
-    │   └── lib
-    │       └── http.js
+    │   ├── index.js
+    │   └── lib
+    │       └── http.js
     └── test
         └── unit
             ├── index.js
@@ -142,9 +143,9 @@ Tests are found inside the `test/` directory and are separate by type: `function
 
     ```
     ├── src
-    │   ├── index.js
-    │   └── lib
-    │       └── http.js
+    │   ├── index.js
+    │   └── lib
+    │       └── http.js
     └── test
         └── integration
             ├── index.js
@@ -169,31 +170,40 @@ Tests are found inside the `test/` directory and are separate by type: `function
     For instance, if you need credit card information to perform various tests in many different places, or if you need an util function that is called before your tests are ran, you could place them inside a `helpers` folder in order to not repeat yourself:
 
     ```javascript
-    export const creditCardMock = {
+    const creditCardMock = {
       number: 4242424242424242,
       holder_name: 'David Bowie',
       expiration_date: 1220,
       cvv: 123,
     }
 
-    export const cleanUpBeforeTests = () => {
-      db.reset();
+    const cleanUpBeforeTests = () => {
+      db.reset()
     }
+
+    module.exports = {
+	  creditCardMock,
+	  cleanUpBeforeTests,
+	}
     ```
 
     `Helpers` folders can be created at any level within the `test` folder structure. If some helper is used only for unit tests, it should reside within `test/unit/helpers`. If the helpers is used across all tests, it should reside within `test/helpers`. If there's a helper that is used only for testing the http module on integration tests, then it should reside within `test/integration/http/helpers`.
 
-## Lambdas and Data Flow
+## Data Flow
 
-This project is designed in AWS Lambda functions and has some logical branches and business domain rules that can be hard to understand. This section documents what every Lambda function does how it fits in the entire project.
+This project has two programs, the `worker` and the `server`.
 
-### 1. Boleto: create
+### Server
+
+This section documents what every endpoint of the `server` does.
+
+#### 1. POST /boletos
 
 Create a new boleto.
 
 After creating the boleto (on our database), we will try to register the boleto withing the provider. Here, there's two possible outcomes: a) the provider could be reached, could process the boleto and gave us a status (either `registered` or `refused`); or b) the provider could not be reached or could not process the boleto (giving us an `unknown`/`undefined`/`try_later` status).
 
-#### a) Provider **could** process the boleto
+##### a) Provider **could** process the boleto
 
 The following steps illustrate the case where the provider **could** be reached and it could process the boleto.
 
@@ -204,11 +214,11 @@ The following steps illustrate the case where the provider **could** be reached 
 1. We update the boleto status in the `Database`.
 1. We return the response to the `Client` (HTTP response).
 
-![](https://cloud.githubusercontent.com/assets/7416751/25156832/8f07ae62-2473-11e7-9dd1-663df65860d3.png)
+![1a-post-boletos-diagram](https://user-images.githubusercontent.com/15306309/41662266-1b84c1c8-7477-11e8-8ba3-b72c2fbecfdd.png)
 
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams/server](docs/diagrams/server)*
 
-#### b) Provider **could not** process the boleto
+##### b) Provider **could not** process the boleto
 
 The following steps illustrate the case where the provider **could** be reached and it could process the boleto.
 
@@ -217,12 +227,12 @@ The following steps illustrate the case where the provider **could** be reached 
 1. We try to register the boleto within the Provider.
 1. The provider could not be reached or could not process the boleto.
 1. We update the boleto status in the `Database` to `pending_registration`.
-1. We send the boleto (`boleto_id` and `issuer`) to an SQS queue called `boletos-to-register`. This queue will be processed by another Lambda later.
+1. We send the boleto (`boleto_id` and `issuer`) to an SQS queue called `boletos-to-register`. This queue will be processed by the `worker` later.
 1. We return the response to the `Client` (HTTP response) with the `status = pending_registration`.
 
-![](https://cloud.githubusercontent.com/assets/7416751/25156834/8f0a0568-2473-11e7-87f1-6bcbdb4c6a3f.png)
+![1b-post-boletos-diagram](https://user-images.githubusercontent.com/15306309/41662267-1b8eb7b4-7477-11e8-8a73-7d8293990e4a.png)
 
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams/server](docs/diagrams/server)*
 
 **Example:**
 
@@ -263,13 +273,13 @@ The following steps illustrate the case where the provider **could** be reached 
   }
   ```
 
-### 2. Boleto: index
+#### 2. GET /boletos
 
 Retrieve all boletos.
 
-![](https://cloud.githubusercontent.com/assets/7416751/25156835/8f0a3376-2473-11e7-92e7-6634c60afddc.png)
+![2-get-boletos-diagram](https://user-images.githubusercontent.com/15306309/41662275-20dd54be-7477-11e8-8060-ba643d705add.png)
 
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams/server](docs/diagrams/server)*
 
 **Example:**
 
@@ -305,13 +315,13 @@ Retrieve all boletos.
   }]
   ```
 
-### 3. Boleto: show
+#### 3. GET /boletos/:id
 
 Find one boleto by id.
 
-![](https://cloud.githubusercontent.com/assets/7416751/25156829/8e9d40a4-2473-11e7-9497-3b7a8dcef9e9.png)
+![3-get-boletos-id-diagram](https://user-images.githubusercontent.com/15306309/41662280-2426d80c-7477-11e8-8990-615aee30c040.png)
 
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams/server](docs/diagrams/server)*
 
 **Example:**
 
@@ -346,35 +356,25 @@ Find one boleto by id.
   }
   ```
 
-### 4. Boleto: process `boletos-to-register` queue
+### Worker
 
-Process the `boletos-to-regiter-queue`. This Lambda function is triggered by the **Schedule Event** (runs every `n` minutes).
+This section documents what the `worker` processes.
 
-When a boleto can't be registered within the provider at the moment of its creation, it will be posted to a SQS Queue called `boletos-to-register`. This function is responsible for processing this queue. Here are the steps:
+#### 1. Process `boletos-to-register` queue
 
-1. This function is triggered by a **Schedule Event** that runs every `n` minutes.
+This is a worker which consumes the queue which has boletos to register and effectively register them.
+
+When a boleto can't be registered within the provider at the moment of its creation, it will be posted to a SQS Queue called `boletos-to-register`. This worker is responsible for processing this queue. Here are the steps:
+
+1. This worker consumer function is triggered when an item is on the queue
 1. Using `sqs-quooler` we then start to poll items from SQS (`sqs.receiveMessage`)
-1. For each message received we invoke a Lambda function called `register` with the boleto information and the SQS Message as parameters.
-1. `sqs-quooler` package will repeat this `pollItems->receive->invokeRegisterLambda` cycle until this Lambda dies (max 5 minutes).
-
-![](https://cloud.githubusercontent.com/assets/7416751/25156830/8f057f34-2473-11e7-8baa-4617c5c5f1c7.png)
-
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
-
-### 5. Boleto: register
-
-Register a boleto. This Lambda function is invoked by another Lambda function: process `boletos-to-register` queue.
-
-This function registers boletos that went to the `boletos-to-register` queue. Here are the steps of execution:
-
-1. The function is invoked by the queueProcessor and receives `boleto` ({ id, issuer}) and `message` (the raw SQS message from `boletos-to-register` queue).
+1. Each message received has a `boleto` ({ id, issuer}) and a `message` (the raw SQS message from `boletos-to-register` queue).
 1. We use the boleto `id` to find the boleto on `Database`.
 1. We check if the boleto can be registered, i.e. if the status of the boleto is either `issued` or `pending_registration`.
 1. If the boleto can be registered, we try to register it within the provider.
 1. If the provider could not process the boleto, we stop executing here. The SQS Message will then go back to `boletos-to-register` queue and will be later processed.
 1. We update the boleto status with either `registered` or `refused`.
 1. **IMPORTANT:** After the boleto is updated, we notify the boleto owner by sendin an SQS message to the queue the owner specified on the boleto creation (aka: `boleto.queue_url`). The owner will then handle the processing of these SQS Messages. That's the only way we can notify the boleto owner that a boleto that went to `boletos-to-register` queue was updated. That's why it's mandatory to pass a queue at the moment of the boleto creation.
+![1-process-boletos-to-register-queue-diagram](https://user-images.githubusercontent.com/15306309/41662291-27f4a414-7477-11e8-9308-50968e9fb827.png)
 
-![](https://cloud.githubusercontent.com/assets/7416751/25156837/8f5971de-2473-11e7-918f-f059a5fba408.png)
-
-*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams](docs/diagrams)*
+*Diagram built with [mermaid.js](http://knsv.github.io/mermaid/). Check out the source code at [docs/diagrams/worker](docs/diagrams/worker)*
