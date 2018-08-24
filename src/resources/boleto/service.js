@@ -1,5 +1,5 @@
 const Promise = require('bluebird')
-const { mergeAll } = require('ramda')
+const { ifElse, mergeAll } = require('ramda')
 const database = require('../../database')
 const { NotFoundError } = require('../../lib/errors')
 const { handleDatabaseErrors } = require('../../lib/errors/database')
@@ -7,6 +7,7 @@ const { getPaginationQuery } = require('../../lib/database/pagination')
 const sqs = require('../../lib/sqs')
 const { BoletosToRegisterQueue } = require('./queues')
 const { findProvider } = require('../../providers')
+const { isBradescoOff } = require('../../providers/bradesco/temp')
 const { makeFromLogger } = require('../../lib/logger')
 
 const { Boleto } = database.models
@@ -44,6 +45,16 @@ module.exports = function boletoService ({ operationId }) {
 
     const logger = makeLogger({ operation: 'register' }, { id: operationId })
 
+    const fakeRegister = () =>
+      Promise.resolve({
+        issuer_response_code: 'fake_issuer_response_code',
+        status: 'pending_registration',
+      })
+        .tap(() => logger.info({
+          message: 'fake_register',
+          metadata: { boleto },
+        }))
+
     const updateBoletoStatus = ({ issuer_response_code, status }) => { // eslint-disable-line
       let newBoletoStatus
 
@@ -66,7 +77,11 @@ module.exports = function boletoService ({ operationId }) {
     }
 
     return Promise.resolve(boleto)
-      .then(provider.register)
+      .then(ifElse(
+        isBradescoOff,
+        fakeRegister,
+        provider.register
+      ))
       .timeout(timeoutMs)
       .then(updateBoletoStatus)
       .catch((err) => {
