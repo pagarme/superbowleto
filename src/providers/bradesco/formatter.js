@@ -1,11 +1,11 @@
-const moment = require('moment-timezone')
+const moment = require('moment')
 const {
   always,
   cond,
   equals,
 } = require('ramda')
 
-const date = timestamp => moment(timestamp).tz('America/Sao_Paulo').format('YYYY-MM-DD')
+const date = timestamp => moment(timestamp).format('YYYY-MM-DD')
 
 const documentType = cond([
   [equals('cpf'), always('1')],
