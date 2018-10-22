@@ -2,8 +2,8 @@ const moment = require('moment')
 
 const isBradescoOff = () => {
   const now = moment()
-  const bradescoStartTime = moment('2018-08-26 23:00:00')
-  const bradescoEndTime = moment('2018-08-27 05:01:00')
+  const bradescoStartTime = moment('2018-10-22 22:15:00')
+  const bradescoEndTime = moment('2018-10-22 22:50:00')
   return now.isBetween(bradescoStartTime, bradescoEndTime)
 }
 
