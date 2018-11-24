@@ -1,17 +1,17 @@
 const { prop } = require('ramda')
 const { Queue } = require('sqs-quooler')
 const sqs = require('../../lib/sqs')
-const getConfig = require('../../config/queues')
+const config = require('../../config/queues')
 
-const config = prop('boletos-to-register', getConfig())
+const { queueUrl, concurrency } = prop('boletos-to-register', config)
 
 const BoletosToRegisterQueue = new Queue({
   sqs,
-  endpoint: config.queueUrl,
-  concurrency: config.concurrency,
+  endpoint: queueUrl,
+  concurrency,
 })
 
-const BoletosToRegisterQueueUrl = config.queueUrl
+const BoletosToRegisterQueueUrl = queueUrl
 
 module.exports = {
   BoletosToRegisterQueue,

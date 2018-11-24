@@ -14,8 +14,8 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-  - docker-compose run lint
-  - docker-compose run test
+  - make lint
+  - make test
   - docker build -t build-s:latest --file=Dockerfile.server .
   - docker build -t build-w:latest --file=Dockerfile.worker .
 deploy:

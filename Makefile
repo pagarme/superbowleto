@@ -10,8 +10,12 @@ teardown:
 	@docker-compose down -v --rmi local
 .PHONY: teardown
 
-test:
-	@docker-compose run test
+lint:
+	@docker-compose run lint
+.PHONY: lint
+
+test: start-yopa migrate
+	@docker-compose up --abort-on-container-exit test
 .PHONY: test
 
 test-functional:
@@ -36,6 +40,10 @@ migrate:
 
 setup-db: start-db migrate
 .PHONY: setup-db
+
+start-yopa:
+	@docker-compose up -d yopa
+.PHONY: start-yopa
 
 superbowleto-web:
 	@docker-compose up superbowleto-web

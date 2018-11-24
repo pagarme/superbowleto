@@ -11,7 +11,7 @@ const {
   prop,
 } = require('ramda')
 const { format } = require('./formatter')
-const getConfig = require('../../config/providers')
+const config = require('../../config/providers')
 const { encodeBase64 } = require('../../lib/encoding')
 const { makeFromLogger } = require('../../lib/logger')
 const responseCodeMap = require('./response-codes')
@@ -20,7 +20,7 @@ const {
   api_key: apiKey,
   endpoint,
   merchant_id: merchantId,
-} = prop('bradesco', getConfig())
+} = prop('bradesco', config)
 
 const makeLogger = makeFromLogger('bradesco/index')
 
