@@ -5,10 +5,8 @@ if (process.env.NODE_ENV === 'production' && process.env.DOTENV_PATH) {
 }
 
 const Sequelize = require('sequelize')
-const getConfig = require('../config/database')
+const config = require('../config/database')
 const rawModels = require('./models')
-
-const config = getConfig()
 
 const defaults = {
   define: {
