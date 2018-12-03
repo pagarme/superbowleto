@@ -2,11 +2,21 @@ const log4js = require('log4js')
 const escriba = require('escriba')
 const { getEnv } = require('../../config/index')
 
-if (getEnv() === 'test') {
-  log4js.setGlobalLogLevel('OFF')
-}
+log4js.configure({
+  appenders: {
+    out: { type: 'stdout' },
+  },
+  categories: {
+    default: { appenders: ['out'], level: 'info' },
+    test: { appenders: ['out'], level: 'OFF' }, // OFF must be uppercase
+  },
+})
 
-const loggerEngine = log4js.getLogger()
+const loggerCategory = getEnv() === 'test'
+  ? 'test'
+  : 'dafault'
+
+const loggerEngine = log4js.getLogger(loggerCategory)
 
 const { logger } = escriba({
   loggerEngine,
