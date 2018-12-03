@@ -1,5 +1,5 @@
 const { curryN } = require('ramda')
-const { validate } = require('joi')
+const Joi = require('joi')
 const { ValidationError, InvalidParameterError } = require('../errors')
 
 const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
@@ -7,7 +7,7 @@ const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
     abortEarly: false,
   }
 
-  const { error, value } = validate(data, schema, options)
+  const { error, value } = Joi.validate(data, schema, options)
 
   if (!error) {
     return resolve(value)
@@ -15,7 +15,7 @@ const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
 
   const errors = error.details.map(err => new InvalidParameterError({
     message: err.message,
-    field: err.path,
+    field: err.path.reduce((acc, curr) => `${acc}.${curr}`),
   }))
 
   return reject(new ValidationError({ errors }))

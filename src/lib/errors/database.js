@@ -1,5 +1,13 @@
 const Sequelize = require('sequelize')
-const { compose, cond, T } = require('ramda')
+const {
+  cond,
+  compose,
+  join,
+  pipe,
+  split,
+  T,
+  tail,
+} = require('ramda')
 const {
   DatabaseError,
   InvalidParameterError,
@@ -11,7 +19,11 @@ const isSequelizeError = err => err instanceof Sequelize.Error
 
 const handleValidationErrors = (err) => {
   const errors = err.errors.map(error => new InvalidParameterError({
-    message: error.message,
+    message: pipe(
+      split('.'),
+      tail,
+      join('')
+    )(error.message),
     field: error.path,
   }))
 
