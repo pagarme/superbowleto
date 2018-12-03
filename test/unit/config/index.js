@@ -21,7 +21,7 @@ test.afterEach(() => {
 })
 
 test('getConfig: with argument', (t) => {
-  const config = getConfig(configMock)('production')
+  const config = getConfig(configMock, 'production')
 
   t.deepEqual(config, {
     host: '172.171.344.32/production',
@@ -31,7 +31,7 @@ test('getConfig: with argument', (t) => {
 
 test('getConfig: with process.env.NODE_ENV', (t) => {
   process.env.NODE_ENV = 'development'
-  const config = getConfig(configMock)('development')
+  const config = getConfig(configMock, 'development')
 
   t.deepEqual(config, {
     host: '172.171.344.32/development',
@@ -41,7 +41,7 @@ test('getConfig: with process.env.NODE_ENV', (t) => {
 
 test('getConfig: with no argument and no process.env.NODE_ENV', (t) => {
   process.env.NODE_ENV = ''
-  const config = getConfig(configMock)()
+  const config = getConfig(configMock)
 
   t.deepEqual(config, {
     host: '172.171.344.32/test',

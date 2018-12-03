@@ -8,6 +8,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=touchdown1!
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   yopa:
     image: pagarme/yopa:latest
@@ -23,18 +28,8 @@ services:
         "&&",
         "curl -f 'http://localhost:47195?Action=GetQueueUrl&QueueName=boletos-to-register'",
       ]
-      interval: 20s
-      retries: 10
-
-  test-dependencies:
-    image: busybox
-    depends_on:
-      postgres:
-        condition: service_started
-      yopa:
-        condition: service_healthy
-      superbowleto-web:
-        condition: service_started
+      interval: 5s
+      retries: 5
 
   test:
     build: .
@@ -45,7 +40,17 @@ services:
       - .:/superbowleto
       - /superbowleto/node_modules
     depends_on:
-      - test-dependencies
+      postgres:
+        condition: service_healthy
+      yopa:
+        condition: service_healthy
+      superbowleto-web:
+        condition: service_started
+    links:
+      - postgres
+      - yopa
+      - superbowleto-web
+
   lint:
     build: .
     entrypoint: npm run lint
@@ -54,21 +59,18 @@ services:
     volumes:
       - .:/superbowleto
       - /superbowleto/node_modules
-    depends_on:
-      - test-dependencies
 
   migrate:
     build: .
-    entrypoint: ./script/setup
+    entrypoint: node_modules/.bin/sequelize db:migrate --config src/config/database.js --migrations-path src/database/migrations/
     environment:
       - API_ENV=test
     volumes:
       - .:/superbowleto
       - /superbowleto/node_modules
     depends_on:
-      - postgres
-    links:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   superbowleto-web:
     build: .
