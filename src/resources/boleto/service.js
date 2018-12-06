@@ -169,7 +169,7 @@ module.exports = function boletoService ({ operationId }) {
     }
 
     const orderQuery = {
-      order: 'id DESC',
+      order: [['id', 'DESC']],
     }
 
     const possibleFields = { token, title_id }
