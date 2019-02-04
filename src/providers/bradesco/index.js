@@ -56,6 +56,22 @@ const buildPayload = (boleto) => {
           uf: path(['payer_address', 'state']),
         },
       },
+      informacoes_opcionais: {
+        sacador_avalista: {
+          nome: prop('company_name'),
+          documento: prop('company_document_number'),
+          tipo_documento: always('2'),
+          endereco: {
+            cep: path(['payer_address', 'zipcode']),
+            logradouro: path(['payer_address', 'street']),
+            numero: path(['payer_address', 'street_number']),
+            complemento: path(['payer_address', 'complementary']),
+            bairro: path(['payer_address', 'neighborhood']),
+            cidade: path(['payer_address', 'city']),
+            uf: path(['payer_address', 'state']),
+          },
+        },
+      },
     },
   })
 
