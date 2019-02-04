@@ -56,6 +56,13 @@ const buildPayload = (boleto) => {
           uf: path(['payer_address', 'state']),
         },
       },
+      informacoes_opcionais: {
+        sacador_avalista: {
+          nome: prop('company_name'),
+          documento: prop('company_document_number'),
+          tipo_documento: always('2'),
+        },
+      },
     },
   })
 
