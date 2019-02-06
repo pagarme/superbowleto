@@ -30,6 +30,15 @@ export const mock = {
   queue_url: userQueueUrl,
   company_name: 'Some Company',
   company_document_number: '98154524872',
+  company_address: {
+    zipcode: '04547006',
+    street_number: '1609',
+    street: 'Rua Gomes de Carvalho',
+    complementary: '6º andar',
+    neighborhood: 'Vila Olimpia',
+    city: 'São Paulo',
+    state: 'SP',
+  },
 }
 
 export const createBoleto = (data = {}) => {

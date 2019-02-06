@@ -38,6 +38,22 @@ test('buildPayload', async (t) => {
           uf: 'SP',
         },
       },
+      informacoes_opcionais: {
+        sacador_avalista: {
+          nome: 'Some Company',
+          documento: '98154524872',
+          tipo_documento: '2',
+          endereco: {
+            cep: '04547006',
+            logradouro: 'Rua Gomes de Carvalho',
+            numero: '1609',
+            complemento: '6º andar',
+            bairro: 'Vila Olimpia',
+            cidade: 'São Paulo',
+            uf: 'SP',
+          },
+        },
+      },
     },
   })
 })
