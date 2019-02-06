@@ -58,6 +58,44 @@ const createSchema = {
     .allow(null)
     .allow(''),
 
+  company_address: Joi.object().keys({
+    zipcode: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    street: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    complementary: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    neighborhood: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    street_number: Joi
+      .alternatives()
+      .try(Joi.string(), Joi.number())
+      .allow(null)
+      .allow(''),
+
+    city: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+
+    state: Joi
+      .string()
+      .allow(null)
+      .allow(''),
+  }),
+
   payer_name: Joi
     .string()
     .allow(null)
