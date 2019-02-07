@@ -104,5 +104,13 @@ test('shows a boleto with a specific token', async (t) => {
     queue_url: userQueueUrl,
     company_name: 'Some Company',
     company_document_number: '98154524872',
+    company_address: {
+      zipcode: '04547006',
+      street_number: '1609',
+      street: 'Rua Gomes de Carvalho',
+      neighborhood: 'Vila Olimpia',
+      city: 'São Paulo',
+      state: 'SP',
+    },
   }, 'result must have the shape of a boleto')
 })

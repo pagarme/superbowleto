@@ -72,6 +72,7 @@ const buildModelResponse = responseObjectBuilder(boleto =>
       'payer_address',
       'company_name',
       'company_document_number',
+      'company_address',
       'bank_response_code',
       'reference_id',
       'created_at',
@@ -89,10 +90,6 @@ const addBoletoCode = (boleto) => {
 }
 
 const validateModel = (boleto) => {
-  if (!boleto.payer_address) {
-    boleto.payer_address = {} // eslint-disable-line
-  }
-
   const defaultAddress = {
     zipcode: '04551010',
     street: 'Rua Fidêncio Ramos',
@@ -137,6 +134,7 @@ const validateModel = (boleto) => {
   )
 
   boleto.payer_address = getAddress(boleto.payer_address) // eslint-disable-line
+  boleto.company_address = getAddress(boleto.company_address) // eslint-disable-line
 }
 
 function create (database) {
@@ -255,6 +253,10 @@ function create (database) {
     company_document_number: {
       type: STRING,
       allowNull: true,
+    },
+
+    company_address: {
+      type: JSON,
     },
 
     bank_response_code: {
