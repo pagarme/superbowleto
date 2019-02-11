@@ -270,6 +270,8 @@ function create (database) {
     indexes: [
       { fields: ['queue_url'] },
       { fields: ['status'] },
+      { fields: ['token'] },
+      { fields: ['title_id'] },
     ],
     hooks: {
       afterCreate: addBoletoCode,
