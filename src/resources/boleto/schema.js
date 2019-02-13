@@ -14,6 +14,53 @@ const createSchema = {
     .integer()
     .required(),
 
+  discount: Joi.array().items(Joi.object().keys({
+    percentage: Joi
+      .number()
+      .integer()
+      .min(0)
+      .max(100),
+
+    amount: Joi
+      .number()
+      .integer(),
+
+    limit_date: Joi
+      .string(),
+  })),
+
+  interest: Joi.object().keys({
+    percentage: Joi
+      .number()
+      .integer()
+      .min(0)
+      .max(100),
+
+    amount: Joi
+      .number()
+      .integer(),
+
+    days: Joi
+      .number()
+      .integer(),
+  }),
+
+  fine: Joi.object().keys({
+    percentage: Joi
+      .number()
+      .integer()
+      .min(0)
+      .max(100),
+
+    amount: Joi
+      .number()
+      .integer(),
+
+    days: Joi
+      .number()
+      .integer(),
+  }),
+
   title_id: Joi
     .number()
     .integer()
