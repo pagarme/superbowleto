@@ -75,6 +75,14 @@ const buildPayload = (boleto) => {
         },
       },
       informacoes_opcionais: {
+        perc_juros: path(['interest', 'percentage']),
+        valor_juros: path(['interest', 'amount']),
+        qtde_dias_juros: path(['interest', 'days']),
+
+        perc_multa_atraso: path(['fine', 'percentage']),
+        valor_multa_atraso: path(['fine', 'amount']),
+        qtde_dias_multa_atraso: path(['fine', 'days']),
+
         sacador_avalista: {
           nome: prop('company_name'),
           documento: prop('company_document_number'),

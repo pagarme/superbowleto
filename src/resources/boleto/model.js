@@ -56,6 +56,8 @@ const buildModelResponse = responseObjectBuilder(boleto =>
       'expiration_date',
       'amount',
       'paid_amount',
+      'interest',
+      'fine',
       'instructions',
       'issuer',
       'issuer_account',
@@ -183,6 +185,14 @@ function create (database) {
       type: INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+
+    interest: {
+      type: JSON,
+    },
+
+    fine: {
+      type: JSON,
     },
 
     instructions: {
