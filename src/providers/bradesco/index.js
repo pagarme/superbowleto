@@ -5,16 +5,21 @@ const {
   always,
   applySpec,
   assoc,
+  both,
+  complement,
   compose,
   defaultTo,
   equals,
   ifElse,
+  isNil,
   length,
+  multiply,
   path,
   pipe,
   prop,
   propSatisfies,
   toLower,
+  toString,
   toUpper,
   trim,
 } = require('ramda')
@@ -41,9 +46,27 @@ const buildHeaders = () => {
   }
 }
 
+const isNotNil = complement(isNil)
+
+const isNumber = both(
+  isNotNil,
+  complement(isNaN) // eslint-disable-line no-restricted-globals
+)
+
 const isLengthEquals = numberOfCharacters => pipe(
   length,
   equals(numberOfCharacters)
+)
+
+const normalizePercentage = ifElse(
+  isNumber,
+  pipe(
+    percentage => Number(percentage).toFixed(5),
+    multiply(100000),
+    toString,
+    percentage => percentage.padStart(8, '0')
+  ),
+  always(undefined)
 )
 
 const buildPayload = (boleto) => {
@@ -77,6 +100,20 @@ const buildPayload = (boleto) => {
         },
       },
       informacoes_opcionais: {
+        perc_juros: pipe(
+          path(['interest', 'percentage']),
+          normalizePercentage
+        ),
+        valor_juros: path(['interest', 'amount']),
+        qtde_dias_juros: path(['interest', 'days']),
+
+        perc_multa_atraso: pipe(
+          path(['fine', 'percentage']),
+          normalizePercentage
+        ),
+        valor_multa_atraso: path(['fine', 'amount']),
+        qtde_dias_multa_atraso: path(['fine', 'days']),
+
         sacador_avalista: {
           nome: prop('company_name'),
           documento: prop('company_document_number'),
@@ -188,6 +225,7 @@ const getProvider = ({ operationId } = defaultOptions) => {
 module.exports = {
   buildHeaders,
   buildPayload,
+  normalizePercentage,
   translateResponseCode,
   getProvider,
 }

@@ -36,6 +36,14 @@ test.skip('POST /boletos', async (t) => {
     company_name: mock.company_name,
     company_document_number: mock.company_document_number,
     queue_url: mock.queue_url,
+    interest: {
+      amount: mock.interest.amount,
+      days: mock.interest.days,
+    },
+    fine: {
+      amount: mock.fine.amount,
+      days: mock.fine.days,
+    },
   })
 })
 
