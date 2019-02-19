@@ -7,8 +7,13 @@ const {
   assoc,
   compose,
   defaultTo,
+  equals,
+  ifElse,
+  length,
   path,
+  pipe,
   prop,
+  propSatisfies,
 } = require('ramda')
 const { format } = require('./formatter')
 const config = require('../../config/providers')
@@ -31,6 +36,11 @@ const buildHeaders = () => {
     Authorization: `Basic ${authorization}`,
   }
 }
+
+const isLengthEquals = numberOfCharacters => pipe(
+  length,
+  equals(numberOfCharacters)
+)
 
 const buildPayload = (boleto) => {
   const spec = applySpec({
@@ -60,7 +70,14 @@ const buildPayload = (boleto) => {
         sacador_avalista: {
           nome: prop('company_name'),
           documento: prop('company_document_number'),
-          tipo_documento: always('2'),
+          tipo_documento: ifElse(
+            propSatisfies(
+              isLengthEquals(11),
+              'document_number'
+            ),
+            always('1'),
+            always('2')
+          ),
           endereco: {
             cep: path(['company_address', 'zipcode']),
             logradouro: path(['company_address', 'street']),
