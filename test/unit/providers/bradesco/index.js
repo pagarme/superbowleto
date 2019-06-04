@@ -39,6 +39,12 @@ test('buildPayload with a cpf number on company_document_number', async (t) => {
         },
       },
       informacoes_opcionais: {
+        perc_juros: undefined,
+        perc_multa_atraso: undefined,
+        qtde_dias_juros: 7,
+        qtde_dias_multa_atraso: 3,
+        valor_juros: 100,
+        valor_multa_atraso: 85,
         sacador_avalista: {
           nome: 'Some Company',
           documento: '98154524872',
@@ -88,6 +94,12 @@ test('buildPayload with a cnpj number on company_document_number', async (t) => 
         },
       },
       informacoes_opcionais: {
+        perc_juros: undefined,
+        perc_multa_atraso: undefined,
+        qtde_dias_juros: 7,
+        qtde_dias_multa_atraso: 3,
+        valor_juros: 100,
+        valor_multa_atraso: 85,
         sacador_avalista: {
           nome: 'Some Company',
           documento: '98154872000112',
