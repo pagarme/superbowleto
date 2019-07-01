@@ -6,7 +6,7 @@ import boletoHandler from '../../../../../src/resources/boleto'
 
 const create = normalizeHandler(boletoHandler.create)
 
-test('creates a boleto (provider success)', async (t) => {
+test.skip('creates a boleto (provider success)', async (t) => {
   const payload = mock
 
   const { body, statusCode } = await create({

@@ -14,12 +14,15 @@ const {
   pipe,
   prop,
   propSatisfies,
+  toLower,
+  toUpper,
 } = require('ramda')
 const { format } = require('./formatter')
 const config = require('../../config/providers')
 const { encodeBase64 } = require('../../lib/encoding')
 const { makeFromLogger } = require('../../lib/logger')
 const responseCodeMap = require('./response-codes')
+const brazilianStates = require('./brazilian-states')
 
 const {
   api_key: apiKey,
@@ -63,7 +66,12 @@ const buildPayload = (boleto) => {
           complemento: path(['payer_address', 'complementary']),
           bairro: path(['payer_address', 'neighborhood']),
           cidade: path(['payer_address', 'city']),
-          uf: path(['payer_address', 'state']),
+          uf: pipe(
+            path(['payer_address', 'state']),
+            toLower,
+            state => brazilianStates[state] || state,
+            toUpper
+          ),
         },
       },
       informacoes_opcionais: {
@@ -85,7 +93,12 @@ const buildPayload = (boleto) => {
             complemento: path(['company_address', 'complementary']),
             bairro: path(['company_address', 'neighborhood']),
             cidade: path(['company_address', 'city']),
-            uf: path(['company_address', 'state']),
+            uf: pipe(
+              path(['payer_address', 'state']),
+              toLower,
+              state => brazilianStates[state] || state,
+              toUpper
+            ),
           },
         },
       },
