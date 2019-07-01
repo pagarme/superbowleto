@@ -4,7 +4,7 @@ import { assert } from '../../helpers/chai'
 import { mock } from '../../helpers/boleto'
 import request from '../../helpers/request'
 
-test('POST /boletos', async (t) => {
+test.skip('POST /boletos', async (t) => {
   const { body, statusCode } = await request({
     route: '/boletos',
     method: 'POST',
