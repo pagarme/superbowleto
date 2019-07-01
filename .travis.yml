@@ -13,7 +13,7 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 script:
-  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+#  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
   - make lint
   - make test
   - docker build -t build-s:latest --file=Dockerfile.server .

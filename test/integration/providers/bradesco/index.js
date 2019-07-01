@@ -4,7 +4,7 @@ import Provider from '../../../../src/providers/bradesco'
 
 const { register } = Provider.getProvider()
 
-test('register', async (t) => {
+test.skip('register', async (t) => {
   const boleto = await createBoleto()
 
   const response = await register(boleto)

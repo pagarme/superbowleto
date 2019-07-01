@@ -4,7 +4,7 @@ import { assert } from '../../helpers/chai'
 import request from '../../helpers/request'
 import { mock, userQueueUrl } from '../../helpers/boleto'
 
-test('GET /boletos/:id with valid id', async (t) => {
+test.skip('GET /boletos/:id with valid id', async (t) => {
   const { body: { id } } = await request({
     route: '/boletos',
     method: 'POST',

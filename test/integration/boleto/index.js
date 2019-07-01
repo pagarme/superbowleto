@@ -65,7 +65,7 @@ test('shows all boletos with custom pagination', async (t) => {
   }, 'result must have the shape of a boleto')
 })
 
-test('shows a boleto with a specific token', async (t) => {
+test.skip('shows a boleto with a specific token', async (t) => {
   await createBoleto({
     token: 'sandbox_3r3regdgdsggdgdzgzd',
   })
