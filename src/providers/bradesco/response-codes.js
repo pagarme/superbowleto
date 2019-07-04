@@ -483,6 +483,10 @@ module.exports = {
     message: 'CARTEIRA DE COBRANCA NAO ACEITA',
     status: 'refused',
   },
+  93005126: {
+    message: 'UF NAO ACEITA',
+    status: 'refused',
+  },
   93005999: {
     message: 'BOLETO GERADO COM SUCESSO - REGISTRO EM PROCESSAMENTO',
     status: 'registered',
