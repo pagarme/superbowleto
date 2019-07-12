@@ -16,6 +16,7 @@ const {
   propSatisfies,
   toLower,
   toUpper,
+  trim,
 } = require('ramda')
 const { format } = require('./formatter')
 const config = require('../../config/providers')
@@ -69,6 +70,7 @@ const buildPayload = (boleto) => {
           uf: pipe(
             path(['payer_address', 'state']),
             toLower,
+            trim,
             state => brazilianStates[state] || state,
             toUpper
           ),
@@ -96,6 +98,7 @@ const buildPayload = (boleto) => {
             uf: pipe(
               path(['company_address', 'state']),
               toLower,
+              trim,
               state => brazilianStates[state] || state,
               toUpper
             ),
