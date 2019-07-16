@@ -22,6 +22,7 @@ module.exports = {
   paraíba: 'pb',
   paraiba: 'pb',
   paraná: 'pr',
+  parana: 'pr',
   pernambuco: 'pe',
   piauí: 'pi',
   piaui: 'pi',
