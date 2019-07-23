@@ -39,6 +39,14 @@ export const mock = {
     city: 'São Paulo',
     state: 'SP',
   },
+  interest: {
+    amount: 100,
+    days: 7,
+  },
+  fine: {
+    amount: 85,
+    days: 3,
+  },
 }
 
 export const createBoleto = (data = {}) => {

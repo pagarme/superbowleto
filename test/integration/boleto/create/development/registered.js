@@ -36,5 +36,13 @@ test('creates a boleto (provider success)', async (t) => {
     company_name: payload.company_name,
     company_document_number: payload.company_document_number,
     queue_url: payload.queue_url,
+    interest: {
+      amount: payload.interest.amount,
+      days: payload.interest.days,
+    },
+    fine: {
+      amount: payload.fine.amount,
+      days: payload.fine.days,
+    },
   })
 })

@@ -1,7 +1,12 @@
 import test from 'ava'
 import moment from 'moment'
 import { createBoleto } from '../../../helpers/boleto'
-import { buildHeaders, buildPayload, translateResponseCode } from '../../../../src/providers/bradesco'
+import {
+  buildHeaders,
+  buildPayload,
+  normalizePercentage,
+  translateResponseCode,
+} from '../../../../src/providers/bradesco'
 
 test('buildHeaders', (t) => {
   const headers = buildHeaders()
@@ -39,6 +44,12 @@ test('buildPayload with a cpf number on company_document_number', async (t) => {
         },
       },
       informacoes_opcionais: {
+        perc_juros: undefined,
+        perc_multa_atraso: undefined,
+        qtde_dias_juros: 7,
+        qtde_dias_multa_atraso: 3,
+        valor_juros: 100,
+        valor_multa_atraso: 85,
         sacador_avalista: {
           nome: 'Some Company',
           documento: '98154524872',
@@ -88,6 +99,12 @@ test('buildPayload with a cnpj number on company_document_number', async (t) => 
         },
       },
       informacoes_opcionais: {
+        perc_juros: undefined,
+        perc_multa_atraso: undefined,
+        qtde_dias_juros: 7,
+        qtde_dias_multa_atraso: 3,
+        valor_juros: 100,
+        valor_multa_atraso: 85,
         sacador_avalista: {
           nome: 'Some Company',
           documento: '98154872000112',
@@ -164,4 +181,34 @@ test('translateResponseCode: with a "unknown" code', (t) => {
   })
 
   t.is(response.status, 'unknown')
+})
+
+test('normalizePercentage: with an integer number', (t) => {
+  const normalizedPercentage = normalizePercentage(95)
+
+  t.is(normalizedPercentage, '09500000')
+})
+
+test('normalizePercentage: with a float number', (t) => {
+  const normalizedPercentage = normalizePercentage('99.99')
+
+  t.is(normalizedPercentage, '09999000')
+})
+
+test('normalizePercentage: with a float number and 6 digits of precision', (t) => {
+  const normalizedPercentage = normalizePercentage('99.999999')
+
+  t.is(normalizedPercentage, '10000000')
+})
+
+test('normalizePercentage: with a non-number string', (t) => {
+  const normalizedPercentage = normalizePercentage('jean')
+
+  t.is(normalizedPercentage, undefined)
+})
+
+test('normalizePercentage: with a integer and non-number string', (t) => {
+  const normalizedPercentage = normalizePercentage('99percentage')
+
+  t.is(normalizedPercentage, undefined)
 })
