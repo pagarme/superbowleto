@@ -102,14 +102,22 @@ const buildPayload = (boleto) => {
       informacoes_opcionais: {
         perc_juros: pipe(
           path(['interest', 'percentage']),
-          normalizePercentage
+          ifElse(
+            isNumber,
+            pipe(
+              percentage => Number(percentage).toFixed(5),
+              multiply(100),
+              toString
+            ),
+            always(undefined)
+          )
         ),
         valor_juros: path(['interest', 'amount']),
         qtde_dias_juros: path(['interest', 'days']),
 
         perc_multa_atraso: pipe(
           path(['fine', 'percentage']),
-          normalizePercentage
+          normalizePercentage(100000)
         ),
         valor_multa_atraso: path(['fine', 'amount']),
         qtde_dias_multa_atraso: path(['fine', 'days']),
