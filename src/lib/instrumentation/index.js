@@ -1,9 +1,14 @@
 const dotenv = require('dotenv')
+const ddTrace = require('dd-trace')
 
 const initializeNewRelic = () => {
-  if (process.env.NODE_ENV === 'production' && process.env.NEWRELIC_KEY) {
-    // eslint-disable-next-line global-require
-    require('newrelic')
+  if (process.env.NODE_ENV === 'production') {
+    ddTrace.init()
+
+    if (process.env.NEWRELIC_KEY) {
+      // eslint-disable-next-line global-require
+      require('newrelic')
+    }
   }
 }
 
