@@ -124,6 +124,26 @@ test('buildPayload with a cnpj number on company_document_number', async (t) => 
   })
 })
 
+test('buildPayload without a issuer_wallet', async (t) => {
+  const boleto = await createBoleto({
+    issuer_wallet: undefined,
+  })
+
+  const payload = buildPayload(boleto)
+
+  t.is(payload.boleto.carteira, '26')
+})
+
+test('buildPayload with issuer_wallet of 25', async (t) => {
+  const boleto = await createBoleto({
+    issuer_wallet: '25',
+  })
+
+  const payload = buildPayload(boleto)
+
+  t.is(payload.boleto.carteira, '25')
+})
+
 test('translateResponseCode: with a "registered" code', (t) => {
   const response = translateResponseCode({
     data: {
