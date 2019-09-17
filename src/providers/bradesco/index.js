@@ -15,6 +15,7 @@ const {
   length,
   multiply,
   path,
+  pathOr,
   pipe,
   prop,
   propSatisfies,
@@ -73,7 +74,7 @@ const buildPayload = (boleto) => {
   const spec = applySpec({
     merchant_id: always(merchantId),
     boleto: {
-      carteira: always('26'),
+      carteira: pathOr('26', ['issuer_wallet']),
       nosso_numero: prop('title_id'),
       numero_documento: prop('title_id'),
       data_emissao: compose(format('date'), always(moment().toDate())),
