@@ -1,8 +1,8 @@
 const { prop } = require('ramda')
 
-const { initializeDotEnv } = require('../lib/instrumentation')
+const bootstrap = require('../lib/bootstrap')
 
-initializeDotEnv()
+bootstrap()
 
 const getEnv = env => env || process.env.NODE_ENV || 'test'
 const getConfig = (config, env) => prop(getEnv(env), config)
