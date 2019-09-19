@@ -1,6 +1,8 @@
+const bootstrap = require('../lib/bootstrap')
 const instrumentation = require('../lib/instrumentation')
 
-instrumentation.initialize()
+bootstrap()
+instrumentation()
 
 const { DatabaseError } = require('../lib/errors')
 const database = require('../database')
