@@ -1,30 +1,37 @@
-const dotenv = require('dotenv')
 const ddTrace = require('dd-trace')
+const { getCredentials } = require('../credentials')
+const { makeFromLogger } = require('../../lib/logger')
 
-const initializeNewRelic = () => {
-  if (process.env.NODE_ENV === 'production') {
-    ddTrace.init()
+const makeLogger = makeFromLogger('lib/instrumentation')
 
-    if (process.env.NEWRELIC_KEY) {
-      // eslint-disable-next-line global-require
-      require('newrelic')
-    }
+const initInstrumentation = () => {
+  if (process.env.NODE_ENV !== 'production') {
+    return false
   }
-}
 
-const initializeDotEnv = () => {
-  if (process.env.NODE_ENV === 'production' && process.env.DOTENV_PATH) {
-    dotenv.config({ path: process.env.DOTENV_PATH })
+  const logger = makeLogger({ operation: 'instrumentation' })
+
+  if (process.env.NEWRELIC_KEY) {
+    // eslint-disable-next-line global-require
+    require('newrelic')
   }
+
+  return getCredentials('datadog/endpoint')
+    .then(datadogEndpoint =>
+      ddTrace.init({
+        hostname: datadogEndpoint,
+        port: 8126,
+      }))
+    .catch((err) => {
+      logger.error({
+        status: 'failed',
+        metadata: {
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message,
+        },
+      })
+    })
 }
 
-const initialize = () => {
-  initializeDotEnv()
-  initializeNewRelic()
-}
-
-module.exports = {
-  initialize,
-  initializeDotEnv,
-  initializeNewRelic,
-}
+module.exports = initInstrumentation
