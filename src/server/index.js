@@ -32,5 +32,6 @@ app.all('/boletos', defaultHandler)
 app.all('*', defaultResourceHandler)
 
 app.keepAliveTimeout = 61 * 1000
+app.timeout = 60 * 1000
 
 module.exports = app
