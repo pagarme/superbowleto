@@ -201,7 +201,7 @@ This section documents what every endpoint of the `server` does.
 
 Create a new boleto.
 
-After creating the boleto (on our database), we will try to register the boleto withing the provider. Here, there's two possible outcomes: a) the provider could be reached, could process the boleto and gave us a status (either `registered` or `refused`); or b) the provider could not be reached or could not process the boleto (giving us an `unknown`/`undefined`/`try_later` status).
+After creating the boleto (on our database), we will try to register the boleto within the provider. Here, there's two possible outcomes: a) the provider could be reached, could process the boleto and gave us a status (either `registered` or `refused`); or b) the provider could not be reached or could not process the boleto (giving us an `unknown`/`undefined`/`try_later` status).
 
 ##### a) Provider **could** process the boleto
 
