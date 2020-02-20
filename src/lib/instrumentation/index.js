@@ -1,7 +1,7 @@
 const ddTrace = require('dd-trace')
 
 const initInstrumentation = () => {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && process.env.STAGE !== 'stg') {
     ddTrace.init()
 
     if (process.env.NEWRELIC_KEY) {
