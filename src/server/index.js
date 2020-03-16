@@ -31,6 +31,7 @@ app.all('/boletos', defaultHandler)
 
 app.all('*', defaultResourceHandler)
 
+app.headersTimeout = 65 * 1000
 app.keepAliveTimeout = 61 * 1000
 app.timeout = 60 * 1000
 
