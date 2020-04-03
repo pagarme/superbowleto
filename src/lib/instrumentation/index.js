@@ -7,7 +7,7 @@ const initInstrumentation = () => {
       runtimeMetrics: true,
     })
 
-    if (process.env.NEWRELIC_KEY) {
+    if (process.env.NEWRELIC_KEY && process.env.NEWRELIC_KEY !== 'REDACTED') {
       // eslint-disable-next-line global-require
       require('newrelic')
     }
