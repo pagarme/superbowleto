@@ -42,7 +42,6 @@ jobs:
           name: create docker image
           command: |
               mkdir -p images
-              docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
               export NODE_ENV=production
               docker build --file=Dockerfile.prod -t build:latest .
               docker save -o images/build.tar build:latest
