@@ -1,14 +1,23 @@
 const log4js = require('log4js')
 const escriba = require('escriba')
+const { dissoc, prop } = require('ramda')
 const { getEnv } = require('../../config/index')
 
-const jsonLayout = () => logEvent => logEvent.data.map(data => JSON.stringify({
-  time: logEvent.startTime,
-  level: logEvent.level.levelStr,
-  category: logEvent.categoryName,
-  data: JSON.parse(data),
-}))
-  .join('\n')
+const jsonLayout = () =>
+  logEvent =>
+    logEvent.data.map((data) => {
+      const dataObj = JSON.parse(data)
+      const dd = prop('dd', dataObj)
+      const dataWithoutDD = dissoc('dd', dataObj)
+      return JSON.stringify({
+        time: logEvent.startTime,
+        level: logEvent.level.levelStr,
+        category: logEvent.categoryName,
+        dd,
+        data: dataWithoutDD,
+      })
+    })
+      .join('\n')
 
 log4js.addLayout('json', jsonLayout)
 
