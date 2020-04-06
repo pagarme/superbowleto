@@ -35,7 +35,7 @@ const loggerEngine = log4js.getLogger(loggerCategory)
 
 const { logger } = escriba({
   loggerEngine,
-  service: 'sbwl',
+  service: 'superbowleto',
   integrations: {
     datadog: true,
   },
