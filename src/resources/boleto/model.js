@@ -140,6 +140,7 @@ const validateModel = (boleto) => {
 }
 
 function create (database) {
+  console.log('TO CONFIGURANDO ISSO!!! ->', process.env.APP_ENV)
   return database.define('Boleto', {
     id: {
       type: STRING,
