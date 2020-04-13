@@ -1,7 +1,10 @@
 const Promise = require('bluebird')
 const cuid = require('cuid')
 
-const defaultCuidValue = (prefix = '') => () => `${prefix}${cuid()}`
+const defaultCuidValue = (prefix = '') => () => {
+  console.log('Gerando ciud() ->', prefix, cuid())
+  return `${prefix}${cuid()}`
+}
 
 const responseObjectBuilder = fn => data =>
   (Array.isArray(data)
