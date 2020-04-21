@@ -180,12 +180,14 @@ const getProvider = ({ operationId } = defaultOptions) => {
 
     const headers = buildHeaders()
     const payload = buildPayload(boleto)
+    const timeoutMs = process.env.APP_ENV === 'live' ? 6000 : 25000
 
     return Promise.resolve({
       headers,
       data: payload,
       url: endpoint,
       method: 'POST',
+      timeout: timeoutMs,
     })
       .tap((request) => {
         logger.info({
