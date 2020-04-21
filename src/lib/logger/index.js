@@ -1,14 +1,38 @@
 const log4js = require('log4js')
 const escriba = require('escriba')
+const { dissoc, prop } = require('ramda')
 const { getEnv } = require('../../config/index')
+
+const jsonLayout = () =>
+  logEvent =>
+    logEvent.data.map((data) => {
+      const dataObj = JSON.parse(data)
+      const dd = prop('dd', dataObj)
+      const dataWithoutDD = dissoc('dd', dataObj)
+      return JSON.stringify({
+        time: logEvent.startTime,
+        level: logEvent.level.levelStr,
+        category: logEvent.categoryName,
+        dd,
+        data: dataWithoutDD,
+      })
+    })
+      .join('\n')
+
+log4js.addLayout('json', jsonLayout)
 
 log4js.configure({
   appenders: {
-    out: { type: 'stdout' },
+    out: {
+      type: 'stdout',
+      layout: { type: 'json' },
+    },
   },
   categories: {
-    default: { appenders: ['out'], level: 'info' },
-    test: { appenders: ['out'], level: 'OFF' }, // OFF must be uppercase
+    default: {
+      appenders: ['out'],
+      level: 'info',
+    },
   },
 })
 
@@ -20,7 +44,10 @@ const loggerEngine = log4js.getLogger(loggerCategory)
 
 const { logger } = escriba({
   loggerEngine,
-  service: 'sbwl',
+  service: 'superbowleto',
+  integrations: {
+    datadog: true,
+  },
 })
 
 const makeLogger = (defaultData = {}, defaultConfig = {}) => {

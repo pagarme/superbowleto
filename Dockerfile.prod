@@ -18,9 +18,9 @@ ENV APP_NAME 'superbowleto'
 # Copy dependencies from the previous image
 COPY --from=0 /app /app
 COPY . /app
-COPY script/start_server.sh /app
+COPY script/start.sh /app
 
 WORKDIR /app
 
 EXPOSE 3000
-ENTRYPOINT ["sh", "-c", "/app/start_server.sh"]
+ENTRYPOINT ["sh", "-c", "/app/start.sh"]

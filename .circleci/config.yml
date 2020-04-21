@@ -1,0 +1,191 @@
+version: 2
+
+_run:
+  prepare_to_deploy: &prepare_to_deploy
+    name: Prepare to deploy
+    command: |
+      mkdir -p ~/.local/bin
+      # install jq
+      curl -sSL -o ~/.local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x ~/.local/bin/jq
+      # install ecs-deploy (in work version)
+      curl -sSL -o /tmp/ecs-deploy.tar.gz https://github.com/silinternational/ecs-deploy/archive/3.4.0.tar.gz && tar xvfz /tmp/ecs-deploy.tar.gz -C /tmp && sudo cp /tmp/ecs-deploy-3.4.0/ecs-deploy ~/.local/bin/ecs-deploy
+      pip install awscli --upgrade --user
+
+jobs:
+  test:
+    machine:
+      docker_layer_caching: true
+    steps:
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - checkout
+      - run:
+          name: Build docker-compose containers
+          command: docker-compose build
+      - run:
+          name: Run linter
+          command: make lint
+      - run:
+          name: Run tests
+          command: make test
+  build_image:
+    working_directory: ~/superbowleto
+    machine:
+        enabled: true
+    steps:
+      - checkout
+      - run:
+          name: create docker image
+          command: |
+              mkdir -p images
+              export NODE_ENV=production
+              docker build --file=Dockerfile.prod -t build:latest .
+              docker save -o images/build.tar build:latest
+      - persist_to_workspace:
+          root: images
+          paths:
+             -  build.tar
+  push_staging:
+    working_directory: ~/superbowleto
+    machine:
+        enabled: true
+    steps:
+      - attach_workspace:
+         at: ~/superbowleto/images
+      - run:
+          name: deploy to fargate
+          command: |
+            docker load -i ~/superbowleto/images/build.tar
+            export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
+            export AWS_ACCOUNT=$STG_AWS_ACCOUNT
+            #ecr-login
+            eval $(aws ecr get-login --region us-east-1 --no-include-email)
+            # build and push server
+            export STG_IMAGE="$STG_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto"
+            docker tag build:latest ${STG_IMAGE}:$CIRCLE_TAG
+            docker push ${STG_IMAGE}:$CIRCLE_TAG
+            docker tag build:latest ${STG_IMAGE}:latest
+            docker push ${STG_IMAGE}:latest
+  push_production:
+    working_directory: ~/superbowleto
+    machine:
+        enabled: true
+    steps:
+      - attach_workspace:
+         at: ~/superbowleto/images
+      - run:
+          name: prepare Deploy to fargate
+          command: |
+            docker load -i ~/superbowleto/images/build.tar
+            export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
+            export AWS_ACCOUNT=$PRD_AWS_ACCOUNT
+            #ecr-login
+            eval $(aws ecr get-login --region us-east-1 --no-include-email)
+            # build and push server
+            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto"
+            docker tag build:latest ${PRD_IMAGE}:$CIRCLE_TAG
+            docker push ${PRD_IMAGE}:$CIRCLE_TAG
+            docker tag build:latest ${PRD_IMAGE}:latest
+            docker push ${PRD_IMAGE}:latest
+  deploy_stg:
+    working_directory: ~/superbowleto
+    machine: true
+    steps:
+      - run: *prepare_to_deploy
+      - checkout
+      - run:
+          name: Deploy service
+          command: |
+            # deploy in live
+            export STG_IMAGE="$STG_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME_SERVER:$CIRCLE_TAG"
+            export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
+            export AWS_DEFAULT_REGION=$REGION
+            export PATH=$HOME/.local/bin:$PATH # put aws in the path
+            ~/.local/bin/ecs-deploy --max-definitions 1 --enable-rollback -c $STG_CLUSTER -r $REGION -n superbowleto-s-sandbox -i $STG_IMAGE --timeout $TIMEOUT
+            ~/.local/bin/ecs-deploy --max-definitions 1 --enable-rollback -c $STG_CLUSTER -r $REGION -n superbowleto-w-sandbox -i $STG_IMAGE --timeout $TIMEOUT
+            ~/.local/bin/ecs-deploy --max-definitions 1 --enable-rollback -c $STG_CLUSTER -r $REGION -n superbowleto-s-live -i $STG_IMAGE --timeout $TIMEOUT
+            ~/.local/bin/ecs-deploy --max-definitions 1 --enable-rollback -c $STG_CLUSTER -r $REGION -n superbowleto-w-live -i $STG_IMAGE --timeout $TIMEOUT
+  deploy_prd:
+    working_directory: ~/superbowleto
+    machine: true
+    steps:
+      - run: *prepare_to_deploy
+      - checkout
+      - run:
+          name: Deploy service
+          command: |
+            # deploy in live
+            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME_SERVER:$CIRCLE_TAG"
+            export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
+            export AWS_DEFAULT_REGION=$REGION
+            export PATH=$HOME/.local/bin:$PATH # put aws in the path
+            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-s-sandbox -i $PRD_IMAGE --timeout $TIMEOUT
+            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-w-sandbox -i $PRD_IMAGE --timeout $TIMEOUT
+            ~/.local/bin/ecs-deploy --max-definitions 3 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-s-live -i $PRD_IMAGE --timeout $TIMEOUT
+            ~/.local/bin/ecs-deploy --max-definitions 3 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-w-live -i $PRD_IMAGE --timeout $TIMEOUT
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+    - test:
+        filters:
+          tags:
+            only: /^v.*/
+    - build_image:
+        requires:
+          - test
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    - push_staging:
+        requires:
+          - build_image
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    - push_production:
+        requires:
+          - push_staging
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    - deploy_stg:
+        requires:
+          - push_staging
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)\-rc[0-9]*$/
+    - deploy_prd:
+        requires:
+          - hold
+          - push_production
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    - hold:
+        type: approval
+        requires:
+          - build_image
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
