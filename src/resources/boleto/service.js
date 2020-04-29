@@ -41,7 +41,6 @@ module.exports = function boletoService ({ operationId }) {
   const register = (boleto) => {
     const Provider = findProvider(boleto.issuer)
     const provider = Provider.getProvider({ operationId })
-    const timeoutMs = process.env.APP_ENV === 'live' ? 6000 : 25000
 
     const logger = makeLogger({ operation: 'register' }, { id: operationId })
 
@@ -82,7 +81,6 @@ module.exports = function boletoService ({ operationId }) {
         fakeRegister,
         provider.register
       ))
-      .timeout(timeoutMs)
       .then(updateBoletoStatus)
       .catch((err) => {
         logger.info({
