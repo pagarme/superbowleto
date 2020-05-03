@@ -151,7 +151,7 @@ function create (database) {
     token: {
       type: STRING,
       allowNull: false,
-      defaultValue: defaultCuidValue(`${process.env.APP_ENV}_`),
+      defaultValue: defaultCuidValue(`${process.env.STAGE}_`),
     },
 
     queue_url: {

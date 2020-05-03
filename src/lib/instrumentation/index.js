@@ -1,7 +1,7 @@
 const ddTrace = require('dd-trace')
 
 const initInstrumentation = () => {
-  if (process.env.NODE_ENV === 'production' && process.env.STAGE !== 'stg') {
+  if (process.env.NODE_ENV === 'production' && process.env.APP_ENV !== 'stg') {
     ddTrace.init({
       logInjection: true,
       runtimeMetrics: true,
