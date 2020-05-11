@@ -93,11 +93,6 @@ jobs:
             docker push ${PRD_IMAGE}:$CIRCLE_TAG
             docker tag build:latest ${PRD_IMAGE}:latest
             docker push ${PRD_IMAGE}:latest
-            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd"
-            docker tag build:latest ${PRD_IMAGE}:$CIRCLE_TAG
-            docker push ${PRD_IMAGE}:$CIRCLE_TAG
-            docker tag build:latest ${PRD_IMAGE}:latest
-            docker push ${PRD_IMAGE}:latest
   deploy_stg:
     working_directory: ~/superbowleto
     machine: true
@@ -132,23 +127,6 @@ jobs:
             export PATH=$HOME/.local/bin:$PATH # put aws in the path
             ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $SDX_CLUSTER -r $REGION -n superbowleto-s-sdx -i $SDX_IMAGE --timeout $TIMEOUT
             ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $SDX_CLUSTER -r $REGION -n superbowleto-w-sdx -i $SDX_IMAGE --timeout $TIMEOUT
-  deploy_prd:
-    working_directory: ~/superbowleto
-    machine: true
-    steps:
-      - run: *prepare_to_deploy
-      - checkout
-      - run:
-          name: Deploy prd
-          command: |
-            # deploy in live
-            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd:$CIRCLE_TAG"
-            export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
-            export AWS_DEFAULT_REGION=$REGION
-            export PATH=$HOME/.local/bin:$PATH # put aws in the path
-            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-s-prd -i $PRD_IMAGE --timeout $TIMEOUT
-            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-w-prd -i $PRD_IMAGE --timeout $TIMEOUT
 workflows:
   version: 2
   build_and_deploy:
@@ -193,14 +171,6 @@ workflows:
         requires:
           - hold
           - push_production
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - deploy_prd:
-        requires:
-          - deploy_sdx
         filters:
           branches:
             ignore: /.*/
