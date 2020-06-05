@@ -29,7 +29,7 @@ const config = require('../../config/providers')
 const { encodeBase64 } = require('../../lib/encoding')
 const { makeFromLogger } = require('../../lib/logger')
 const responseCodeMap = require('./response-codes')
-const brazilianStates = require('./brazilian-states')
+const brazilianStates = require('../../lib/helpers/brazilian-states')
 
 const {
   api_key: apiKey,
