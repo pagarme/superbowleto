@@ -26,6 +26,7 @@ const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/
 
 const barcodeBank = cond([
   [equals('development'), always('bradesco')],
+  [equals('boleto-api-bradesco-shopfacil'), always('bradesco')],
   [T, identity],
 ])
 
