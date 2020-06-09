@@ -62,6 +62,7 @@ const createSchema = {
 
   issuer: Joi
     .string()
+    .valid('bradesco', 'boleto-api-bradesco-shopfacil', 'development')
     .required(),
 
   issuer_account: Joi
