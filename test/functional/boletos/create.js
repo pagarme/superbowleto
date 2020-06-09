@@ -97,3 +97,30 @@ test('POST /boletos with invalid parameters', async (t) => {
     ],
   })
 })
+
+test('POST /boletos with invalid issuer', async (t) => {
+  const wrongIssuer = merge(mock, {
+    issuer: 'bradesco-typo',
+  })
+
+  const { body, statusCode } = await request({
+    route: '/boletos',
+    method: 'POST',
+    data: wrongIssuer,
+    headers: {
+      'x-api-key': 'abc123',
+    },
+  })
+
+  t.is(statusCode, 400)
+
+  t.deepEqual(body, {
+    errors: [
+      {
+        type: 'invalid_parameter',
+        message: '"issuer" must be one of [bradesco, boleto-api-bradesco-shopfacil, development]',
+        field: 'issuer',
+      },
+    ],
+  })
+})
