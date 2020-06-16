@@ -39,7 +39,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: create docker image
+          name: Build docker image
           command: |
               mkdir -p images
               export NODE_ENV=production
@@ -49,7 +49,7 @@ jobs:
           root: images
           paths:
              -  build.tar
-  push_staging:
+  push_stg:
     working_directory: ~/superbowleto
     machine:
         enabled: true
@@ -57,7 +57,7 @@ jobs:
       - attach_workspace:
          at: ~/superbowleto/images
       - run:
-          name: deploy to fargate
+          name: Push stg
           command: |
             docker load -i ~/superbowleto/images/build.tar
             export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
@@ -71,7 +71,7 @@ jobs:
             docker push ${STG_IMAGE}:$CIRCLE_TAG
             docker tag build:latest ${STG_IMAGE}:latest
             docker push ${STG_IMAGE}:latest
-  push_production:
+  push_sdx:
     working_directory: ~/superbowleto
     machine:
         enabled: true
@@ -79,7 +79,29 @@ jobs:
       - attach_workspace:
          at: ~/superbowleto/images
       - run:
-          name: prepare Deploy to fargate
+          name: Push sdx
+          command: |
+            docker load -i ~/superbowleto/images/build.tar
+            export AWS_ACCESS_KEY_ID=$SDX_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$SDX_AWS_SECRET_ACCESS_KEY
+            export AWS_ACCOUNT=$SDX_AWS_ACCOUNT
+            #ecr-login
+            eval $(aws ecr get-login --region us-east-1 --no-include-email)
+            # build and push server
+            export SDX_IMAGE="$SDX_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx"
+            docker tag build:latest ${SDX_IMAGE}:$CIRCLE_TAG
+            docker push ${SDX_IMAGE}:$CIRCLE_TAG
+            docker tag build:latest ${SDX_IMAGE}:latest
+            docker push ${SDX_IMAGE}:latest
+  push_prd:
+    working_directory: ~/superbowleto
+    machine:
+        enabled: true
+    steps:
+      - attach_workspace:
+          at: ~/superbowleto/images
+      - run:
+          name: Push prd
           command: |
             docker load -i ~/superbowleto/images/build.tar
             export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
@@ -88,7 +110,7 @@ jobs:
             #ecr-login
             eval $(aws ecr get-login --region us-east-1 --no-include-email)
             # build and push server
-            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx"
+            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd"
             docker tag build:latest ${PRD_IMAGE}:$CIRCLE_TAG
             docker push ${PRD_IMAGE}:$CIRCLE_TAG
             docker tag build:latest ${PRD_IMAGE}:latest
@@ -120,13 +142,30 @@ jobs:
           name: Deploy sdx
           command: |
             # deploy in live
-            export SDX_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx:$CIRCLE_TAG"
-            export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
+            export SDX_IMAGE="$SDX_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx:$CIRCLE_TAG"
+            export AWS_ACCESS_KEY_ID=$SDX_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$SDX_AWS_SECRET_ACCESS_KEY
             export AWS_DEFAULT_REGION=$REGION
             export PATH=$HOME/.local/bin:$PATH # put aws in the path
             ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $SDX_CLUSTER -r $REGION -n superbowleto-s-sdx -i $SDX_IMAGE --timeout $TIMEOUT
             ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $SDX_CLUSTER -r $REGION -n superbowleto-w-sdx -i $SDX_IMAGE --timeout $TIMEOUT
+  deploy_prd:
+    working_directory: ~/superbowleto
+    machine: true
+    steps:
+      - run: *prepare_to_deploy
+      - checkout
+      - run:
+          name: Deploy prd
+          command: |
+            # deploy in live
+            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd:$CIRCLE_TAG"
+            export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
+            export AWS_DEFAULT_REGION=$REGION
+            export PATH=$HOME/.local/bin:$PATH # put aws in the path
+            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-s-prd -i $PRD_IMAGE --timeout $TIMEOUT
+            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-w-prd -i $PRD_IMAGE --timeout $TIMEOUT
 workflows:
   version: 2
   build_and_deploy:
@@ -143,7 +182,8 @@ workflows:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - push_staging:
+    - hold_stg:
+        type: approval
         requires:
           - build_image
         filters:
@@ -151,9 +191,43 @@ workflows:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - push_production:
+    - hold_sdx:
+        type: approval
         requires:
-          - push_staging
+          - build_image
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    - hold_prd:
+        type: approval
+        requires:
+          - build_image
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    - push_stg:
+        requires:
+          - hold_stg
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    - push_sdx:
+        requires:
+          - hold_sdx
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    - push_prd:
+        requires:
+          - hold_prd
         filters:
           branches:
             ignore: /.*/
@@ -161,25 +235,23 @@ workflows:
             only: /^v([0-9]+).([0-9]+).([0-9]+)$/
     - deploy_stg:
         requires:
-          - push_staging
+          - push_stg
         filters:
           branches:
             ignore: /.*/
           tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)\-rc[0-9]*$/
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
     - deploy_sdx:
         requires:
-          - hold
-          - push_production
+          - push_sdx
         filters:
           branches:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - hold:
-        type: approval
+    - deploy_prd:
         requires:
-          - build_image
+          - push_prd
         filters:
           branches:
             ignore: /.*/
