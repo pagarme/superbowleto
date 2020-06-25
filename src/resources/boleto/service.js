@@ -9,6 +9,7 @@ const { BoletosToRegisterQueue } = require('./queues')
 const { findProvider } = require('../../providers')
 const { isBradescoOff } = require('../../providers/bradesco/temp')
 const { makeFromLogger } = require('../../lib/logger')
+const { changeIssuerWhenInterestOrFine } = require('../../lib/helpers/providers')
 
 const { Boleto } = database.models
 
@@ -21,6 +22,7 @@ module.exports = function boletoService ({ operationId }) {
     logger.info({ status: 'started', metadata: { data } })
 
     return Promise.resolve(data)
+      .then(changeIssuerWhenInterestOrFine)
       .then(Boleto.create.bind(Boleto))
       .tap((boleto) => {
         logger.info({ status: 'success', metadata: { boleto } })
