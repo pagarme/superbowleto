@@ -55,7 +55,7 @@ test('changeIssuerWhenInterestOrFine: when interest is not empty or null and pro
     },
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
 })
@@ -69,7 +69,7 @@ test('changeIssuerWhenInterestOrFine: when interest is not empty or null and pro
     },
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'development')
 })
@@ -81,7 +81,7 @@ test('changeIssuerWhenInterestOrFine: when interest is empty', async (t) => {
     interest: {},
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'boleto-api-bradesco-shopfacil')
 })
@@ -93,7 +93,7 @@ test('changeIssuerWhenInterestOrFine: when interest is null', async (t) => {
     interest: null,
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'boleto-api-bradesco-shopfacil')
 })
@@ -107,7 +107,7 @@ test('changeIssuerWhenInterestOrFine: when fine is not empty or null and provide
     },
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
 })
@@ -145,7 +145,7 @@ test('changeIssuerWhenInterestOrFine: when fine is null', async (t) => {
     fine: null,
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'boleto-api-bradesco-shopfacil')
 })
@@ -160,7 +160,7 @@ test('changeIssuerWhenInterestOrFine: when fine is null, interest has info and i
     },
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
 })
@@ -175,7 +175,7 @@ test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and i
     interest: null,
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
 })
@@ -190,7 +190,7 @@ test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and i
     interest: null,
   }
 
-  const result = changeIssuerWhenInterestOrFine(boleto)
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'development')
 })
