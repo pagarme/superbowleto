@@ -10,7 +10,7 @@ const makeLogger = makeFromLogger('helpers/providers')
 
 const isEmptyOrNull = key => isEmpty(key) || isNil(key)
 
-const changeIssuerWhenInterestOrFine = (boleto) => {
+const changeIssuerWhenInterestOrFine = (boleto, operationId) => {
   const {
     fine,
     interest,
@@ -22,9 +22,12 @@ const changeIssuerWhenInterestOrFine = (boleto) => {
   if (issuerIsBoletoApi && (!isEmptyOrNull(interest) || !isEmptyOrNull(fine))) {
     const defaultIssuer = 'bradesco'
 
-    const logger = makeLogger({
-      operation: 'change_issuer',
-    })
+    const logger = makeLogger(
+      {
+        operation: 'change_issuer',
+      },
+      { id: operationId }
+    )
 
     logger.info({
       status: 'success',

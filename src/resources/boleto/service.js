@@ -22,7 +22,10 @@ module.exports = function boletoService ({ operationId }) {
     logger.info({ status: 'started', metadata: { data } })
 
     return Promise.resolve(data)
-      .then(changeIssuerWhenInterestOrFine)
+      .then(boletoContent => changeIssuerWhenInterestOrFine(
+        boletoContent,
+        operationId
+      ))
       .then(Boleto.create.bind(Boleto))
       .tap((boleto) => {
         logger.info({ status: 'success', metadata: { boleto } })
