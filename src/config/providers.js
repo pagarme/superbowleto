@@ -14,6 +14,11 @@ const config = getConfig({
       password: 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg',
       endpoint: 'https://stgboleto.mundipagg.com/v1/boleto/register',
     },
+    'boleto-api-caixa': {
+      boleto_api_password: 'FAKEPWDCAIXA',
+      boleto_api_user: 'FAKEUSRCAIXA',
+      endpoint: 'https://stgboleto.mundipagg.com/v1',
+    },
   },
   production: {
     bradesco: {
@@ -28,6 +33,11 @@ const config = getConfig({
       password: process.env.BOLETO_API_BRADESCO_SHOPFACIL_PASSWORD,
       endpoint: process.env.BOLETO_API_ENDPOINT,
     },
+    'boleto-api-caixa': {
+      boleto_api_password: process.env.BOLETO_API_PASSWORD,
+      boleto_api_user: process.env.BOLETO_API_USER,
+      endpoint: process.env.BOLETO_API_ENDPOINT,
+    },
   },
   test: {
     bradesco: {
@@ -40,6 +50,11 @@ const config = getConfig({
       boleto_api_user: 'FAKEUSR',
       username: '100005254',
       password: 'bbE9XN8RhOyA9-79HHPnbJ1-Qqy7kzoKGdR-Njmi9fg',
+      endpoint: 'https://stgboleto.mundipagg.com/v1',
+    },
+    'boleto-api-caixa': {
+      boleto_api_password: 'FAKEPWDCAIXA',
+      boleto_api_user: 'FAKEUSRCAIXA',
       endpoint: 'https://stgboleto.mundipagg.com/v1',
     },
   },
