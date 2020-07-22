@@ -15,6 +15,7 @@ test.after(async () => {
 
 test('shows an existing configuration', async (t) => {
   const companyId = cuid()
+
   const configuration = await createConfig({
     external_id: companyId,
     issuer: 'bradesco',
@@ -29,6 +30,7 @@ test('shows an existing configuration', async (t) => {
   t.is(statusCode, 200)
   t.is(body.external_id, companyId)
   t.is(body.object, 'configuration')
+
   assert.containSubset(body, {
     external_id: companyId,
     issuer: 'bradesco',
@@ -39,11 +41,21 @@ test('shows an existing configuration', async (t) => {
 })
 
 test('shows a non-existing configuration', async (t) => {
-  const { statusCode } = await showConfig({
+  const { body, statusCode } = await showConfig({
     params: {
       external_id: 'xxxxx',
     },
   })
 
   t.is(statusCode, 404)
+
+  t.deepEqual(body, {
+    errors: [
+      {
+        type: 'not_found',
+        message: 'Configuration not found',
+        field: null,
+      },
+    ],
+  })
 })

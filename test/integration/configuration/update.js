@@ -43,8 +43,9 @@ test('Update configuration: issuer and issuer_agency', async (t) => {
   }, 'result must have the shape of a configuration')
 })
 
-test('Update configuration with invalid issuer', async (t) => {
+test('try to update configuration with invalid issuer', async (t) => {
   const companyId = cuid()
+
   const configuration = await createConfig({
     external_id: companyId,
     issuer: 'bradesco',
@@ -66,6 +67,26 @@ test('Update configuration with invalid issuer', async (t) => {
       type: 'invalid_parameter',
       message: '"issuer" must be one of [bradesco, boleto-api-bradesco-shopfacil, development]',
       field: 'issuer',
+    }],
+  })
+})
+
+test('try to update a non-existing configuration', async (t) => {
+  const { statusCode, body } = await updateConfig({
+    params: {
+      id: '1234',
+    },
+    body: {
+      issuer: 'bradesco',
+    },
+  })
+
+  t.is(statusCode, 404)
+
+  assert.containSubset(body, {
+    errors: [{
+      type: 'not_found',
+      message: 'Configuration not found',
     }],
   })
 })

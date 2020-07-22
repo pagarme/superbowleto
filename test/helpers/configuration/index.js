@@ -1,5 +1,5 @@
-import database from '../../src/database'
-import { buildModelResponse } from '../../src/resources/configuration/model'
+import database from '../../../src/database'
+import { buildModelResponse } from '../../../src/resources/configuration/model'
 
 const { Configuration } = database.models
 
@@ -9,11 +9,9 @@ export const mock = {
   issuer_wallet: '26',
 }
 
-const createConfig = async (data = {}) => {
+export const createConfig = async (data = {}) => {
   const payload = Object.assign({}, mock, data)
 
   const configuration = await Configuration.create(payload)
   return buildModelResponse(configuration)
 }
-
-module.exports = { createConfig }

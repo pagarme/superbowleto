@@ -46,9 +46,6 @@ module.exports = {
       type: DATE,
       allowNull: false,
     },
-  })
-    .then(() => queryInterface.addIndex('Configurations', ['issuer']))
-    .then(() => queryInterface.addIndex('Configurations', ['external_id'])),
-
+  }),
   down: queryInterface => queryInterface.dropTable('Configurations'),
 }

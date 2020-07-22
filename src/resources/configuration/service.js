@@ -9,14 +9,16 @@ const makeLogger = makeFromLogger('configuration/service')
 
 module.exports = function configutarionService ({ operationId }) {
   const update = async (data) => {
+    const {
+      id,
+      issuer,
+      issuer_account: issuerAccount,
+      issuer_agency: issuerAgency,
+      issuer_wallet: issuerWallet,
+    } = data
+
     const logger = makeLogger({ operation: 'update' }, { id: operationId })
     logger.info({ status: 'started', metadata: { data } })
-
-    const { id } = data
-    const { issuer } = data
-    const issuerAccount = data.issuer_account
-    const issuerAgency = data.issuer_agency
-    const issuerWallet = data.issuer_wallet
 
     const query = {
       where: {
@@ -26,12 +28,19 @@ module.exports = function configutarionService ({ operationId }) {
 
     try {
       const config = await Configuration.findOne(query)
+
       if (!config) {
         throw new NotFoundError({
           message: 'Configuration not found',
         })
       }
-      logger.info({ status: 'success', metadata: { config } })
+
+      logger.info({
+        status: 'success',
+        metadata: {
+          config,
+        },
+      })
 
       return config.update({
         issuer: issuer || config.issuer,
@@ -53,6 +62,7 @@ module.exports = function configutarionService ({ operationId }) {
 
     try {
       const config = await Configuration.findOne(query)
+
       if (!config) {
         throw new NotFoundError({
           message: 'Configuration not found',

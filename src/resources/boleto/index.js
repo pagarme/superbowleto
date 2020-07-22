@@ -4,13 +4,11 @@ const {
   complement,
   propEq,
 } = require('ramda')
-const { buildSuccessResponse, buildFailureResponse } = require('../../lib/http/response')
+const { buildSuccessResponse } = require('../../lib/http/response')
 const {
   MethodNotAllowedError,
-  ValidationError,
-  NotFoundError,
-  InternalServerError,
 } = require('../../lib/errors')
+const { handleError } = require('../../lib/helpers/errors')
 const BoletoService = require('./service')
 const { parse } = require('../../lib/http/request')
 const { createSchema, updateSchema, indexSchema } = require('./schema')
@@ -20,22 +18,6 @@ const { defaultCuidValue } = require('../../lib/database/schema')
 const { buildModelResponse } = require('./model')
 
 const makeLogger = makeFromLogger('boleto/index')
-
-const handleError = (err) => {
-  if (err instanceof ValidationError) {
-    return buildFailureResponse(400, err)
-  }
-
-  if (err instanceof NotFoundError) {
-    return buildFailureResponse(404, err)
-  }
-
-  if (err instanceof MethodNotAllowedError) {
-    return buildFailureResponse(405, err)
-  }
-
-  return buildFailureResponse(500, new InternalServerError())
-}
 
 const create = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()

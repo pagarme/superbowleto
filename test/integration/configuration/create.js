@@ -2,6 +2,7 @@ import cuid from 'cuid'
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
+import { mock } from '../../helpers/configuration'
 import configHandler from '../../../src/resources/configuration'
 import database from '../../../src/database'
 
@@ -15,13 +16,10 @@ test.after(async () => {
 test('creates a configuration', async (t) => {
   const companyId = cuid()
 
-  const payload = {
-    external_id: companyId,
-    issuer: 'bradesco',
-    issuer_account: '9721',
-    issuer_agency: '3381',
-    issuer_wallet: '26',
-  }
+  const payload = mock
+
+  payload.external_id = companyId
+  payload.issuer = 'bradesco'
 
   const { body, statusCode } = await create({
     body: payload,
@@ -40,13 +38,10 @@ test('creates a configuration', async (t) => {
 })
 
 test('creates a configuration with invalid data', async (t) => {
-  const payload = {
-    external_id: null,
-    issuer: 'shopfacil',
-    issuer_account: '123',
-    issuer_agency: '3381',
-    issuer_wallet: '26',
-  }
+  const payload = mock
+
+  payload.external_id = null
+  payload.issuer = 'shopfacil'
 
   const { body, statusCode } = await create({
     body: payload,
