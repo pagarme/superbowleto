@@ -14,8 +14,12 @@ const populateReq = merge({
 })
 
 const createMockRes = () => ({
-  status: () => ({
-    send: () => undefined,
+  status: statusCode => ({
+    send: body =>
+      ({
+        statusCode,
+        body,
+      }),
   }),
 })
 
