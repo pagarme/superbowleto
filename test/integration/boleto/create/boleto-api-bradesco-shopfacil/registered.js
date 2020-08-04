@@ -57,3 +57,41 @@ test('creates a boleto (status success)', async (t) => {
     queue_url: payload.queue_url,
   })
 })
+
+test('creates a boleto with rules: changing issuer to bradesco', async (t) => {
+  const payload = mock
+
+  payload.issuer = 'boleto-api-bradesco-shopfacil'
+  payload.rules = ['no_strict']
+  payload.external_id = externalId
+  payload.interest = undefined
+  payload.fine = undefined
+
+  const { body, statusCode } = await create({
+    body: payload,
+  })
+
+  t.is(statusCode, 201)
+  t.is(body.object, 'boleto')
+  t.is(body.issuer, 'bradesco')
+  t.is(body.issuer_wallet, '26')
+
+  t.true(body.title_id != null)
+  t.true(body.barcode != null)
+  t.true(typeof body.title_id === 'number')
+
+  assert.containSubset(body, {
+    status: 'registered',
+    paid_amount: 0,
+    amount: payload.amount,
+    instructions: payload.instructions,
+    issuer: 'bradesco',
+    issuer_id: null,
+    payer_name: payload.payer_name,
+    payer_document_type: payload.payer_document_type,
+    payer_document_number: payload.payer_document_number,
+    company_name: payload.company_name,
+    company_document_number: payload.company_document_number,
+    queue_url: payload.queue_url,
+  })
+})

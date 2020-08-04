@@ -45,6 +45,26 @@ const findBoletoConfiguration = async (boleto) => {
   return merge(boleto, updatedRequestConfig)
 }
 
+const setBoletoRulesConfiguration = (boleto) => {
+  const config = {
+    issuer: 'bradesco',
+    issuer_account: '469',
+    issuer_agency: '1229',
+  }
+
+  if (boleto.rules) {
+    if (boleto.rules.includes('strict_expiration_date')) {
+      return merge(boleto, { ...config, issuer_wallet: '25' })
+    }
+    if (boleto.rules.includes('no_strict')) {
+      return merge(boleto, { ...config, issuer_wallet: '26' })
+    }
+  }
+
+  return findBoletoConfiguration(boleto)
+}
+
 module.exports = {
+  setBoletoRulesConfiguration,
   findBoletoConfiguration,
 }
