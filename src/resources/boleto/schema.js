@@ -91,6 +91,11 @@ const createSchema = {
     .allow(null)
     .allow(''),
 
+  external_id: Joi
+    .string()
+    .allow(null)
+    .allow(''),
+
   company_address: Joi.object().keys({
     zipcode: Joi
       .string()

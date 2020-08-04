@@ -73,6 +73,7 @@ const buildModelResponse = responseObjectBuilder(boleto =>
       'payer_document_type',
       'payer_document_number',
       'payer_address',
+      'external_id',
       'company_name',
       'company_document_number',
       'company_address',
@@ -256,6 +257,11 @@ function create (database) {
 
     payer_address: {
       type: JSON,
+    },
+
+    external_id: {
+      type: STRING,
+      allowNull: true,
     },
 
     company_name: {
