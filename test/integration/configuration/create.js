@@ -2,23 +2,26 @@ import cuid from 'cuid'
 import test from 'ava'
 import { assert } from '../../helpers/chai'
 import { normalizeHandler } from '../../helpers/normalizer'
-import { mock } from '../../helpers/configuration'
+import { mock } from '../../helpers/configuration/index'
 import configHandler from '../../../src/resources/configuration'
 import database from '../../../src/database'
 
 const { Configuration } = database.models
 const create = normalizeHandler(configHandler.create)
+const externalId = cuid()
 
-test.after(async () => {
-  await Configuration.destroy({ where: {} })
+test.afterEach(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('creates a configuration', async (t) => {
-  const companyId = cuid()
-
   const payload = mock
 
-  payload.external_id = companyId
+  payload.external_id = externalId
   payload.issuer = 'bradesco'
 
   const { body, statusCode } = await create({

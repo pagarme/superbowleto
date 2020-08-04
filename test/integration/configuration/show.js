@@ -8,31 +8,34 @@ import database from '../../../src/database'
 
 const { Configuration } = database.models
 const showConfig = normalizeHandler(configurationHandler.show)
+const externalId = cuid()
 
-test.after(async () => {
-  await Configuration.destroy({ where: {} })
+test.afterEach(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('shows an existing configuration', async (t) => {
-  const companyId = cuid()
-
   const configuration = await createConfig({
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'bradesco',
   })
 
   const { body, statusCode } = await showConfig({
     params: {
-      external_id: companyId,
+      external_id: externalId,
     },
   })
 
   t.is(statusCode, 200)
-  t.is(body.external_id, companyId)
+  t.is(body.external_id, externalId)
   t.is(body.object, 'configuration')
 
   assert.containSubset(body, {
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'bradesco',
     issuer_account: configuration.issuer_account,
     issuer_agency: configuration.issuer_agency,

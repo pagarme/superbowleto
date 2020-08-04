@@ -7,17 +7,20 @@ import request from '../../helpers/request'
 import database from '../../../src/database'
 
 const { Configuration } = database.models
+const externalId = cuid()
 
-test.after(async () => {
-  await Configuration.destroy({ where: {} })
+test.afterEach(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('POST /configurations', async (t) => {
-  const companyId = cuid()
-
   const configuration = merge(mock, {
     issuer: 'bradesco',
-    external_id: companyId,
+    external_id: externalId,
   })
 
   const { body, statusCode } = await request({
@@ -33,7 +36,7 @@ test('POST /configurations', async (t) => {
   t.is(body.object, 'configuration')
 
   assert.containSubset(body, {
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'bradesco',
     issuer_account: mock.issuer_account,
     issuer_agency: mock.issuer_agency,

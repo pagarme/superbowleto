@@ -7,17 +7,20 @@ import { mock } from '../../helpers/configuration'
 import database from '../../../src/database'
 
 const { Configuration } = database.models
+const externalId = cuid()
 
-test.after(async () => {
-  await Configuration.destroy({ where: {} })
+test.afterEach(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('PATCH /configurations/:external_id', async (t) => {
-  const companyId = cuid()
-
   const configuration = merge(mock, {
     issuer: 'bradesco',
-    external_id: companyId,
+    external_id: externalId,
   })
 
   const { body: { id } } = await request({
@@ -44,7 +47,7 @@ test('PATCH /configurations/:external_id', async (t) => {
   t.is(body.object, 'configuration')
 
   assert.containSubset(body, {
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'boleto-api-bradesco-shopfacil',
     issuer_account: mock.issuer_account,
     issuer_agency: mock.issuer_agency,
@@ -53,11 +56,9 @@ test('PATCH /configurations/:external_id', async (t) => {
 })
 
 test('PATCH /configurations/:id with invalid parameters', async (t) => {
-  const companyId = cuid()
-
   const configuration = merge(mock, {
     issuer: 'bradesco',
-    external_id: companyId,
+    external_id: externalId,
   })
 
   const { body: { id } } = await request({
