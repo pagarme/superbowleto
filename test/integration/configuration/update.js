@@ -8,16 +8,19 @@ import database from '../../../src/database'
 
 const { Configuration } = database.models
 const updateConfig = normalizeHandler(configurationHandler.update)
+const externalId = cuid()
 
-test.after(async () => {
-  await Configuration.destroy({ where: {} })
+test.afterEach(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('Update configuration: issuer and issuer_agency', async (t) => {
-  const companyId = cuid()
-
   const configuration = await createConfig({
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'bradesco',
   })
 
@@ -35,7 +38,7 @@ test('Update configuration: issuer and issuer_agency', async (t) => {
   t.is(body.object, 'configuration')
 
   assert.containSubset(body, {
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'boleto-api-bradesco-shopfacil',
     issuer_account: configuration.issuer_account,
     issuer_agency: '5555',
@@ -44,10 +47,8 @@ test('Update configuration: issuer and issuer_agency', async (t) => {
 })
 
 test('try to update configuration with invalid issuer', async (t) => {
-  const companyId = cuid()
-
   const configuration = await createConfig({
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'bradesco',
   })
 

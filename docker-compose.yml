@@ -62,7 +62,7 @@ services:
 
   migrate:
     build: .
-    entrypoint: node_modules/.bin/sequelize db:migrate --config src/config/database.js --migrations-path src/database/migrations/
+    entrypoint: npm run migrate_seed
     environment:
       - API_ENV=test
     volumes:

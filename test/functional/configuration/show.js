@@ -7,20 +7,23 @@ import { mock } from '../../helpers/configuration'
 import database from '../../../src/database'
 
 const { Configuration } = database.models
+const externalId = cuid()
 
-test.after(async () => {
-  await Configuration.destroy({ where: {} })
+test.afterEach(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('GET /configurations/:id with valid id', async (t) => {
-  const companyId = cuid()
-
   const configuration = merge(mock, {
     issuer: 'bradesco',
-    external_id: companyId,
+    external_id: externalId,
   })
 
-  const { body: { external_id: externalId } } = await request({
+  await request({
     route: '/configurations',
     method: 'POST',
     data: configuration,
@@ -38,11 +41,11 @@ test('GET /configurations/:id with valid id', async (t) => {
   })
 
   t.is(statusCode, 200)
-  t.is(body.external_id, companyId)
+  t.is(body.external_id, externalId)
   t.is(body.object, 'configuration')
 
   assert.containSubset(body, {
-    external_id: companyId,
+    external_id: externalId,
     issuer: 'bradesco',
     issuer_account: mock.issuer_account,
     issuer_agency: mock.issuer_agency,

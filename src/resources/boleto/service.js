@@ -10,6 +10,7 @@ const { findProvider } = require('../../providers')
 const { isBradescoOff } = require('../../providers/bradesco/temp')
 const { makeFromLogger } = require('../../lib/logger')
 const { changeIssuerWhenInterestOrFine } = require('../../lib/helpers/providers')
+const { setBoletoRulesConfiguration } = require('../../lib/helpers/configurations')
 
 const { Boleto } = database.models
 
@@ -22,6 +23,7 @@ module.exports = function boletoService ({ operationId }) {
     logger.info({ status: 'started', metadata: { data } })
 
     return Promise.resolve(data)
+      .then(setBoletoRulesConfiguration)
       .then(boletoContent => changeIssuerWhenInterestOrFine(
         boletoContent,
         operationId

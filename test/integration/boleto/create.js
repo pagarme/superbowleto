@@ -11,6 +11,7 @@ test('creates a boleto with invalid data', async (t) => {
     expiration_date: true,
     issuer: 100,
     payer_document_type: 'xxx',
+    rules: 123,
   }
 
   const { body, statusCode } = await create({
@@ -47,6 +48,10 @@ test('creates a boleto with invalid data', async (t) => {
       type: 'invalid_parameter',
       message: '"payer_document_number" is required',
       field: 'payer_document_number',
+    }, {
+      type: 'invalid_parameter',
+      message: '"rules" must be an array',
+      field: 'rules',
     }],
   })
 })

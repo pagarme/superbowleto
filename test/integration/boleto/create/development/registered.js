@@ -1,16 +1,37 @@
 import test from 'ava'
+import cuid from 'cuid'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock } from '../../../../helpers/boleto'
 import boletoHandler from '../../../../../src/resources/boleto'
+import { createConfig } from '../../../../helpers/configuration'
+import database from '../../../../../src/database'
 
+const { Configuration } = database.models
 const create = normalizeHandler(boletoHandler.create)
+const externalId = cuid()
+
+test.before(async () => {
+  await createConfig({
+    issuer: 'development',
+    external_id: externalId,
+  })
+})
+
+test.after(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
+})
 
 test('creates a boleto (provider success)', async (t) => {
   const payload = mock
 
   payload.amount = 5000000
   payload.issuer = 'development'
+  payload.external_id = externalId
 
   const { body, statusCode } = await create({
     body: payload,

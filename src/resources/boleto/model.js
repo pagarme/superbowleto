@@ -19,7 +19,7 @@ const {
 } = require('ramda')
 
 const {
-  STRING, INTEGER, ENUM, TEXT, DATE, JSON,
+  STRING, INTEGER, ENUM, TEXT, DATE, JSON, ARRAY,
 } = require('sequelize')
 const { Boleto: NodeBoleto } = require('node-boleto')
 const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
@@ -73,10 +73,12 @@ const buildModelResponse = responseObjectBuilder(boleto =>
       'payer_document_type',
       'payer_document_number',
       'payer_address',
+      'external_id',
       'company_name',
       'company_document_number',
       'company_address',
       'bank_response_code',
+      'rules',
       'reference_id',
       'created_at',
       'updated_at',
@@ -258,6 +260,11 @@ function create (database) {
       type: JSON,
     },
 
+    external_id: {
+      type: STRING,
+      allowNull: true,
+    },
+
     company_name: {
       type: STRING,
       allowNull: true,
@@ -278,6 +285,11 @@ function create (database) {
 
     issuer_response_code: {
       type: STRING,
+    },
+
+    rules: {
+      type: ARRAY(TEXT),
+      allowNull: true,
     },
   }, {
     indexes: [

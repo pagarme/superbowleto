@@ -1,5 +1,6 @@
 import test from 'ava'
 import Promise from 'bluebird'
+import cuid from 'cuid'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
@@ -7,10 +8,19 @@ import boletoHandler from '../../../../../src/resources/boleto'
 import Provider from '../../../../../src/providers/boleto-api-bradesco-shopfacil'
 import { findItemOnQueue, purgeQueue } from '../../../../helpers/sqs'
 import { BoletosToRegisterQueue } from '../../../../../src/resources/boleto/queues'
+import { createConfig } from '../../../../helpers/configuration'
+import database from '../../../../../src/database'
 
+const { Configuration } = database.models
 const create = normalizeHandler(boletoHandler.create)
+const externalId = cuid()
 
 test.before(async () => {
+  await createConfig({
+    issuer: 'boleto-api-bradesco-shopfacil',
+    external_id: externalId,
+  })
+
   mockFunction(Provider, 'getProvider', () => ({
     register () {
       return Promise.resolve({
@@ -23,14 +33,20 @@ test.before(async () => {
   await purgeQueue(BoletosToRegisterQueue)
 })
 
-test.after(() => {
+test.after(async () => {
   restoreFunction(Provider, 'getProvider')
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('creates a boleto (status unknown)', async (t) => {
   const payload = mock
 
   payload.issuer = 'boleto-api-bradesco-shopfacil'
+  payload.external_id = externalId
   payload.interest = undefined
   payload.fine = undefined
 

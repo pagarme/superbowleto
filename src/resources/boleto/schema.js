@@ -91,6 +91,11 @@ const createSchema = {
     .allow(null)
     .allow(''),
 
+  external_id: Joi
+    .string()
+    .allow(null)
+    .allow(''),
+
   company_address: Joi.object().keys({
     zipcode: Joi
       .string()
@@ -188,6 +193,11 @@ const createSchema = {
   register: Joi
     .boolean()
     .default(true),
+
+  rules: Joi
+    .array()
+    .allow(null)
+    .items(Joi.string().valid('strict_expiration_date', 'no_strict')),
 }
 
 const updateSchema = {

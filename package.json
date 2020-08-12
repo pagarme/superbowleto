@@ -10,7 +10,10 @@
     "test-e2e": "ava --verbose --serial 'test/e2e/**/*.js'",
     "test-functional": "ava --verbose --serial 'test/functional/**/*.js'",
     "test-integration": "ava --verbose 'test/integration/**/*.js'",
-    "test-unit": "ava --verbose 'test/unit/**/*.js'"
+    "test-unit": "ava --verbose 'test/unit/**/*.js'",
+    "migrate": "node_modules/.bin/sequelize db:migrate --config src/config/database.js --migrations-path src/database/migrations/",
+    "seed": "node_modules/.bin/sequelize db:seed:all --config src/config/database.js --seeders-path src/database/seeders/",
+    "migrate_seed": "npm run migrate && npm run seed"
   },
   "repository": {
     "type": "git",

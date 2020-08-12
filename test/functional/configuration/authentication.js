@@ -3,13 +3,23 @@ import cuid from 'cuid'
 import { merge } from 'ramda'
 import { mock } from '../../helpers/configuration'
 import request from '../../helpers/request'
+import database from '../../../src/database'
+
+const { Configuration } = database.models
+const externalId = cuid()
+
+test.afterEach(async () => {
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
+})
 
 test('POST /configurations with authentication', async (t) => {
-  const companyId = cuid()
-
   const configuration = merge(mock, {
     issuer: 'bradesco',
-    external_id: companyId,
+    external_id: externalId,
   })
 
   const { body, statusCode } = await request({
@@ -26,11 +36,9 @@ test('POST /configurations with authentication', async (t) => {
 })
 
 test('POST /configurations with invalid authentication', async (t) => {
-  const companyId = cuid()
-
   const configuration = merge(mock, {
     issuer: 'bradesco',
-    external_id: companyId,
+    external_id: externalId,
   })
 
   const { body, statusCode } = await request({
@@ -55,11 +63,9 @@ test('POST /configurations with invalid authentication', async (t) => {
 })
 
 test('POST /configurations without authentication', async (t) => {
-  const companyId = cuid()
-
   const configuration = merge(mock, {
     issuer: 'bradesco',
-    external_id: companyId,
+    external_id: externalId,
   })
 
   const { body, statusCode } = await request({
