@@ -66,7 +66,7 @@ test('try to update configuration with invalid issuer', async (t) => {
   assert.containSubset(body, {
     errors: [{
       type: 'invalid_parameter',
-      message: '"issuer" must be one of [bradesco, boleto-api-bradesco-shopfacil, development]',
+      message: '"issuer" must be one of [bradesco, boleto-api-bradesco-shopfacil, boleto-api-caixa, development]',
       field: 'issuer',
     }],
   })

@@ -19,7 +19,7 @@ const createSchema = {
 
   issuer: Joi
     .string()
-    .valid('bradesco', 'boleto-api-bradesco-shopfacil', 'development')
+    .valid('bradesco', 'boleto-api-bradesco-shopfacil', 'boleto-api-caixa', 'development')
     .required(),
 }
 
@@ -39,7 +39,7 @@ const updateSchema = {
 
   issuer: Joi
     .string()
-    .valid('bradesco', 'boleto-api-bradesco-shopfacil', 'development'),
+    .valid('bradesco', 'boleto-api-bradesco-shopfacil', 'boleto-api-caixa', 'development'),
 }
 
 module.exports = {
