@@ -1,14 +1,24 @@
 import test from 'ava'
 import Promise from 'bluebird'
+import cuid from 'cuid'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
 import boletoHandler from '../../../../../src/resources/boleto'
 import Provider from '../../../../../src/providers/boleto-api-caixa'
+import { createConfig } from '../../../../helpers/configuration'
+import database from '../../../../../src/database'
 
 const create = normalizeHandler(boletoHandler.create)
+const { Configuration } = database.models
+const externalId = cuid()
 
-test.before(() => {
+test.before(async () => {
+  await createConfig({
+    issuer: 'boleto-api-caixa',
+    external_id: externalId,
+  })
+
   mockFunction(Provider, 'getProvider', () => ({
     register () {
       return Promise.resolve({
@@ -21,6 +31,12 @@ test.before(() => {
 
 test.after(async () => {
   restoreFunction(Provider, 'getProvider')
+
+  await Configuration.destroy({
+    where: {
+      external_id: externalId,
+    },
+  })
 })
 
 test('creates a boleto (status success)', async (t) => {
@@ -29,6 +45,7 @@ test('creates a boleto (status success)', async (t) => {
   payload.issuer = 'boleto-api-caixa'
   payload.interest = undefined
   payload.fine = undefined
+  payload.external_id = externalId
 
   const { body, statusCode } = await create({
     body: payload,
