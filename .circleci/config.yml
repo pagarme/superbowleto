@@ -53,7 +53,6 @@ jobs:
           root: ~/project
           paths:
             - ./
-
   sonar:
     machine:
       docker_layer_caching: true
