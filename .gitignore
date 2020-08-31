@@ -47,6 +47,7 @@ jspm_packages
 .scannerwork
 
 # Ava test report
+reports/
 ava.xml
 
 ### Terraform ###

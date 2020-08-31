@@ -40,9 +40,9 @@ jobs:
           name: Run tests
           command: make test
       - store_test_results:
-          path: ./ava.xml
+          path: ./reports
       - store_artifacts:
-          path: ./ava.xml
+          path: ./reports
       - persist_to_workspace:
           root: ~/project
           paths:

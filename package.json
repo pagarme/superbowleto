@@ -6,9 +6,8 @@
   "private": true,
   "scripts": {
     "lint": "eslint 'test/**/*.js' 'src/**/*.js'",
-    "test": "nyc ava --verbose --serial 'test/**/*.js' --tap | ./node_modules/.bin/tap-xunit > ./ava.xml && npm run export-coverage",
+    "test": "mkdir reports && nyc ava --verbose --serial 'test/**/*.js' --tap | ./node_modules/.bin/tap-xunit > ./reports/ava.xml && npm run export-coverage",
     "export-coverage": "nyc report --reporter=lcov --report-dir=./coverage/",
-    "generate-ava-report": "ava --tap | tap-xunit > ./reports/ava.xml",
     "test-e2e": "ava --verbose --serial 'test/e2e/**/*.js'",
     "test-functional": "ava --verbose --serial 'test/functional/**/*.js'",
     "test-integration": "ava --verbose 'test/integration/**/*.js'",
