@@ -10,12 +10,19 @@ _run:
       # install ecs-deploy (in work version)
       curl -sSL -o /tmp/ecs-deploy.tar.gz https://github.com/silinternational/ecs-deploy/archive/3.4.0.tar.gz && tar xvfz /tmp/ecs-deploy.tar.gz -C /tmp && sudo cp /tmp/ecs-deploy-3.4.0/ecs-deploy ~/.local/bin/ecs-deploy
       pip install awscli --upgrade --user
+  pull_sonar_image: &pull_sonar_image
+    name: Pull Docker sonar-scanner image
+    command: |
+      echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+      docker pull pagarme/sonar-scanner
 
 jobs:
   test:
     machine:
       docker_layer_caching: true
     steps:
+      - attach_workspace:
+        at: ~/project
       - run:
           name: Install Docker Compose
           command: |
@@ -32,6 +39,20 @@ jobs:
       - run:
           name: Run tests
           command: make test
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - ./
+  sonar:
+    machine:
+      docker_layer_caching: true
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: *pull_sonar_image
+      - run:
+          name: Superbowleto Analysis
+          command: make sonar BRANCH=$CIRCLE_BRANCH
   build_image:
     working_directory: ~/superbowleto
     machine:
@@ -174,9 +195,16 @@ workflows:
         filters:
           tags:
             only: /^v.*/
-    - build_image:
+    - sonar:
+        context: dockerhub
+        filters:
+          tags:
+            only: /^v.*/
         requires:
           - test
+    - build_image:
+        requires:
+          - sonar
         filters:
           branches:
             ignore: /.*/

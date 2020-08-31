@@ -52,3 +52,7 @@ superbowleto-web:
 superbowleto-worker:
 	@docker-compose up superbowleto-worker
 .PHONY: superbowleto-worker
+
+sonar:
+	docker run -ti -v $(shell pwd):/usr/src pagarme/sonar-scanner
+.PHONY: sonar

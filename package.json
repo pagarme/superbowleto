@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "lint": "eslint 'test/**/*.js' 'src/**/*.js'",
-    "test": "nyc ava --verbose --serial 'test/**/*.js'",
+    "test": "nyc ava --verbose --serial 'test/**/*.js' && npm run export-coverage",
+    "export-coverage": "nyc report --reporter=lcov --report-dir=./coverage/",
     "test-e2e": "ava --verbose --serial 'test/e2e/**/*.js'",
     "test-functional": "ava --verbose --serial 'test/functional/**/*.js'",
     "test-integration": "ava --verbose 'test/integration/**/*.js'",
