@@ -39,13 +39,21 @@ jobs:
       - run:
           name: Run tests
           command: make test
+      - run:
+          name: Generate Ava Report
+          command: |
+            mkdir -p ~/reports
+            ava --tap | tap-xunit > ~/reports/ava.xml
+          when: always
+      - store_test_results:
+          path: ~/reports
+      - store_artifacts:
+          path: ~/reports
       - persist_to_workspace:
           root: ~/project
           paths:
             - ./
-    override:
-        - mkdir -p $CIRCLE_TEST_REPORTS/reports
-        - ava --tap | tap-xunit > $CIRCLE_TEST_REPORTS/reports/ava.xml
+
   sonar:
     machine:
       docker_layer_caching: true
