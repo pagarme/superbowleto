@@ -46,6 +46,9 @@ jspm_packages
 # Sonar
 .scannerwork
 
+# Ava test report
+ava.xml
+
 ### Terraform ###
 # Terraform - https://terraform.io/
 .terraform
