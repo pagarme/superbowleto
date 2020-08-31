@@ -54,5 +54,6 @@ superbowleto-worker:
 .PHONY: superbowleto-worker
 
 sonar:
-	docker run -ti -v $(shell pwd):/usr/src pagarme/sonar-scanner
+	sed -i 's/\/superbowleto\/src\//src\//g' coverage/lcov.info
+	docker run -ti -v $(shell pwd):/usr/src pagarme/sonar-scanner -Dsonar.branch.name=add-sonar-analysis
 .PHONY: sonar
