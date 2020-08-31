@@ -43,6 +43,13 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# Sonar
+.scannerwork
+
+# Ava test report
+reports/
+ava.xml
+
 ### Terraform ###
 # Terraform - https://terraform.io/
 .terraform

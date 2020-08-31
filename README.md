@@ -102,6 +102,12 @@ Tests are separate in `functional`, `integration` and `unit`. You can either run
   $ docker-compose run test npm run test-unit
   ```
 
+For the CI purposes we have a specif command that will generate coverage report and xml test results report to be published at the CircleCI.
+
+  ```sh
+  $ docker-compose run --entrypoint="npm run test-ci" test --abort-on-container-exit
+  ```
+
 ### Installing new dependencies
 
 We install our dependencies (aka npm dependencies) inside the Docker image (see our [Dockerfile](https://github.com/pagarme/superbowleto/blob/master/Dockerfile) to understand it better).
