@@ -6,6 +6,8 @@
   "private": true,
   "scripts": {
     "lint": "eslint 'test/**/*.js' 'src/**/*.js'",
+    "test-ci": "mkdir reports && nyc ava --verbose --serial 'test/**/*.js' --tap | ./node_modules/.bin/tap-xunit > ./reports/ava.xml && npm run export-coverage",
+    "export-coverage": "nyc report --reporter=lcov --report-dir=./coverage/",
     "test": "nyc ava --verbose --serial 'test/**/*.js'",
     "test-e2e": "ava --verbose --serial 'test/e2e/**/*.js'",
     "test-functional": "ava --verbose --serial 'test/functional/**/*.js'",
@@ -60,6 +62,7 @@
     "eslint-config-pagarme-base": "2.0.0",
     "eslint-plugin-import": "2.14.0",
     "nyc": "13.1.0",
-    "sinon": "2.3.2"
+    "sinon": "2.3.2",
+    "tap-xunit": "2.4.1"
   }
 }
