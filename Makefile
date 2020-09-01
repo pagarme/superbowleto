@@ -59,5 +59,5 @@ superbowleto-worker:
 
 sonar:
 	sed -i 's/\/superbowleto\/src\//src\//g' coverage/lcov.info
-	@docker run -ti -v $(shell pwd):/usr/src pagarme/sonar-scanner -Dsonar.branch.name=$CIRCLE_BRANCH
+	@docker run -ti -v $(shell pwd):/usr/src pagarme/sonar-scanner -Dsonar.branch.name=${BRANCH}
 .PHONY: sonar
