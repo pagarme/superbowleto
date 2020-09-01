@@ -71,7 +71,7 @@ test('POST /configurations with invalid parameters', async (t) => {
       },
       {
         type: 'invalid_parameter',
-        message: '"issuer" must be one of [bradesco, boleto-api-bradesco-shopfacil, development]',
+        message: '"issuer" must be one of [bradesco, boleto-api-bradesco-shopfacil, boleto-api-caixa, development]',
         field: 'issuer',
       },
       {
