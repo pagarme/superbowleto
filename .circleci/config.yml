@@ -203,6 +203,9 @@ workflows:
         context: dockerhub
         requires:
           - test
+        filters:
+          tags:
+            only: /^v.*/
     - build_image:
         requires:
           - sonar
