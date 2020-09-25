@@ -52,7 +52,7 @@ const setBoletoRulesConfiguration = (boleto) => {
     issuer_agency: '1229',
   }
 
-  if (boleto.rules) {
+  if (boleto.rules && boleto.issuer !== 'development') {
     if (boleto.rules.includes('strict_expiration_date')) {
       return merge(boleto, { ...config, issuer_wallet: '25' })
     }
