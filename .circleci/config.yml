@@ -18,8 +18,7 @@ _run:
 
 jobs:
   test:
-    machine:
-      docker_layer_caching: true
+    machine: true
     steps:
       - attach_workspace:
           at: ~/project
@@ -48,8 +47,7 @@ jobs:
           paths:
             - ./
   sonar:
-    machine:
-      docker_layer_caching: true
+    machine: true
     steps:
       - attach_workspace:
           at: ~/project
