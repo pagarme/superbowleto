@@ -19,11 +19,12 @@ test.afterEach(async () => {
 
 test('findBoletoConfiguration: without configuration created', async (t) => {
   const payload = mock
+  const operationId = cuid()
 
   payload.external_id = externalId
   payload.issuer = 'boleto-api-bradesco-shopfacil'
 
-  const boleto = await findBoletoConfiguration(payload)
+  const boleto = await findBoletoConfiguration(payload, operationId)
 
   t.is(boleto.issuer, 'bradesco')
 
@@ -41,11 +42,12 @@ test('findBoletoConfiguration: without configuration created', async (t) => {
 
 test('findBoletoConfiguration: without externalId', async (t) => {
   const payload = mock
+  const operationId = cuid()
 
   payload.external_id = undefined
   payload.issuer = 'boleto-api-bradesco-shopfacil'
 
-  const boleto = await findBoletoConfiguration(payload)
+  const boleto = await findBoletoConfiguration(payload, operationId)
 
   t.is(boleto.issuer, 'bradesco')
 
@@ -68,10 +70,11 @@ test('findBoletoConfiguration: with configuration created', async (t) => {
   })
 
   const payload = mock
+  const operationId = cuid()
 
   payload.external_id = externalId
 
-  const boleto = await findBoletoConfiguration(payload)
+  const boleto = await findBoletoConfiguration(payload, operationId)
 
   t.is(boleto.issuer, 'boleto-api-bradesco-shopfacil')
 

@@ -23,7 +23,10 @@ module.exports = function boletoService ({ operationId }) {
     logger.info({ status: 'started', metadata: { data } })
 
     return Promise.resolve(data)
-      .then(setBoletoRulesConfiguration)
+      .then(boletoContent => setBoletoRulesConfiguration(
+        boletoContent,
+        operationId
+      ))
       .then(boletoContent => changeIssuerWhenInterestOrFine(
         boletoContent,
         operationId
