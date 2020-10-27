@@ -3,9 +3,13 @@ const {
   merge,
 } = require('ramda')
 
+const { makeFromLogger } = require('../logger')
+
+const makeLogger = makeFromLogger('helpers/providers')
+
 const { Configuration } = database.models
 
-const findBoletoConfiguration = async (boleto) => {
+const findBoletoConfiguration = async (boleto, operationId) => {
   const {
     external_id: externalId,
   } = boleto
@@ -42,10 +46,27 @@ const findBoletoConfiguration = async (boleto) => {
     issuer_wallet: configuration.issuer_wallet,
   }
 
+  const logger = makeLogger(
+    {
+      operation: 'update_from_configuration',
+    },
+    { id: operationId }
+  )
+
+  logger.info({
+    status: 'success',
+    metadata: {
+      issuer: configuration.issuer,
+      issuer_account: configuration.issuer_account,
+      issuer_agency: configuration.issuer_agency,
+      issuer_wallet: configuration.issuer_wallet,
+    },
+  })
+
   return merge(boleto, updatedRequestConfig)
 }
 
-const setBoletoRulesConfiguration = (boleto) => {
+const setBoletoRulesConfiguration = (boleto, operationId) => {
   const config = {
     issuer: 'bradesco',
     issuer_account: '469',
@@ -53,15 +74,39 @@ const setBoletoRulesConfiguration = (boleto) => {
   }
 
   if (boleto.rules && boleto.issuer !== 'development') {
+    const logger = makeLogger(
+      {
+        operation: 'change_issuer_wallet',
+      },
+      { id: operationId }
+    )
+
     if (boleto.rules.includes('strict_expiration_date')) {
+      logger.info({
+        status: 'success',
+        metadata: {
+          rules: boleto.rules,
+          issuer_wallet: '25',
+        },
+      })
+
       return merge(boleto, { ...config, issuer_wallet: '25' })
     }
+
     if (boleto.rules.includes('no_strict')) {
+      logger.info({
+        status: 'success',
+        metadata: {
+          rules: boleto.rules,
+          issuer_wallet: '26',
+        },
+      })
+
       return merge(boleto, { ...config, issuer_wallet: '26' })
     }
   }
 
-  return findBoletoConfiguration(boleto)
+  return findBoletoConfiguration(boleto, operationId)
 }
 
 module.exports = {

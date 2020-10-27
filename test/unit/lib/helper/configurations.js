@@ -1,15 +1,17 @@
 import test from 'ava'
+import cuid from 'cuid'
 import { assert } from '../../../helpers/chai'
 import { mock } from '../../../helpers/boleto'
 import { setBoletoRulesConfiguration } from '../../../../src/lib/helpers/configurations'
 
 test('setBoletoRulesConfiguration: issuer development', async (t) => {
   const payload = mock
+  const operationId = cuid()
 
   payload.rules = null
   payload.issuer = 'development'
 
-  const boleto = await setBoletoRulesConfiguration(payload)
+  const boleto = await setBoletoRulesConfiguration(payload, operationId)
 
   t.is(boleto.issuer_wallet, '26')
   t.is(boleto.issuer, 'bradesco')
@@ -28,11 +30,12 @@ test('setBoletoRulesConfiguration: issuer development', async (t) => {
 
 test('setBoletoRulesConfiguration: without rules', async (t) => {
   const payload = mock
+  const operationId = cuid()
 
   payload.rules = null
   payload.issuer = 'boleto-api-bradesco-shopfacil'
 
-  const boleto = await setBoletoRulesConfiguration(payload)
+  const boleto = await setBoletoRulesConfiguration(payload, operationId)
 
   t.is(boleto.issuer_wallet, '26')
   t.is(boleto.issuer, 'bradesco')
@@ -51,10 +54,11 @@ test('setBoletoRulesConfiguration: without rules', async (t) => {
 
 test('setBoletoRulesConfiguration: no_strict', async (t) => {
   const payload = mock
+  const operationId = cuid()
 
   payload.rules = ['no_strict']
 
-  const boleto = await setBoletoRulesConfiguration(payload)
+  const boleto = await setBoletoRulesConfiguration(payload, operationId)
 
   t.is(boleto.issuer_wallet, '26')
   t.is(boleto.issuer, 'bradesco')
@@ -73,10 +77,11 @@ test('setBoletoRulesConfiguration: no_strict', async (t) => {
 
 test('setBoletoRulesConfiguration: strict_expiration_date', async (t) => {
   const payload = mock
+  const operationId = cuid()
 
   payload.rules = ['strict_expiration_date']
 
-  const boleto = await setBoletoRulesConfiguration(payload)
+  const boleto = await setBoletoRulesConfiguration(payload, operationId)
 
   t.is(boleto.issuer_wallet, '25')
   t.is(boleto.issuer, 'bradesco')
