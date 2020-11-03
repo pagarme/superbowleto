@@ -80,6 +80,7 @@ const buildModelResponse = responseObjectBuilder(boleto =>
       'company_address',
       'bank_response_code',
       'rules',
+      'boleto_url',
       'reference_id',
       'created_at',
       'updated_at',
@@ -290,6 +291,11 @@ function create (database) {
 
     rules: {
       type: ARRAY(TEXT),
+      allowNull: true,
+    },
+
+    boleto_url: {
+      type: STRING,
       allowNull: true,
     },
   }, {

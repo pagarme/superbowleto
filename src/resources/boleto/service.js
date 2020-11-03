@@ -64,7 +64,7 @@ module.exports = function boletoService ({ operationId }) {
           metadata: { boleto },
         }))
 
-    const updateBoletoStatus = ({ issuer_response_code, status }) => { // eslint-disable-line
+    const updateBoletoStatus = ({ issuer_response_code, status, boleto_url }) => { // eslint-disable-line
       let newBoletoStatus
 
       if (status === 'registered') {
@@ -78,6 +78,7 @@ module.exports = function boletoService ({ operationId }) {
       return boleto.update({
         issuer_response_code,
         status: newBoletoStatus,
+        boleto_url,
       })
     }
 
