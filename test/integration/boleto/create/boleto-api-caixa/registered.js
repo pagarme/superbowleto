@@ -24,6 +24,7 @@ test.before(async () => {
       return Promise.resolve({
         status: 'registered',
         issuer_response_code: '0',
+        boleto_url: 'boletocaixa.com',
       })
     },
   }))
@@ -72,5 +73,6 @@ test('creates a boleto (status success)', async (t) => {
     company_name: payload.company_name,
     company_document_number: payload.company_document_number,
     queue_url: payload.queue_url,
+    boleto_url: 'boletocaixa.com',
   })
 })

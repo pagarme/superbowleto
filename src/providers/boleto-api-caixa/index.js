@@ -4,6 +4,9 @@ const cuid = require('cuid')
 const {
   path,
   prop,
+  find,
+  propEq,
+  pipe,
 } = require('ramda')
 
 const { encodeBase64 } = require('../../lib/encoding')
@@ -115,15 +118,30 @@ const sendRequestToBoletoApi = async (payload, headers) => {
   }
 }
 
+const isHtml = propEq('rel', 'html')
+
+const getBoletoUrl = pipe(
+  prop('links'),
+  find(isHtml),
+  path(['href'])
+)
+
 const translateResponseCode = (axiosResponse) => {
   const axiosResponseData = path(['data'], axiosResponse)
   const hasErrors = path(['errors', 'length'], axiosResponseData)
 
   if (!hasErrors) {
+    const boletoUrl = getBoletoUrl(axiosResponseData)
+
+    if (!boletoUrl) {
+      throw new Error('URL do boleto não existe')
+    }
+
     const defaultSuccessValue = {
       message: 'REGISTRO EFETUADO COM SUCESSO',
       status: 'registered',
       issuer_response_code: '0',
+      boleto_url: boletoUrl,
     }
 
     return defaultSuccessValue
@@ -218,4 +236,6 @@ module.exports = {
   buildPayload,
   getProvider,
   translateResponseCode,
+  isHtml,
+  getBoletoUrl,
 }

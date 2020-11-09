@@ -6,6 +6,8 @@ import {
   buildHeaders,
   buildPayload,
   translateResponseCode,
+  isHtml,
+  getBoletoUrl,
 } from '../../../../src/providers/boleto-api-caixa'
 import {
   getDocumentType,
@@ -138,7 +140,12 @@ test('translateResponseCode: with a "registered" code', (t) => {
       digitableLine: '98139178390283012831893193103293',
       barCodeNumber: '804284028402804820482',
       links: [{
-        href: 'https://blablabla.com',
+        href: 'https://blablahtml.com',
+        rel: 'html',
+        method: 'GET',
+      },
+      {
+        href: 'https://blablapdf.com',
         rel: 'PDF',
         method: 'GET',
       }],
@@ -148,6 +155,7 @@ test('translateResponseCode: with a "registered" code', (t) => {
   const response = translateResponseCode(axiosResponse)
 
   t.is(response.status, 'registered')
+  t.is(response.boleto_url, 'https://blablahtml.com')
 })
 
 test('translateResponseCode: registered with empty errors', (t) => {
@@ -157,8 +165,13 @@ test('translateResponseCode: registered with empty errors', (t) => {
       digitableLine: '98139178390283012831893193103293',
       barCodeNumber: '804284028402804820482',
       links: [{
-        href: 'https://blablabla.com',
+        href: 'https://blablapdf.com',
         rel: 'PDF',
+        method: 'GET',
+      },
+      {
+        href: 'https://blablahtml.com',
+        rel: 'html',
         method: 'GET',
       }],
       errors: [],
@@ -168,6 +181,7 @@ test('translateResponseCode: registered with empty errors', (t) => {
   const response = translateResponseCode(axiosResponse)
 
   t.is(response.status, 'registered')
+  t.is(response.boleto_url, 'https://blablahtml.com')
 })
 
 test('translateResponseCode: with a "refused" code', (t) => {
@@ -215,6 +229,28 @@ test('translateResponseCode: with a "MP" error', (t) => {
   t.is(response.status, 'refused')
 })
 
+test('translateResponseCode: with response missing html link', (t) => {
+  const axiosResponse = {
+    data: {
+      id: '37279202382',
+      digitableLine: '98139178390283012831893193103293',
+      barCodeNumber: '804284028402804820482',
+      links: [
+        {
+          href: 'https://blablapdf.com',
+          rel: 'PDF',
+          method: 'GET',
+        }],
+    },
+  }
+
+  const error = t.throws(() => {
+    translateResponseCode(axiosResponse)
+  })
+
+  t.is(error.message, 'URL do boleto não existe')
+})
+
 test('buildHeaders', (t) => {
   const encryptedHeaders = buildHeaders()
 
@@ -223,4 +259,50 @@ test('buildHeaders', (t) => {
   }
 
   t.deepEqual(encryptedHeaders, expectedHeader)
+})
+
+test('isHtml: when rel prop is html', (t) => {
+  const links = {
+    href: 'https://blablahtml.com',
+    rel: 'html',
+    method: 'GET',
+  }
+
+  const response = isHtml(links)
+
+  t.is(response, true)
+})
+
+test('isHtml: when rel prop is pdf', (t) => {
+  const links = {
+    href: 'https://blablahtml.com',
+    rel: 'pdf',
+    method: 'GET',
+  }
+
+  const response = isHtml(links)
+
+  t.is(response, false)
+})
+
+test('getBoletoUrl', (t) => {
+  const axiosResponse = {
+    id: '37279202382',
+    digitableLine: '98139178390283012831893193103293',
+    barCodeNumber: '804284028402804820482',
+    links: [{
+      href: 'https://blablahtml.com',
+      rel: 'html',
+      method: 'GET',
+    },
+    {
+      href: 'https://blablapdf.com',
+      rel: 'PDF',
+      method: 'GET',
+    }],
+  }
+
+  const response = getBoletoUrl(axiosResponse)
+
+  t.is(response, 'https://blablahtml.com')
 })
