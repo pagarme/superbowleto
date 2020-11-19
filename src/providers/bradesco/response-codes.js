@@ -489,6 +489,6 @@ module.exports = {
   },
   93005999: {
     message: 'BOLETO GERADO COM SUCESSO - REGISTRO EM PROCESSAMENTO',
-    status: 'registered',
+    status: 'unknown',
   },
 }
