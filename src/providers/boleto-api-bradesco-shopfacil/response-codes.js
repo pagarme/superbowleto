@@ -621,7 +621,7 @@ module.exports = {
   },
   93005999: {
     message: 'BOLETO GERADO COM SUCESSO – REGISTRO EM PROCESSAMENTO',
-    status: 'registered',
+    status: 'unknown',
   },
   '-549': {
     message: 'Erro - A Tag DATAVENCIMENTO do Boleto nao pode ser alterada quando o titulo ja foi registrado',

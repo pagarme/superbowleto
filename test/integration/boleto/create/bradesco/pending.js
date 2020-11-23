@@ -15,7 +15,7 @@ test.before(async () => {
     register () {
       return Promise.resolve({
         status: 'unknown',
-        issuer_response_code: 'unknown',
+        issuer_response_code: '93005999',
       })
     },
   }))
@@ -49,7 +49,7 @@ test('creates a boleto (provider unknown)', async (t) => {
 
   assert.containSubset(body, {
     status: 'pending_registration',
-    issuer_response_code: 'unknown',
+    issuer_response_code: '93005999',
     paid_amount: 0,
     amount: payload.amount,
     instructions: payload.instructions,
