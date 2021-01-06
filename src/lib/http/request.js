@@ -2,9 +2,14 @@ const { curryN } = require('ramda')
 const Joi = require('joi')
 const { ValidationError, InvalidParameterError } = require('../errors')
 
-const parse = curryN(2, (schema, data) => new Promise((resolve, reject) => {
+const parse = curryN(2, (
+  schema,
+  data,
+  specificOptions = {}
+) => new Promise((resolve, reject) => {
   const options = {
     abortEarly: false,
+    ...specificOptions,
   }
 
   const { error, value } = Joi.validate(data, schema, options)

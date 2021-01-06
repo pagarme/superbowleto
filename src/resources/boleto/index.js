@@ -124,8 +124,12 @@ const index = (req, res) => {
 
   const { query } = req
 
+  const specificJoiValidateOptions = {
+    allowUnknown: true,
+  }
+
   return Promise.resolve(query)
-    .then(parse(indexSchema))
+    .then(parse(indexSchema, query, specificJoiValidateOptions))
     .then(service.index)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))
