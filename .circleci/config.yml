@@ -1,4 +1,8 @@
-version: 2
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@6.8.2
+  aws-ecs: circleci/aws-ecs@1.1.0
 
 _run:
   prepare_to_deploy: &prepare_to_deploy
@@ -193,77 +197,108 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-    - test:
-        filters:
-          tags:
-            only: /^v.*/
-    - sonar:
-        context: dockerhub
-        requires:
-          - test
-        filters:
-          tags:
-            only: /^v.*/
+    # - test:
+    #     filters:
+    #       tags:
+    #         only: /^v.*/
+    # - sonar:
+    #     context: dockerhub
+    #     requires:
+    #       - test
+    #     filters:
+    #       tags:
+    #         only: /^v.*/
     - build_image:
-        requires:
-          - sonar
+        # requires:
+        #   - sonar
         filters:
           branches:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - hold_stg:
-        type: approval
-        requires:
-          - build_image
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - hold_sdx:
-        type: approval
-        requires:
-          - build_image
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - hold_prd:
-        type: approval
-        requires:
-          - build_image
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # - hold_stg:
+    #     type: approval
+    #     requires:
+    #       - build_image
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    # - hold_sdx:
+    #     type: approval
+    #     requires:
+    #       - build_image
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # - hold_prd:
+    #     type: approval
+    #     requires:
+    #       - build_image
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+)$/
     - push_stg:
         requires:
-          - hold_stg
+          # - hold_stg
+          - build_image
         filters:
           branches:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - push_sdx:
-        requires:
-          - hold_sdx
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - push_prd:
-        requires:
-          - hold_prd
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - deploy_stg:
+    # - push_sdx:
+    #     requires:
+    #       - hold_sdx
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # - push_prd:
+    #     requires:
+    #       - hold_prd
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # - deploy_stg:
+    #     requires:
+    #       - push_stg
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    # - aws-ecr/build-and-push-image:
+    #     name: build-and-push-image-stg
+    #     account-url: STG_AWS_ACCOUNT_URL
+    #     aws-access-key-id: STG_AWS_ACCESS_KEY_ID
+    #     aws-secret-access-key: STG_AWS_SECRET_ACCESS_KEY
+    #     region: REGION
+    #     repo: 'jaiminho-stg'
+    #     tag: "latest,${CIRCLE_SHA1}"
+    #     requires:
+    #       - push_stg
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+
+    - aws-ecs/update-task-definition:
+        name: update-task-definition-server-stg
+        aws-region: $REGION
+        aws-access-key-id: $STG_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $STG_AWS_SECRET_ACCESS_KEY
+        container-image-name-updates: 'container=superbowleto-s-stg,image-and-tag=${STG_AWS_ACCOUNT_URL}/superbowleto-stg:latest'
+        family: 'superbowleto-s-stg'
         requires:
           - push_stg
         filters:
@@ -271,19 +306,20 @@ workflows:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - deploy_sdx:
-        requires:
-          - push_sdx
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - deploy_prd:
-        requires:
-          - push_prd
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+
+    # - deploy_sdx:
+    #     requires:
+    #       - push_sdx
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # - deploy_prd:
+    #     requires:
+    #       - push_prd
+    #     filters:
+    #       branches:
+    #         ignore: /.*/
+    #       tags:
+    #         only: /^v([0-9]+).([0-9]+).([0-9]+)$/
