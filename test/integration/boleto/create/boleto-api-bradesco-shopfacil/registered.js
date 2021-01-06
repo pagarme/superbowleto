@@ -1,6 +1,7 @@
 import test from 'ava'
 import Promise from 'bluebird'
 import cuid from 'cuid'
+import nock from 'nock'
 import { assert } from '../../../../helpers/chai'
 import { normalizeHandler } from '../../../../helpers/normalizer'
 import { mock, mockFunction, restoreFunction } from '../../../../helpers/boleto'
@@ -83,9 +84,30 @@ test('creates a boleto with rules: changing issuer to bradesco', async (t) => {
   payload.interest = undefined
   payload.fine = undefined
 
+  nock.cleanAll()
+
+  nock('https://homolog.meiosdepagamentobradesco.com.br')
+    .post('/apiregistro/api')
+    .reply(201, {
+      data: {
+        boleto: {
+          nosso_numero: 10203040,
+          numero_documento: '10203040',
+          data_registro: '2021-01-05T17:24:05',
+          data_requisicao: '2021-01-05T17:24:04',
+        },
+      },
+      status: {
+        codigo: 0,
+        mensagem: 'REGISTRO EFETUADO COM SUCESSO - CIP NAO CONFIRMADA',
+      },
+    })
+
   const { body, statusCode } = await create({
     body: payload,
   })
+
+  nock.cleanAll()
 
   t.is(statusCode, 201)
   t.is(body.object, 'boleto')
