@@ -37,6 +37,57 @@ test('parse: with valid schema and coercion', async (t) => {
   }, 'should have the correct parsed, coerced parameters and no errors')
 })
 
+test('parse: with valid schema and specific validate options allowUnknown true', async (t) => {
+  const specificJoiValidateOptions = {
+    allowUnknown: true,
+  }
+
+  const value = await parse(schema, {
+    name: 'David Bowie',
+    security_number: 42,
+    a: 'a',
+    b: 'b',
+  }, specificJoiValidateOptions)
+
+  t.deepEqual(value, {
+    name: 'David Bowie',
+    security_number: 42,
+    a: 'a',
+    b: 'b',
+  }, 'should have the correct parsed parameters and no errors')
+})
+
+test('parse: with valid schema and specific validate options allowUnknown false', async (t) => {
+  const specificJoiValidateOptions = {
+    allowUnknown: false,
+  }
+
+  const validationError = await parse(schema, {
+    name: 'David Bowie',
+    security_number: 42,
+    a: 'a',
+    b: 'b',
+  }, specificJoiValidateOptions).catch(err => err)
+
+  const { errors } = validationError
+
+  t.true(validationError instanceof ValidationError, 'should be a ValidationError')
+  t.true(Array.isArray(errors), 'should have an array of errors')
+  t.is(errors.length, 2, 'should have 2 errors')
+
+  assert.containSubset(errors[0], {
+    message: '"a" is not allowed',
+    type: 'invalid_parameter',
+    field: 'a',
+  }, 'should have an error because `a` is anknown')
+
+  assert.containSubset(errors[1], {
+    message: '"b" is not allowed',
+    type: 'invalid_parameter',
+    field: 'b',
+  }, 'should have an error because `b` is anknown')
+})
+
 test('parse: with invalid schema', async (t) => {
   const validationError = await parse(schema, {
     security_number: true,

@@ -122,14 +122,42 @@ const index = (req, res) => {
   const requestId = req.get('x-request-id') || defaultCuidValue('req_')()
   const service = BoletoService({ operationId: requestId })
 
+  const logger = makeLogger({ operation: 'handle_boleto_index_request' }, { id: requestId })
+
   const { query } = req
 
+  logger.info({ status: 'started', metadata: { query } })
+
+  const specificJoiValidateOptions = {
+    allowUnknown: true,
+  }
+
   return Promise.resolve(query)
-    .then(parse(indexSchema))
+    .then(parse(indexSchema, query, specificJoiValidateOptions))
     .then(service.index)
     .then(buildModelResponse)
     .then(buildSuccessResponse(200))
-    .catch(handleError)
+    .tap((response) => {
+      logger.info({
+        status: 'success',
+        metadata: {
+          body: response.body,
+          statusCode: response.statusCode,
+        },
+      })
+    })
+    .catch((err) => {
+      logger.error({
+        status: 'failed',
+        metadata: {
+          error_name: err.name,
+          error_stack: err.stack,
+          error_message: err.message,
+        },
+      })
+
+      return handleError(err)
+    })
     .tap(({ body, statusCode }) => res.status(statusCode).send(body))
 }
 
