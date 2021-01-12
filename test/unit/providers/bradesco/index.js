@@ -215,6 +215,12 @@ test('normalizePercentage: with a float number', (t) => {
   t.is(normalizedPercentage, '09999000')
 })
 
+test('normalizePercentage: with a tricky float number', (t) => {
+  const normalizedPercentage = normalizePercentage('0.07')
+
+  t.is(normalizedPercentage, '00007000')
+})
+
 test('normalizePercentage: with a float number and 6 digits of precision', (t) => {
   const normalizedPercentage = normalizePercentage('99.999999')
 

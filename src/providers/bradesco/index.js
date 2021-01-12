@@ -64,6 +64,7 @@ const normalizePercentage = ifElse(
   pipe(
     percentage => Number(percentage).toFixed(5),
     multiply(100000),
+    parseInt,
     toString,
     percentage => percentage.padStart(8, '0')
   ),
