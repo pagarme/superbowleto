@@ -1,5 +1,11 @@
 const Promise = require('bluebird')
-const { ifElse, mergeAll } = require('ramda')
+const {
+  complement,
+  filter,
+  ifElse,
+  isNil,
+  mergeAll,
+} = require('ramda')
 const database = require('../../database')
 const { NotFoundError } = require('../../lib/errors')
 const { handleDatabaseErrors } = require('../../lib/errors/database')
@@ -64,7 +70,13 @@ module.exports = function boletoService ({ operationId }) {
           metadata: { boleto },
         }))
 
-    const updateBoletoStatus = ({ issuer_response_code, status, boleto_url }) => { // eslint-disable-line
+    const updateBoletoProviderResponse = ({
+      issuer_response_code: issuerResponseCode,
+      status,
+      boleto_url: boletoUrl,
+      digitable_line: digitableLine,
+      barcode,
+    }) => {
       let newBoletoStatus
 
       if (status === 'registered') {
@@ -75,11 +87,19 @@ module.exports = function boletoService ({ operationId }) {
         newBoletoStatus = 'pending_registration'
       }
 
-      return boleto.update({
-        issuer_response_code,
+      const isNotNull = complement(isNil)
+
+      const providerResponse = {
+        issuer_response_code: issuerResponseCode,
         status: newBoletoStatus,
-        boleto_url,
-      })
+        boleto_url: boletoUrl,
+        digitable_line: digitableLine,
+        barcode,
+      }
+
+      const providerResponseFiltered = filter(isNotNull, providerResponse)
+
+      return boleto.update(providerResponseFiltered)
     }
 
     if (boleto.status === 'refused' || boleto.status === 'registered') {
@@ -92,7 +112,7 @@ module.exports = function boletoService ({ operationId }) {
         fakeRegister,
         provider.register
       ))
-      .then(updateBoletoStatus)
+      .then(updateBoletoProviderResponse)
       .catch((err) => {
         logger.info({
           status: 'processing',
