@@ -156,6 +156,8 @@ test('translateResponseCode: with a "registered" code', (t) => {
 
   t.is(response.status, 'registered')
   t.is(response.boleto_url, 'https://blablahtml.com')
+  t.is(response.digitable_line, '98139178390283012831893193103293')
+  t.is(response.barcode, '804284028402804820482')
 })
 
 test('translateResponseCode: registered with empty errors', (t) => {
@@ -182,6 +184,8 @@ test('translateResponseCode: registered with empty errors', (t) => {
 
   t.is(response.status, 'registered')
   t.is(response.boleto_url, 'https://blablahtml.com')
+  t.is(response.digitable_line, '98139178390283012831893193103293')
+  t.is(response.barcode, '804284028402804820482')
 })
 
 test('translateResponseCode: with a "refused" code', (t) => {
@@ -249,6 +253,48 @@ test('translateResponseCode: with response missing html link', (t) => {
   })
 
   t.is(error.message, 'URL do boleto não existe')
+})
+
+test('translateResponseCode: with response missing digitable line', (t) => {
+  const axiosResponse = {
+    data: {
+      id: '37279202382',
+      barCodeNumber: '804284028402804820482',
+      links: [
+        {
+          href: 'https://blablahtml.com',
+          rel: 'html',
+          method: 'GET',
+        }],
+    },
+  }
+
+  const error = t.throws(() => {
+    translateResponseCode(axiosResponse)
+  })
+
+  t.is(error.message, 'linha digitável do boleto não existe')
+})
+
+test('translateResponseCode: with response missing barcode', (t) => {
+  const axiosResponse = {
+    data: {
+      id: '37279202382',
+      digitableLine: '98139178390283012831893193103293',
+      links: [
+        {
+          href: 'https://blablahtml.com',
+          rel: 'html',
+          method: 'GET',
+        }],
+    },
+  }
+
+  const error = t.throws(() => {
+    translateResponseCode(axiosResponse)
+  })
+
+  t.is(error.message, 'código de barras do boleto não existe')
 })
 
 test('buildHeaders', (t) => {

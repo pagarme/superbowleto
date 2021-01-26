@@ -132,9 +132,19 @@ const translateResponseCode = (axiosResponse) => {
 
   if (!hasErrors) {
     const boletoUrl = getBoletoUrl(axiosResponseData)
+    const digitableLine = path(['digitableLine'], axiosResponseData)
+    const barcode = path(['barCodeNumber'], axiosResponseData)
 
     if (!boletoUrl) {
       throw new Error('URL do boleto não existe')
+    }
+
+    if (!digitableLine) {
+      throw new Error('linha digitável do boleto não existe')
+    }
+
+    if (!barcode) {
+      throw new Error('código de barras do boleto não existe')
     }
 
     const defaultSuccessValue = {
@@ -142,6 +152,8 @@ const translateResponseCode = (axiosResponse) => {
       status: 'registered',
       issuer_response_code: '0',
       boleto_url: boletoUrl,
+      digitable_line: digitableLine,
+      barcode,
     }
 
     return defaultSuccessValue
