@@ -1,15 +1,9 @@
-version: 2
+version: 2.1
+
+orbs:
+  aws-ecs: circleci/aws-ecs@1.1.0
 
 _run:
-  prepare_to_deploy: &prepare_to_deploy
-    name: Prepare to deploy
-    command: |
-      mkdir -p ~/.local/bin
-      # install jq
-      curl -sSL -o ~/.local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x ~/.local/bin/jq
-      # install ecs-deploy (in work version)
-      curl -sSL -o /tmp/ecs-deploy.tar.gz https://github.com/silinternational/ecs-deploy/archive/3.4.0.tar.gz && tar xvfz /tmp/ecs-deploy.tar.gz -C /tmp && sudo cp /tmp/ecs-deploy-3.4.0/ecs-deploy ~/.local/bin/ecs-deploy
-      pip install awscli --upgrade --user
   pull_sonar_image: &pull_sonar_image
     name: Pull Docker sonar-scanner image
     command: |
@@ -57,8 +51,7 @@ jobs:
           command: make sonar BRANCH=$CIRCLE_BRANCH
   build_image:
     working_directory: ~/superbowleto
-    machine:
-        enabled: true
+    machine: true
     steps:
       - checkout
       - run:
@@ -74,8 +67,7 @@ jobs:
              -  build.tar
   push_stg:
     working_directory: ~/superbowleto
-    machine:
-        enabled: true
+    machine: true
     steps:
       - attach_workspace:
          at: ~/superbowleto/images
@@ -94,10 +86,23 @@ jobs:
             docker push ${STG_IMAGE}:$CIRCLE_TAG
             docker tag build:latest ${STG_IMAGE}:latest
             docker push ${STG_IMAGE}:latest
+  run_stg_migrations:
+    working_directory: ~/superbowleto
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: run migrations
+          command: |
+            npm install
+            export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
+            export AWS_ACCOUNT=$STG_AWS_ACCOUNT
+            export AWS_REGION=$REGION
+            node script/run_migrations_task.js superbowleto-w-stg cluster-stg
   push_sdx:
     working_directory: ~/superbowleto
-    machine:
-        enabled: true
+    machine: true
     steps:
       - attach_workspace:
          at: ~/superbowleto/images
@@ -116,10 +121,23 @@ jobs:
             docker push ${SDX_IMAGE}:$CIRCLE_TAG
             docker tag build:latest ${SDX_IMAGE}:latest
             docker push ${SDX_IMAGE}:latest
+  run_sdx_migrations:
+    working_directory: ~/superbowleto
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: run migrations
+          command: |
+            npm install
+            export AWS_ACCESS_KEY_ID=$SDX_AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$SDX_AWS_SECRET_ACCESS_KEY
+            export AWS_ACCOUNT=$SDX_AWS_ACCOUNT
+            export AWS_REGION=$REGION
+            node script/run_migrations_task.js superbowleto-w-sdx cluster-sdx
   push_prd:
     working_directory: ~/superbowleto
-    machine:
-        enabled: true
+    machine: true
     steps:
       - attach_workspace:
           at: ~/superbowleto/images
@@ -138,59 +156,22 @@ jobs:
             docker push ${PRD_IMAGE}:$CIRCLE_TAG
             docker tag build:latest ${PRD_IMAGE}:latest
             docker push ${PRD_IMAGE}:latest
-  deploy_stg:
+  run_prd_migrations:
     working_directory: ~/superbowleto
     machine: true
     steps:
-      - run: *prepare_to_deploy
       - checkout
       - run:
-          name: Deploy stg
+          name: run migrations
           command: |
-            # deploy in live
-            export STG_IMAGE="$STG_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-stg:$CIRCLE_TAG"
-            export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
-            export AWS_DEFAULT_REGION=$REGION
-            export PATH=$HOME/.local/bin:$PATH # put aws in the path
-            ~/.local/bin/ecs-deploy --max-definitions 1 --enable-rollback -c $STG_CLUSTER -r $REGION -n superbowleto-s-stg -i $STG_IMAGE --timeout $TIMEOUT
-            ~/.local/bin/ecs-deploy --max-definitions 1 --enable-rollback -c $STG_CLUSTER -r $REGION -n superbowleto-w-stg -i $STG_IMAGE --timeout $TIMEOUT
-  deploy_sdx:
-    working_directory: ~/superbowleto
-    machine: true
-    steps:
-      - run: *prepare_to_deploy
-      - checkout
-      - run:
-          name: Deploy sdx
-          command: |
-            # deploy in live
-            export SDX_IMAGE="$SDX_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx:$CIRCLE_TAG"
-            export AWS_ACCESS_KEY_ID=$SDX_AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$SDX_AWS_SECRET_ACCESS_KEY
-            export AWS_DEFAULT_REGION=$REGION
-            export PATH=$HOME/.local/bin:$PATH # put aws in the path
-            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $SDX_CLUSTER -r $REGION -n superbowleto-s-sdx -i $SDX_IMAGE --timeout $TIMEOUT
-            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $SDX_CLUSTER -r $REGION -n superbowleto-w-sdx -i $SDX_IMAGE --timeout $TIMEOUT
-  deploy_prd:
-    working_directory: ~/superbowleto
-    machine: true
-    steps:
-      - run: *prepare_to_deploy
-      - checkout
-      - run:
-          name: Deploy prd
-          command: |
-            # deploy in live
-            export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd:$CIRCLE_TAG"
+            npm install
             export AWS_ACCESS_KEY_ID=$PRD_AWS_ACCESS_KEY_ID
             export AWS_SECRET_ACCESS_KEY=$PRD_AWS_SECRET_ACCESS_KEY
-            export AWS_DEFAULT_REGION=$REGION
-            export PATH=$HOME/.local/bin:$PATH # put aws in the path
-            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-s-prd -i $PRD_IMAGE --timeout $TIMEOUT
-            ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $PRD_CLUSTER -r $REGION -n superbowleto-w-prd -i $PRD_IMAGE --timeout $TIMEOUT
+            export AWS_ACCOUNT=$PRD_AWS_ACCOUNT
+            export AWS_REGION=$REGION
+            node script/run_migrations_task.js superbowleto-w-prd cluster-prd
+
 workflows:
-  version: 2
   build_and_deploy:
     jobs:
     - test:
@@ -212,6 +193,8 @@ workflows:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    
+    ## STG DEPLOYMENT ##
     - hold_stg:
         type: approval
         requires:
@@ -221,6 +204,71 @@ workflows:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    - push_stg:
+        requires:
+          - hold_stg
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    # update-task-definition-worker-stg
+    - aws-ecs/update-task-definition:
+        name: update-task-definition-worker-stg
+        aws-region: $REGION
+        aws-access-key-id: $STG_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $STG_AWS_SECRET_ACCESS_KEY
+        container-image-name-updates: 'container=superbowleto-w-stg,image-and-tag=${STG_AWS_ACCOUNT_URL}/superbowleto-stg:$CIRCLE_TAG'
+        family: 'superbowleto-w-stg'
+        requires:
+          - push_stg
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    - run_stg_migrations:
+        requires:
+          - update-task-definition-worker-stg
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    # update-service-server-stg
+    - aws-ecs/deploy-service-update:
+        name: update-service-server-stg
+        aws-region: $REGION
+        aws-access-key-id: $STG_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $STG_AWS_SECRET_ACCESS_KEY
+        family: 'superbowleto-s-stg'
+        cluster-name: 'cluster-stg'
+        service-name: 'superbowleto-s-stg'
+        requires:
+          - run_stg_migrations
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+    # update-service-worker-stg
+    - aws-ecs/deploy-service-update:
+        name: update-service-worker-stg
+        aws-region: $REGION
+        aws-access-key-id: $STG_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $STG_AWS_SECRET_ACCESS_KEY
+        family: 'superbowleto-w-stg'
+        cluster-name: 'cluster-stg'
+        service-name: 'superbowleto-w-stg'
+        requires:
+          - run_stg_migrations
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
+
+    ## SDX DEPLOYMENT ##
     - hold_sdx:
         type: approval
         requires:
@@ -230,26 +278,75 @@ workflows:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - hold_prd:
-        type: approval
+    - push_sdx:
         requires:
-          - build_image
+          - hold_sdx
         filters:
           branches:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - push_stg:
+    # update-task-definition-worker-sdx
+    - aws-ecs/update-task-definition:
+        name: update-task-definition-worker-sdx
+        aws-region: $REGION
+        aws-access-key-id: $SDX_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $SDX_AWS_SECRET_ACCESS_KEY
+        container-image-name-updates: 'container=superbowleto-w-sdx,image-and-tag=${SDX_AWS_ACCOUNT_URL}/superbowleto-sdx:$CIRCLE_TAG'
+        family: 'superbowleto-w-sdx'
         requires:
-          - hold_stg
+          - push_sdx
         filters:
           branches:
             ignore: /.*/
           tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - push_sdx:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    - run_sdx_migrations:
         requires:
-          - hold_sdx
+          - update-task-definition-worker-sdx
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # update-service-server-sdx
+    - aws-ecs/deploy-service-update:
+        name: update-service-server-sdx
+        aws-region: $REGION
+        aws-access-key-id: $SDX_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $SDX_AWS_SECRET_ACCESS_KEY
+        family: 'superbowleto-s-sdx'
+        cluster-name: 'cluster-sdx'
+        service-name: 'superbowleto-s-sdx'
+        requires:
+          - run_sdx_migrations
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # update-service-worker-sdx
+    - aws-ecs/deploy-service-update:
+        name: update-service-worker-sdx
+        aws-region: $REGION
+        aws-access-key-id: $SDX_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $SDX_AWS_SECRET_ACCESS_KEY
+        family: 'superbowleto-w-sdx'
+        cluster-name: 'cluster-sdx'
+        service-name: 'superbowleto-w-sdx'
+        requires:
+          - run_sdx_migrations
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+
+    ## PRD DEPLOYMENT ##
+    - hold_prd:
+        type: approval
+        requires:
+          - build_image
         filters:
           branches:
             ignore: /.*/
@@ -263,25 +360,56 @@ workflows:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - deploy_stg:
+    # update-task-definition-worker-prd
+    - aws-ecs/update-task-definition:
+        name: update-task-definition-worker-prd
+        aws-region: $REGION
+        aws-access-key-id: $PRD_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $PRD_AWS_SECRET_ACCESS_KEY
+        container-image-name-updates: 'container=superbowleto-w-prd,image-and-tag=${PRD_AWS_ACCOUNT_URL}/superbowleto-prd:$CIRCLE_TAG'
+        family: 'superbowleto-w-prd'
         requires:
-          - push_stg
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v([0-9]+).([0-9]+).([0-9]+).*$/
-    - deploy_sdx:
-        requires:
-          - push_sdx
+          - push_prd
         filters:
           branches:
             ignore: /.*/
           tags:
             only: /^v([0-9]+).([0-9]+).([0-9]+)$/
-    - deploy_prd:
+    - run_prd_migrations:
         requires:
-          - push_prd
+          - update-task-definition-worker-prd
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # update-service-server-prd
+    - aws-ecs/deploy-service-update:
+        name: update-service-server-prd
+        aws-region: $REGION
+        aws-access-key-id: $PRD_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $PRD_AWS_SECRET_ACCESS_KEY
+        family: 'superbowleto-s-prd'
+        cluster-name: 'cluster-prd'
+        service-name: 'superbowleto-s-prd'
+        requires:
+          - run_prd_migrations
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v([0-9]+).([0-9]+).([0-9]+)$/
+    # update-service-worker-prd
+    - aws-ecs/deploy-service-update:
+        name: update-service-worker-prd
+        aws-region: $REGION
+        aws-access-key-id: $PRD_AWS_ACCESS_KEY_ID
+        aws-secret-access-key: $PRD_AWS_SECRET_ACCESS_KEY
+        family: 'superbowleto-w-prd'
+        cluster-name: 'cluster-prd'
+        service-name: 'superbowleto-w-prd'
+        requires:
+          - run_prd_migrations
         filters:
           branches:
             ignore: /.*/
