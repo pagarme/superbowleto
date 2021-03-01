@@ -44,7 +44,7 @@ test('buildPayload with full payer_address', async (t) => {
       documentNumber: String(boleto.title_id),
     },
     recipient: {
-      name: boleto.company_name,
+      name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
       document: {
         type: getDocumentType(boleto.company_document_number),
         number: boleto.company_document_number,
@@ -98,7 +98,7 @@ test('buildPayload with payer_address incomplete', async (t) => {
       documentNumber: String(boleto.title_id),
     },
     recipient: {
-      name: boleto.company_name,
+      name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
       document: {
         type: getDocumentType(boleto.company_document_number),
         number: boleto.company_document_number,

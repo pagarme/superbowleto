@@ -60,7 +60,7 @@ const buildPayload = (boleto, operationId) => {
       documentNumber: String(path(['title_id'], boleto)),
     },
     recipient: {
-      name: path(['company_name'], boleto),
+      name: `${path(['company_name'], boleto)} | Pagar.me Pagamentos S/A`,
       document: {
         type: recipientDocumentType,
         number: path(['company_document_number'], boleto),
