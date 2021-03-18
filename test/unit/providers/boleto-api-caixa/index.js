@@ -34,7 +34,7 @@ test('buildPayload with full payer_address', async (t) => {
     bankNumber: 104,
     agreement: {
       agreementNumber: 1103388,
-      agency: boleto.issuer_agency,
+      agency: 3337,
     },
     title: {
       expireDate: moment(boleto.expiration_date).tz('America/Sao_Paulo').format('YYYY-MM-DD'),
@@ -88,7 +88,7 @@ test('buildPayload with payer_address incomplete', async (t) => {
     bankNumber: 104,
     agreement: {
       agreementNumber: 1103388,
-      agency: boleto.issuer_agency,
+      agency: 3337,
     },
     title: {
       expireDate: moment(boleto.expiration_date).tz('America/Sao_Paulo').format('YYYY-MM-DD'),
