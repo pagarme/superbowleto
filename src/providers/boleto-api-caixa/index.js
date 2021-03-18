@@ -45,12 +45,13 @@ const buildPayload = (boleto, operationId) => {
   const formattedBuyerStateCode = formatStateCode(boleto, 'payer_address')
 
   const agreementNumber = 1103388
+  const agency = '3337'
 
   const payload = {
     bankNumber: caixaBankCode,
     agreement: {
       agreementNumber,
-      agency: path(['issuer_agency'], boleto),
+      agency,
     },
     title: {
       expireDate: formattedExpirationDate,
