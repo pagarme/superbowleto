@@ -9,9 +9,6 @@ import {
   isHtml,
   getBoletoUrl,
 } from '../../../../src/providers/boleto-api-caixa'
-import {
-  getDocumentType,
-} from '../../../../src/providers/boleto-api-caixa/formatter'
 
 test('buildPayload with full payer_address', async (t) => {
   const boleto = await createBoleto({
@@ -46,8 +43,8 @@ test('buildPayload with full payer_address', async (t) => {
     recipient: {
       name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
       document: {
-        type: getDocumentType(boleto.company_document_number),
-        number: boleto.company_document_number,
+        type: 'CNPJ',
+        number: '18727053000174',
       },
       address: {
         street: boleto.company_address.street,
@@ -100,8 +97,8 @@ test('buildPayload with payer_address incomplete', async (t) => {
     recipient: {
       name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
       document: {
-        type: getDocumentType(boleto.company_document_number),
-        number: boleto.company_document_number,
+        type: 'CNPJ',
+        number: '18727053000174',
       },
       address: {
         street: boleto.company_address.street,

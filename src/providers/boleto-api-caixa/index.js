@@ -14,7 +14,6 @@ const { makeFromLogger } = require('../../lib/logger')
 const { isA4XXError } = require('../../lib/helpers/errors')
 const {
   formatDate,
-  getDocumentType,
   formatStateCode,
 } = require('./formatter')
 
@@ -40,12 +39,13 @@ const buildHeaders = () => {
 
 const buildPayload = (boleto, operationId) => {
   const formattedExpirationDate = formatDate(boleto.expiration_date)
-  const recipientDocumentType = getDocumentType(path(['company_document_number'], boleto))
   const formattedRecipientStateCode = formatStateCode(boleto, 'company_address')
   const formattedBuyerStateCode = formatStateCode(boleto, 'payer_address')
 
   const agreementNumber = 1103388
   const agency = '3337'
+  const recipientDocumentNumber = '18727053000174'
+  const recipientDocumentType = 'CNPJ'
 
   const payload = {
     bankNumber: caixaBankCode,
@@ -64,7 +64,7 @@ const buildPayload = (boleto, operationId) => {
       name: `${path(['company_name'], boleto)} | Pagar.me Pagamentos S/A`,
       document: {
         type: recipientDocumentType,
-        number: path(['company_document_number'], boleto),
+        number: recipientDocumentNumber,
       },
       address: {
         street: path(['company_address', 'street'], boleto),
