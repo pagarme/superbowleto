@@ -1,7 +1,7 @@
 const {
   isEmpty,
   isNil,
-  assoc,
+  merge,
 } = require('ramda')
 
 const { makeFromLogger } = require('../logger')
@@ -20,11 +20,16 @@ const changeIssuerWhenInterestOrFine = (boleto, operationId) => {
   const issuerIsBoletoApi = issuer.includes('boleto-api')
 
   if (issuerIsBoletoApi && (!isEmptyOrNull(interest) || !isEmptyOrNull(fine))) {
-    const defaultIssuer = 'bradesco'
+    const config = {
+      issuer: 'bradesco',
+      issuer_account: '469',
+      issuer_agency: '1229',
+      issuer_wallet: '26',
+    }
 
     const logger = makeLogger(
       {
-        operation: 'change_issuer',
+        operation: 'change_issuer_interest_or_fine',
       },
       { id: operationId }
     )
@@ -33,11 +38,11 @@ const changeIssuerWhenInterestOrFine = (boleto, operationId) => {
       status: 'success',
       metadata: {
         oldIssuer: issuer,
-        newIssuer: defaultIssuer,
+        newIssuer: config.issuer,
       },
     })
 
-    return assoc('issuer', defaultIssuer, boleto)
+    return merge(boleto, config)
   }
 
   return boleto

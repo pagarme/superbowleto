@@ -50,6 +50,9 @@ test('changeIssuerWhenInterestOrFine: when interest is not empty or null and pro
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     interest: {
       amount: 200,
     },
@@ -58,12 +61,18 @@ test('changeIssuerWhenInterestOrFine: when interest is not empty or null and pro
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
+  t.is(result.issuer_agency, '1229')
+  t.is(result.issuer_account, '469')
+  t.is(result.issuer_wallet, '26')
 })
 
 test('changeIssuerWhenInterestOrFine: when interest is not empty or null and provider is not boleto-api', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'development',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     interest: {
       amount: 200,
     },
@@ -72,36 +81,54 @@ test('changeIssuerWhenInterestOrFine: when interest is not empty or null and pro
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'development')
+  t.is(result.issuer_agency, '123')
+  t.is(result.issuer_account, '1234')
+  t.is(result.issuer_wallet, '25')
 })
 
 test('changeIssuerWhenInterestOrFine: when interest is empty', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     interest: {},
   }
 
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'boleto-api-bradesco-shopfacil')
+  t.is(result.issuer_agency, '123')
+  t.is(result.issuer_account, '1234')
+  t.is(result.issuer_wallet, '25')
 })
 
 test('changeIssuerWhenInterestOrFine: when interest is null', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     interest: null,
   }
 
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'boleto-api-bradesco-shopfacil')
+  t.is(result.issuer_agency, '123')
+  t.is(result.issuer_account, '1234')
+  t.is(result.issuer_wallet, '25')
 })
 
 test('changeIssuerWhenInterestOrFine: when fine is not empty or null and provider is boleto-api', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     fine: {
       amount: 200,
     },
@@ -110,12 +137,18 @@ test('changeIssuerWhenInterestOrFine: when fine is not empty or null and provide
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
+  t.is(result.issuer_agency, '1229')
+  t.is(result.issuer_account, '469')
+  t.is(result.issuer_wallet, '26')
 })
 
 test('changeIssuerWhenInterestOrFine: when fine is not empty or null and provider is not boleto-api', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'development',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     fine: {
       amount: 200,
     },
@@ -124,36 +157,54 @@ test('changeIssuerWhenInterestOrFine: when fine is not empty or null and provide
   const result = changeIssuerWhenInterestOrFine(boleto)
 
   t.is(result.issuer, 'development')
+  t.is(result.issuer_agency, '123')
+  t.is(result.issuer_account, '1234')
+  t.is(result.issuer_wallet, '25')
 })
 
 test('changeIssuerWhenInterestOrFine: when fine is empty', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     fine: {},
   }
 
   const result = changeIssuerWhenInterestOrFine(boleto)
 
   t.is(result.issuer, 'boleto-api-bradesco-shopfacil')
+  t.is(result.issuer_agency, '123')
+  t.is(result.issuer_account, '1234')
+  t.is(result.issuer_wallet, '25')
 })
 
 test('changeIssuerWhenInterestOrFine: when fine is null', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     fine: null,
   }
 
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'boleto-api-bradesco-shopfacil')
+  t.is(result.issuer_agency, '123')
+  t.is(result.issuer_account, '1234')
+  t.is(result.issuer_wallet, '25')
 })
 
 test('changeIssuerWhenInterestOrFine: when fine is null, interest has info and is boleto-api', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     fine: null,
     interest: {
       amount: 100,
@@ -163,12 +214,18 @@ test('changeIssuerWhenInterestOrFine: when fine is null, interest has info and i
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
+  t.is(result.issuer_agency, '1229')
+  t.is(result.issuer_account, '469')
+  t.is(result.issuer_wallet, '26')
 })
 
 test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and is boleto-api', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'boleto-api-bradesco-shopfacil',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     fine: {
       amount: 100,
     },
@@ -178,12 +235,18 @@ test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and i
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'bradesco')
+  t.is(result.issuer_agency, '1229')
+  t.is(result.issuer_account, '469')
+  t.is(result.issuer_wallet, '26')
 })
 
 test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and is not boleto-api', async (t) => {
   const boleto = {
     amount: 100,
     issuer: 'development',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
     fine: {
       amount: 100,
     },
@@ -193,4 +256,7 @@ test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and i
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
 
   t.is(result.issuer, 'development')
+  t.is(result.issuer_agency, '123')
+  t.is(result.issuer_account, '1234')
+  t.is(result.issuer_wallet, '25')
 })
