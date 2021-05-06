@@ -23,6 +23,9 @@ const {
 } = require('sequelize')
 const { Boleto: NodeBoleto } = require('node-boleto')
 const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
+const { makeFromLogger } = require('../../lib/logger')
+
+const makeLogger = makeFromLogger('boleto/model')
 
 const barcodeBank = cond([
   [equals('development'), always('bradesco')],
@@ -140,8 +143,27 @@ const validateModel = (boleto) => {
     always(defaultAddress)
   )
 
+
+  const logger = makeLogger({ operation: 'create_boleto_model' }, { })
+
+  logger.info({
+    status: 'started',
+    metadata: {
+      payer_address: boleto.payer_address,
+      company_address: boleto.company_address,
+    },
+  })
+
   boleto.payer_address = getAddress(boleto.payer_address) // eslint-disable-line
   boleto.company_address = getAddress(boleto.company_address) // eslint-disable-line
+
+  logger.info({
+    status: 'ended',
+    metadata: {
+      payer_address: boleto.payer_address,
+      company_address: boleto.company_address,
+    },
+  })
 }
 
 function create (database) {
