@@ -37,6 +37,37 @@ const buildHeaders = () => {
   }
 }
 
+const noStrictRules = {
+  acceptDivergentAmount: true,
+  maxDaysToPayPastDue: 60,
+}
+
+const strictExpirateDateRules = {
+  acceptDivergentAmount: false,
+  maxDaysToPayPastDue: 0,
+}
+
+const defineRules = (boleto) => {
+  if (boleto.rules) {
+    if (boleto.rules.includes('strict_expiration_date')) {
+      return strictExpirateDateRules
+    }
+    if (boleto.rules.includes('no_strict')) {
+      return noStrictRules
+    }
+  }
+
+  if (boleto.issuer_wallet === '25') {
+    return strictExpirateDateRules
+  }
+
+  if (boleto.issuer_wallet === '26') {
+    return noStrictRules
+  }
+
+  return null
+}
+
 const buildPayload = (boleto, operationId) => {
   const formattedExpirationDate = formatDate(boleto.expiration_date)
   const formattedRecipientStateCode = formatStateCode(boleto, 'company_address')
@@ -59,6 +90,7 @@ const buildPayload = (boleto, operationId) => {
       ourNumber: path(['title_id'], boleto),
       instructions: path(['instructions'], boleto),
       documentNumber: String(path(['title_id'], boleto)),
+      rules: defineRules(boleto),
     },
     recipient: {
       name: `${path(['company_name'], boleto)} | Pagar.me Pagamentos S/A`,
