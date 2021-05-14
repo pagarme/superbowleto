@@ -67,10 +67,24 @@ const findBoletoConfiguration = async (boleto, operationId) => {
 }
 
 const setBoletoRulesConfiguration = (boleto, operationId) => {
-  const config = {
+  let config
+
+  const configBradesco = {
     issuer: 'bradesco',
     issuer_account: '469',
     issuer_agency: '1229',
+  }
+
+  const configCaixa = {
+    issuer: 'boleto-api-caixa',
+    issuer_account: '1103388',
+    issuer_agency: '3337',
+  }
+
+  if (boleto.issuer === 'boleto-api-caixa') {
+    config = configCaixa
+  } else {
+    config = configBradesco
   }
 
   if (boleto.rules && boleto.issuer !== 'development') {
