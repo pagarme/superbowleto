@@ -17,7 +17,7 @@ const noStrictRules = {
 
 const strictExpirateDateRules = {
   acceptDivergentAmount: false,
-  maxDaysToPayPastDue: 0,
+  maxDaysToPayPastDue: 1,
 }
 
 test('buildPayload without rules and wallet then title.rules should be null', async (t) => {
