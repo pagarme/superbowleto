@@ -1,5 +1,10 @@
 version: 2
 
+parameters:
+  machine_image:
+    type: string
+    default: "ubuntu-2004:202010-01" 
+
 _run:
   prepare_to_deploy: &prepare_to_deploy
     name: Prepare to deploy
@@ -8,7 +13,8 @@ _run:
       # install jq
       curl -sSL -o ~/.local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x ~/.local/bin/jq
       # install ecs-deploy (in work version)
-      curl -sSL -o /tmp/ecs-deploy.tar.gz https://github.com/silinternational/ecs-deploy/archive/3.4.0.tar.gz && tar xvfz /tmp/ecs-deploy.tar.gz -C /tmp && sudo cp /tmp/ecs-deploy-3.4.0/ecs-deploy ~/.local/bin/ecs-deploy
+      curl -sSL -o /tmp/ecs-deploy.tar.gz https://github.com/silinternational/ecs-deploy/archive/3.10.0.tar.gz && tar xvfz /tmp/ecs-deploy.tar.gz -C /tmp && sudo cp /tmp/ecs-deploy-3.10.0/ecs-deploy ~/.local/bin/ecs-deploy
+      pip install --upgrade "pip>=9.0,<=20.3.4"
       pip install awscli --upgrade --user
   pull_sonar_image: &pull_sonar_image
     name: Pull Docker sonar-scanner image
@@ -18,7 +24,8 @@ _run:
 
 jobs:
   test:
-    machine: true
+    machine:
+      image: << pipeline.parameters.machine_image >>
     steps:
       - attach_workspace:
           at: ~/project
@@ -47,7 +54,8 @@ jobs:
           paths:
             - ./
   sonar:
-    machine: true
+    machine:
+      image: << pipeline.parameters.machine_image >>
     steps:
       - attach_workspace:
           at: ~/project
@@ -58,7 +66,7 @@ jobs:
   build_image:
     working_directory: ~/superbowleto
     machine:
-        enabled: true
+      image: << pipeline.parameters.machine_image >>
     steps:
       - checkout
       - run:
@@ -75,7 +83,7 @@ jobs:
   push_stg:
     working_directory: ~/superbowleto
     machine:
-        enabled: true
+      image: << pipeline.parameters.machine_image >>
     steps:
       - attach_workspace:
          at: ~/superbowleto/images
@@ -97,7 +105,7 @@ jobs:
   push_sdx:
     working_directory: ~/superbowleto
     machine:
-        enabled: true
+      image: << pipeline.parameters.machine_image >>
     steps:
       - attach_workspace:
          at: ~/superbowleto/images
@@ -119,7 +127,7 @@ jobs:
   push_prd:
     working_directory: ~/superbowleto
     machine:
-        enabled: true
+      image: << pipeline.parameters.machine_image >>
     steps:
       - attach_workspace:
           at: ~/superbowleto/images
@@ -140,7 +148,8 @@ jobs:
             docker push ${PRD_IMAGE}:latest
   deploy_stg:
     working_directory: ~/superbowleto
-    machine: true
+    machine:
+      image: << pipeline.parameters.machine_image >>
     steps:
       - run: *prepare_to_deploy
       - checkout
@@ -157,7 +166,8 @@ jobs:
             ~/.local/bin/ecs-deploy --max-definitions 1 --enable-rollback -c $STG_CLUSTER -r $REGION -n superbowleto-w-stg -i $STG_IMAGE --timeout $TIMEOUT
   deploy_sdx:
     working_directory: ~/superbowleto
-    machine: true
+    machine:
+      image: << pipeline.parameters.machine_image >>
     steps:
       - run: *prepare_to_deploy
       - checkout
@@ -174,7 +184,8 @@ jobs:
             ~/.local/bin/ecs-deploy --max-definitions 2 --enable-rollback -c $SDX_CLUSTER -r $REGION -n superbowleto-w-sdx -i $SDX_IMAGE --timeout $TIMEOUT
   deploy_prd:
     working_directory: ~/superbowleto
-    machine: true
+    machine:
+      image: << pipeline.parameters.machine_image >>
     steps:
       - run: *prepare_to_deploy
       - checkout
