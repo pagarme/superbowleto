@@ -119,7 +119,7 @@ jobs:
             export AWS_ACCOUNT=$SDX_AWS_ACCOUNT
             export AWS_REGION=$REGION
             #ecr-login
-            aws ecr get-login-password | docker login --username AWS --password-stdin "$STG_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx"
+            aws ecr get-login-password | docker login --username AWS --password-stdin "$SDX_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx"
             # build and push server
             export SDX_IMAGE="$SDX_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-sdx"
             docker tag build:latest ${SDX_IMAGE}:$CIRCLE_TAG
@@ -142,7 +142,7 @@ jobs:
             export AWS_ACCOUNT=$PRD_AWS_ACCOUNT
             export AWS_REGION=$REGION
             #ecr-login
-            aws ecr get-login-password | docker login --username AWS --password-stdin "$STG_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd"
+            aws ecr get-login-password | docker login --username AWS --password-stdin "$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd"
             # build and push server
             export PRD_IMAGE="$PRD_AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com/superbowleto-prd"
             docker tag build:latest ${PRD_IMAGE}:$CIRCLE_TAG
