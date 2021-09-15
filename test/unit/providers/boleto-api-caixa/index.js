@@ -10,7 +10,71 @@ import {
   getBoletoUrl,
 } from '../../../../src/providers/boleto-api-caixa'
 
+const noStrictRules = {
+  acceptDivergentAmount: true,
+  maxDaysToPayPastDue: 60,
+}
+
+const strictExpirateDateRules = {
+  acceptDivergentAmount: false,
+  maxDaysToPayPastDue: 1,
+}
+
+test('buildPayload without rules and wallet then title.rules should be null', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto()
+  delete boleto.issuer_wallet
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.rules, null)
+})
+
+test('buildPayload with no_strict rules then title.rules should have no_strict rules', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    rules: ['no_strict'],
+  })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.rules, noStrictRules)
+})
+
+test('buildPayload with strict_expiration_date rules then title.rules should have strict_expiration_date rules', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    rules: ['strict_expiration_date'],
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.rules, strictExpirateDateRules)
+})
+
+test('buildPayload without rules and wallet 25 then title.rules should have strict_expiration_date rules', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    issuer_wallet: '25',
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.rules, strictExpirateDateRules)
+})
+
+test('buildPayload without rules and wallet 26 then title.rules should have no_strict rules', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    issuer_wallet: '26',
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.rules, noStrictRules)
+})
+
 test('buildPayload with full payer_address', async (t) => {
+  const operationId = cuid()
   const boleto = await createBoleto({
     payer_address: {
       zipcode: '5555555',
@@ -23,60 +87,36 @@ test('buildPayload with full payer_address', async (t) => {
     },
   })
 
-  const operationId = cuid()
-
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload, {
-    bankNumber: 104,
-    agreement: {
-      agreementNumber: 1103388,
-      agency: '3337',
-    },
-    title: {
-      expireDate: moment(boleto.expiration_date).tz('America/Sao_Paulo').format('YYYY-MM-DD'),
-      amountInCents: boleto.amount,
-      ourNumber: boleto.title_id,
-      instructions: boleto.instructions,
-      documentNumber: String(boleto.title_id),
-    },
-    recipient: {
-      name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
-      document: {
-        type: 'CNPJ',
-        number: '18727053000174',
-      },
-      address: {
-        street: boleto.company_address.street,
-        number: boleto.company_address.street_number,
-        complement: boleto.company_address.complementary,
-        zipCode: boleto.company_address.zipcode,
-        district: boleto.company_address.neighborhood,
-        city: boleto.company_address.city,
-        stateCode: boleto.company_address.state,
-      },
-    },
-    buyer: {
-      name: boleto.payer_name,
-      document: {
-        type: boleto.payer_document_type.toUpperCase(),
-        number: boleto.payer_document_number,
-      },
-      address: {
-        street: boleto.payer_address.street,
-        number: boleto.payer_address.street_number,
-        complement: boleto.payer_address.complementary,
-        district: boleto.payer_address.neighborhood,
-        zipCode: boleto.payer_address.zipcode,
-        city: boleto.payer_address.city,
-        stateCode: boleto.payer_address.state,
-      },
-    },
-    requestKey: operationId,
+  t.deepEqual(payload.buyer.address, {
+    street: boleto.payer_address.street,
+    number: boleto.payer_address.street_number,
+    complement: boleto.payer_address.complementary,
+    district: boleto.payer_address.neighborhood,
+    zipCode: boleto.payer_address.zipcode,
+    city: boleto.payer_address.city,
+    stateCode: boleto.payer_address.state,
   })
 })
 
 test('buildPayload with payer_address incomplete', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto()
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.buyer.address, {
+    street: 'Rua Fidêncio Ramos',
+    number: '308',
+    complement: '9º andar, conjunto 91',
+    zipCode: '04551010',
+    district: 'Vila Olímpia',
+    city: 'São Paulo',
+    stateCode: 'SP',
+  })
+})
+
+test('buildPayload complete', async (t) => {
   const operationId = cuid()
   const boleto = await createBoleto()
   const payload = buildPayload(boleto, operationId)
@@ -93,6 +133,10 @@ test('buildPayload with payer_address incomplete', async (t) => {
       ourNumber: boleto.title_id,
       instructions: boleto.instructions,
       documentNumber: String(boleto.title_id),
+      rules: {
+        acceptDivergentAmount: true,
+        maxDaysToPayPastDue: 60,
+      },
     },
     recipient: {
       name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
@@ -129,6 +173,7 @@ test('buildPayload with payer_address incomplete', async (t) => {
     requestKey: operationId,
   })
 })
+
 
 test('translateResponseCode: with a "registered" code', (t) => {
   const axiosResponse = {

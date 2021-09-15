@@ -97,3 +97,29 @@ test('setBoletoRulesConfiguration: strict_expiration_date', async (t) => {
     company_name: payload.company_name,
   })
 })
+
+test('setBoletoRulesConfiguration: caixa with no_strict rules', async (t) => {
+  const payload = mock
+  const operationId = cuid()
+
+  payload.rules = ['no_strict']
+  payload.issuer = 'boleto-api-caixa'
+
+
+  const boleto = await setBoletoRulesConfiguration(payload, operationId)
+
+  t.is(boleto.issuer_wallet, '26')
+  t.is(boleto.issuer, 'boleto-api-caixa')
+
+  assert.containSubset(boleto, {
+    issuer: boleto.issuer,
+    issuer_account: boleto.issuer_account,
+    issuer_agency: boleto.issuer_agency,
+    issuer_wallet: boleto.issuer_wallet,
+    amount: payload.amount,
+    instructions: payload.instructions,
+    payer_name: payload.payer_name,
+    company_name: payload.company_name,
+  })
+})
+
