@@ -28,6 +28,10 @@ const {
 const makeLogger = makeFromLogger('boleto-api-caixa/index')
 
 const caixaBankCode = 104
+const agreementNumber = 1103388
+const agency = '3337'
+const recipientDocumentNumber = '18727053000174'
+const recipientDocumentType = 'CNPJ'
 
 const buildHeaders = () => {
   const authorization = encodeBase64(`${boletoApiUser}:${boletoApiPassword}`)
@@ -68,15 +72,21 @@ const defineRules = (boleto) => {
   return null
 }
 
+const getInstructions = (companyName, boleto) => {
+  let instructions = path(['instructions'], boleto) || ''
+
+  instructions += ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${recipientDocumentNumber}. Para confirmar a existência deste boleto consulte em pagar.me/boletos.`
+
+  return instructions
+}
+
 const buildPayload = (boleto, operationId) => {
   const formattedExpirationDate = formatDate(boleto.expiration_date)
   const formattedRecipientStateCode = formatStateCode(boleto, 'company_address')
   const formattedBuyerStateCode = formatStateCode(boleto, 'payer_address')
+  const companyName = path(['company_name'], boleto)
 
-  const agreementNumber = 1103388
-  const agency = '3337'
-  const recipientDocumentNumber = '18727053000174'
-  const recipientDocumentType = 'CNPJ'
+  const instructions = getInstructions(companyName, boleto)
 
   const payload = {
     bankNumber: caixaBankCode,
@@ -88,12 +98,12 @@ const buildPayload = (boleto, operationId) => {
       expireDate: formattedExpirationDate,
       amountInCents: path(['amount'], boleto),
       ourNumber: path(['title_id'], boleto),
-      instructions: path(['instructions'], boleto),
+      instructions,
       documentNumber: String(path(['title_id'], boleto)),
       rules: defineRules(boleto),
     },
     recipient: {
-      name: `${path(['company_name'], boleto)} | Pagar.me Pagamentos S/A`,
+      name: `${companyName} | Pagar.me Pagamentos S/A`,
       document: {
         type: recipientDocumentType,
         number: recipientDocumentNumber,
