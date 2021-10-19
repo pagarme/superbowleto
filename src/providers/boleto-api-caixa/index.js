@@ -141,11 +141,14 @@ const buildPayload = (boleto, operationId) => {
 }
 
 const sendRequestToBoletoApi = async (payload, headers) => {
+  const timeoutMs = process.env.APP_ENV === 'prd' ? 50000 : 25000
+
   const axiosPayload = {
     data: payload,
     url: endpoint,
     method: 'POST',
     headers,
+    timeout: timeoutMs,
   }
 
   try {
