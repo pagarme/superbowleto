@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   postgres:
-    image: postgres:9.6-alpine
+    image: postgres:12.8-alpine
     ports:
       - 5432
     environment:
