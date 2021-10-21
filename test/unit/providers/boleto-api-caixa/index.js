@@ -20,6 +20,8 @@ const strictExpirateDateRules = {
   maxDaysToPayPastDue: 1,
 }
 
+const defaultInstruction = ' A emissão deste boleto foi solicitada e/ou intermediada pela empresa company name test - CNPJ: 18727053000174. Para confirmar a existência deste boleto consulte em pagar.me/boletos.'
+
 test('buildPayload without rules and wallet then title.rules should be null', async (t) => {
   const operationId = cuid()
   const boleto = await createBoleto()
@@ -116,10 +118,48 @@ test('buildPayload with payer_address incomplete', async (t) => {
   })
 })
 
+test('buildPayload with the instruction field filled should return the received instruction with the default instruction', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({ company_name: 'company name test' })
+  const payload = buildPayload(boleto, operationId)
+
+  let instructionsExpected = boleto.instructions
+  instructionsExpected += `${defaultInstruction}`
+
+  t.deepEqual(payload.title.instructions, instructionsExpected)
+})
+
+test('buildPayload with empty instruction field should return default instruction', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({ instructions: '', company_name: 'company name test' })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.instructions, defaultInstruction)
+})
+
+test('buildPayload with null instruction field should return default instruction', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({ instructions: null, company_name: 'company name test' })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.instructions, defaultInstruction)
+})
+
+test('buildPayload with undefined instruction field should return default instruction', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({ instructions: undefined, company_name: 'company name test' })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.title.instructions, defaultInstruction)
+})
+
 test('buildPayload complete', async (t) => {
   const operationId = cuid()
-  const boleto = await createBoleto()
+  const boleto = await createBoleto({ company_name: 'company name test' })
   const payload = buildPayload(boleto, operationId)
+
+  let { instructions } = boleto
+  instructions += `${defaultInstruction}`
 
   t.deepEqual(payload, {
     bankNumber: 104,
@@ -131,7 +171,7 @@ test('buildPayload complete', async (t) => {
       expireDate: moment(boleto.expiration_date).tz('America/Sao_Paulo').format('YYYY-MM-DD'),
       amountInCents: boleto.amount,
       ourNumber: boleto.title_id,
-      instructions: boleto.instructions,
+      instructions,
       documentNumber: String(boleto.title_id),
       rules: {
         acceptDivergentAmount: true,

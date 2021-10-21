@@ -181,7 +181,7 @@ const getProvider = ({ operationId } = defaultOptions) => {
 
     const headers = buildHeaders()
     const payload = buildPayload(boleto)
-    const timeoutMs = process.env.APP_ENV === 'prd' ? 6000 : 25000
+    const timeoutMs = process.env.APP_ENV === 'prd' ? 50000 : 25000
 
     return Promise.resolve({
       headers,
