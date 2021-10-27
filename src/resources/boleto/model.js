@@ -16,6 +16,7 @@ const {
   pipe,
   pick,
   values,
+  pickAll,
 } = require('ramda')
 
 const {
@@ -125,13 +126,14 @@ const validateModel = (boleto) => {
   const isNotNil = complement(isNil)
 
   const hasNoNilValues = pipe(
+    pickAll(requiredAddressFields),
     values,
     all(isNotNil)
   )
 
   const isValidAddress = both(
-    hasNoNilValues,
-    hasAllRequiredFields
+    hasAllRequiredFields,
+    hasNoNilValues
   )
 
   const getAddress = ifElse(

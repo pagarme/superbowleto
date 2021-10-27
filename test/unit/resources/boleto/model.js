@@ -3,6 +3,7 @@ import {
   buildModelResponse,
   generateBoletoCode,
   validateModel,
+
 } from '../../../../src/resources/boleto/model'
 
 test('buildResponse', async (t) => {
@@ -175,4 +176,80 @@ test('validateModel: with incomplete address', async (t) => {
     city: 'São Paulo',
     state: 'SP',
   }, 'should use default address')
+})
+
+test('validateModel: with null complementary address', async (t) => {
+  const boleto = {
+    payer_address: {
+      zipcode: '01329010',
+      street: 'Rua dos Franceses',
+      street_number: '147',
+      neighborhood: 'Morro dos Ingleses',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      complementary: null,
+    },
+  }
+
+  validateModel(boleto)
+
+  t.deepEqual(boleto.payer_address, {
+    zipcode: '01329010',
+    street: 'Rua dos Franceses',
+    street_number: '147',
+    neighborhood: 'Morro dos Ingleses',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    complementary: null,
+  }, 'should use payer_address "as is"')
+})
+
+test('validateModel: without complementary address', async (t) => {
+  const boleto = {
+    payer_address: {
+      zipcode: '01329010',
+      street: 'Rua dos Franceses',
+      street_number: '147',
+      neighborhood: 'Morro dos Ingleses',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+    },
+  }
+
+  validateModel(boleto)
+
+  t.deepEqual(boleto.payer_address, {
+    zipcode: '01329010',
+    street: 'Rua dos Franceses',
+    street_number: '147',
+    neighborhood: 'Morro dos Ingleses',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+  }, 'should use payer_address "as is"')
+})
+
+test('validateModel: with blank complementary address', async (t) => {
+  const boleto = {
+    payer_address: {
+      zipcode: '01329010',
+      street: 'Rua dos Franceses',
+      street_number: '147',
+      neighborhood: 'Morro dos Ingleses',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      complementary: '',
+    },
+  }
+
+  validateModel(boleto)
+
+  t.deepEqual(boleto.payer_address, {
+    zipcode: '01329010',
+    street: 'Rua dos Franceses',
+    street_number: '147',
+    neighborhood: 'Morro dos Ingleses',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    complementary: '',
+  }, 'should use payer_address "as is"')
 })
