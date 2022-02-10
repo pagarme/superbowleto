@@ -226,7 +226,7 @@ The following steps illustrate the case where the provider **could** be reached 
 
 ##### b) Provider **could not** process the boleto
 
-The following steps illustrate the case where the provider **could** be reached and it could process the boleto.
+The following steps illustrate the case where the provider **could not** be reached or it **could not** process the boleto.
 
 1. The `Client` makes an HTTP request to create a boleto.
 1. We create the boleto in the `Database` with status `issued`.
