@@ -17,9 +17,11 @@ const changeIssuerWhenInterestOrFine = (boleto, operationId) => {
     issuer,
   } = boleto
 
-  const issuerIsBoletoApi = issuer.includes('boleto-api')
+  const isBoletoApiProviderWithoutInterestAndFine =
+    issuer.includes('boleto-api-bradesco-shopfacil')
 
-  if (issuerIsBoletoApi && (!isEmptyOrNull(interest) || !isEmptyOrNull(fine))) {
+  if (isBoletoApiProviderWithoutInterestAndFine &&
+    (!isEmptyOrNull(interest) || !isEmptyOrNull(fine))) {
     const config = {
       issuer: 'bradesco',
       issuer_account: '469',

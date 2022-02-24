@@ -7,6 +7,7 @@ const {
   find,
   propEq,
   pipe,
+  pathOr,
 } = require('ramda')
 
 const { encodeBase64 } = require('../../lib/encoding')
@@ -32,6 +33,9 @@ const agreementNumber = 1103388
 const agency = '3337'
 const recipientDocumentNumber = '18727053000174'
 const recipientDocumentType = 'CNPJ'
+const defaultFeesAmountInCents = 0
+const defaultFeesPercentage = 0.0
+const numberOfStandardDays = 0
 
 const buildHeaders = () => {
   const authorization = encodeBase64(`${boletoApiUser}:${boletoApiPassword}`)
@@ -72,6 +76,56 @@ const defineRules = (boleto) => {
   return null
 }
 
+const defineFine = (boleto) => {
+  const daysAfterExpirationDate = pathOr(numberOfStandardDays, ['fine', 'days'], boleto)
+  const amountInCents = pathOr(defaultFeesAmountInCents, ['fine', 'amount'], boleto)
+  const percentageOnTotal = pathOr(defaultFeesPercentage, ['fine', 'percentage'], boleto)
+
+  if (daysAfterExpirationDate > numberOfStandardDays ||
+    amountInCents > defaultFeesAmountInCents ||
+    percentageOnTotal > defaultFeesPercentage) {
+    return {
+      daysAfterExpirationDate,
+      amountInCents,
+      percentageOnTotal,
+    }
+  }
+
+  return null
+}
+
+const defineInterest = (boleto) => {
+  const daysAfterExpirationDate = pathOr(numberOfStandardDays, ['interest', 'days'], boleto)
+  const amountPerDayInCents = pathOr(defaultFeesAmountInCents, ['interest', 'amount'], boleto)
+  const percentagePerMonth = pathOr(defaultFeesPercentage, ['interest', 'percentage'], boleto)
+
+  if (daysAfterExpirationDate > numberOfStandardDays ||
+    amountPerDayInCents > defaultFeesAmountInCents ||
+    percentagePerMonth > defaultFeesPercentage) {
+    return {
+      daysAfterExpirationDate,
+      amountPerDayInCents,
+      percentagePerMonth,
+    }
+  }
+
+  return null
+}
+
+const defineFees = (boleto) => {
+  const fine = defineFine(boleto)
+  const interest = defineInterest(boleto)
+
+  if (fine || interest) {
+    return {
+      fine,
+      interest,
+    }
+  }
+
+  return null
+}
+
 const getInstructions = (companyName, boleto) => {
   let instructions = path(['instructions'], boleto) || ''
 
@@ -101,6 +155,7 @@ const buildPayload = (boleto, operationId) => {
       instructions,
       documentNumber: String(path(['title_id'], boleto)),
       rules: defineRules(boleto),
+      fees: defineFees(boleto),
     },
     recipient: {
       name: `${companyName} | Pagar.me Pagamentos S/A`,
