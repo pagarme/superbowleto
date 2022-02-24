@@ -7,6 +7,7 @@ const {
   find,
   propEq,
   pipe,
+  pathOr,
 } = require('ramda')
 
 const { encodeBase64 } = require('../../lib/encoding')
@@ -32,6 +33,8 @@ const agreementNumber = 1103388
 const agency = '3337'
 const recipientDocumentNumber = '18727053000174'
 const recipientDocumentType = 'CNPJ'
+const defaultValueFee = 0
+const numberOfStandardDays = 0
 
 const buildHeaders = () => {
   const authorization = encodeBase64(`${boletoApiUser}:${boletoApiPassword}`)
@@ -101,6 +104,18 @@ const buildPayload = (boleto, operationId) => {
       instructions,
       documentNumber: String(path(['title_id'], boleto)),
       rules: defineRules(boleto),
+      fees: {
+        fine: {
+          daysAfterExpirationDate: pathOr(numberOfStandardDays, ['fine', 'days'], boleto),
+          amountInCents: pathOr(defaultValueFee, ['fine', 'amount'], boleto),
+          percentageOnTotal: pathOr(defaultValueFee, ['fine', 'percentage'], boleto),
+        },
+        interest: {
+          daysAfterExpirationDate: pathOr(numberOfStandardDays, ['interest', 'days'], boleto),
+          amountPerDayInCents: pathOr(defaultValueFee, ['interest', 'amount'], boleto),
+          percentagePerMonth: pathOr(defaultValueFee, ['interest', 'percentage'], boleto),
+        },
+      },
     },
     recipient: {
       name: `${companyName} | Pagar.me Pagamentos S/A`,

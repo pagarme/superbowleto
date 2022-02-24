@@ -33,7 +33,7 @@ services:
 
   test:
     build: .
-    entrypoint: npm test
+    command: npm test
     environment:
       - API_ENV=test
     volumes:

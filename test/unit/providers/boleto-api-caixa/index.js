@@ -153,6 +153,256 @@ test('buildPayload with undefined instruction field should return default instru
   t.deepEqual(payload.title.instructions, defaultInstruction)
 })
 
+test('buildPayload with undefined fine should return the fine fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 0
+  const amountInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 0
+  const boleto = await createBoleto()
+  delete boleto.fine
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    amountInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with empty fine should return the fine fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 0
+  const amountInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 0
+  const boleto = await createBoleto({ fine: {} })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    amountInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with fine per amount should return the fine fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 0
+  const boleto = await createBoleto()
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    boleto.fine.days
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    boleto.fine.amount
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with fine per percentage should return the fine fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 2.34
+  const amountInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 4
+  const boleto = await createBoleto({
+    fine: {
+      days: daysAfterExpirationDateExpected,
+      percentage: percentageOnTotalExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    amountInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with fine per percentage and amount should return the fine fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 1.10
+  const amountInCentsExpected = 200
+  const daysAfterExpirationDateExpected = 1
+  const boleto = await createBoleto({
+    fine: {
+      amount: amountInCentsExpected,
+      days: daysAfterExpirationDateExpected,
+      percentage: percentageOnTotalExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    amountInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with undefined interest should return the interest fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 0
+  const amountPerDayInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 0
+  const boleto = await createBoleto()
+  delete boleto.interest
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    amountPerDayInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
+})
+
+test('buildPayload with empty interest should return the interest fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 0
+  const amountPerDayInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 0
+  const boleto = await createBoleto({ interest: {} })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    amountPerDayInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
+})
+
+test('buildPayload with interest per amount should return the interest fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 0
+  const boleto = await createBoleto()
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    boleto.interest.days
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    boleto.interest.amount
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
+})
+
+test('buildPayload with interest per percentage should return the interest fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 2.34
+  const amountPerDayInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 4
+  const boleto = await createBoleto({
+    interest: {
+      days: daysAfterExpirationDateExpected,
+      percentage: percentagePerMonthExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    amountPerDayInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
+})
+
+test('buildPayload with interest per percentage and amount should return the interest fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 1.10
+  const amountPerDayInCentsExpected = 200
+  const daysAfterExpirationDateExpected = 1
+  const boleto = await createBoleto({
+    interest: {
+      amount: amountPerDayInCentsExpected,
+      days: daysAfterExpirationDateExpected,
+      percentage: percentagePerMonthExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    amountPerDayInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
+})
+
 test('buildPayload complete', async (t) => {
   const operationId = cuid()
   const boleto = await createBoleto({ company_name: 'company name test' })
@@ -176,6 +426,18 @@ test('buildPayload complete', async (t) => {
       rules: {
         acceptDivergentAmount: true,
         maxDaysToPayPastDue: 60,
+      },
+      fees: {
+        fine: {
+          daysAfterExpirationDate: boleto.fine.days,
+          amountInCents: boleto.fine.amount,
+          percentageOnTotal: 0,
+        },
+        interest: {
+          daysAfterExpirationDate: boleto.interest.days,
+          amountPerDayInCents: boleto.interest.amount,
+          percentagePerMonth: 0,
+        },
       },
     },
     recipient: {
