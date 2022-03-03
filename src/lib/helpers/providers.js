@@ -15,12 +15,15 @@ const changeIssuerWhenInterestOrFine = (boleto, operationId) => {
     fine,
     interest,
     issuer,
+    external_id: externalId,
   } = boleto
 
-  const isBoletoApiProviderWithoutInterestAndFine =
-    issuer.includes('boleto-api-bradesco-shopfacil')
+  const companyCaixaFineAndInterestTestId = '5aba73e21b9d0d663cb107a0'
 
-  if (isBoletoApiProviderWithoutInterestAndFine &&
+  const isBoletoApi =
+    issuer.includes('boleto-api') && externalId !== companyCaixaFineAndInterestTestId
+
+  if (isBoletoApi &&
     (!isEmptyOrNull(interest) || !isEmptyOrNull(fine))) {
     const config = {
       issuer: 'bradesco',
