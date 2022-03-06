@@ -9,9 +9,10 @@
 
 - [Technology](#technology)
 - [Developing](#developing)
-	- [First Install](#first-install)
-	- [Running tests](#running-tests)
-	- [Installing new dependencies](#installing-new-dependencies)
+  - [Makefile](#makefile)
+  - [First Install](#first-install)
+  - [Running tests](#running-tests)
+  - [Note concerning Makefile](#note-concerning-makefile)
 - [Testing](#testing)
 - [Data Flow](#data-flow)
 	- [Server](#server)
@@ -38,6 +39,18 @@ Here's a brief overview of our technology stack:
 
 In order to develop for this project you must have [Docker](https://docs.docker.com/)
 and [Docker Compose](https://docs.docker.com/compose/) installed.
+
+### Makefile
+
+In order to obtain information about various commands that the `make` tool supports in this project, just run:
+
+```sh
+$ make
+```
+or
+```sh
+$ make help
+```
 
 ### First Install
 
@@ -102,7 +115,7 @@ Tests are separate in `functional`, `integration` and `unit`. You can either run
   $ docker-compose run test npm run test-unit
   ```
 
-For the CI purposes we have a specif command that will generate coverage report and xml test results report to be published at the CircleCI.
+For the CI purposes we have a specific command that will generate coverage report and xml test results report to be published at the CircleCI.
 
   ```sh
   $ docker-compose run --entrypoint="npm run test-ci" test --abort-on-container-exit
