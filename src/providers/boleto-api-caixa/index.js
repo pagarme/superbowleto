@@ -3,6 +3,7 @@ const Promise = require('bluebird')
 const cuid = require('cuid')
 const {
   path,
+  pathOr,
   prop,
   find,
   propEq,
@@ -14,6 +15,7 @@ const { makeFromLogger } = require('../../lib/logger')
 const { isA4XXError } = require('../../lib/helpers/errors')
 const {
   formatDate,
+  getDocumentType,
   formatStateCode,
 } = require('./formatter')
 
@@ -30,6 +32,7 @@ const makeLogger = makeFromLogger('boleto-api-caixa/index')
 const caixaBankCode = 104
 const agreementNumber = 1103388
 const agency = '3337'
+const recipientDocumentName = 'Pagar.me Pagamentos S/A'
 const recipientDocumentNumber = '18727053000174'
 const recipientDocumentType = 'CNPJ'
 
@@ -72,10 +75,10 @@ const defineRules = (boleto) => {
   return null
 }
 
-const getInstructions = (companyName, boleto) => {
+const getInstructions = (companyName, companyDocument, boleto) => {
   let instructions = path(['instructions'], boleto) || ''
 
-  instructions += ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${recipientDocumentNumber}. Para confirmar a existência deste boleto consulte em pagar.me/boletos.`
+  instructions += ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocument}. Para confirmar a existência deste boleto consulte em pagar.me/boletos.`
 
   return instructions
 }
@@ -84,9 +87,10 @@ const buildPayload = (boleto, operationId) => {
   const formattedExpirationDate = formatDate(boleto.expiration_date)
   const formattedRecipientStateCode = formatStateCode(boleto, 'company_address')
   const formattedBuyerStateCode = formatStateCode(boleto, 'payer_address')
-  const companyName = path(['company_name'], boleto)
+  const companyName = pathOr('', ['company_name'], boleto)
+  const companyDocument = pathOr('', ['company_document_number'], boleto)
 
-  const instructions = getInstructions(companyName, boleto)
+  const instructions = getInstructions(companyName, companyDocument, boleto)
 
   const payload = {
     bankNumber: caixaBankCode,
@@ -103,33 +107,40 @@ const buildPayload = (boleto, operationId) => {
       rules: defineRules(boleto),
     },
     recipient: {
-      name: `${companyName} | Pagar.me Pagamentos S/A`,
+      name: recipientDocumentName,
       document: {
         type: recipientDocumentType,
-        number: recipientDocumentNumber,
+        number: String(recipientDocumentNumber),
       },
       address: {
         street: path(['company_address', 'street'], boleto),
-        number: path(['company_address', 'street_number'], boleto),
+        number: String(path(['company_address', 'street_number'], boleto)),
         complement: path(['company_address', 'complementary'], boleto),
-        zipCode: path(['company_address', 'zipcode'], boleto),
+        zipCode: String(path(['company_address', 'zipcode'], boleto)),
         district: path(['company_address', 'neighborhood'], boleto),
         city: path(['company_address', 'city'], boleto),
         stateCode: formattedRecipientStateCode,
       },
     },
+    payeeGuarantor: {
+      name: companyName,
+      document: {
+        type: getDocumentType(companyDocument),
+        number: String(companyDocument),
+      },
+    },
     buyer: {
       name: path(['payer_name'], boleto),
       document: {
-        number: path(['payer_document_number'], boleto),
+        number: String(path(['payer_document_number'], boleto)),
         type: path(['payer_document_type'], boleto).toUpperCase(),
       },
       address: {
         street: path(['payer_address', 'street'], boleto),
-        number: path(['payer_address', 'street_number'], boleto),
+        number: String(path(['payer_address', 'street_number'], boleto)),
         complement: path(['payer_address', 'complementary'], boleto),
         district: path(['payer_address', 'neighborhood'], boleto),
-        zipCode: path(['payer_address', 'zipcode'], boleto),
+        zipCode: String(path(['payer_address', 'zipcode'], boleto)),
         city: path(['payer_address', 'city'], boleto),
         stateCode: formattedBuyerStateCode,
       },

@@ -9,6 +9,10 @@ import {
   isHtml,
   getBoletoUrl,
 } from '../../../../src/providers/boleto-api-caixa'
+import {
+  getDocumentType,
+} from '../../../../src/providers/boleto-api-caixa/formatter'
+
 
 const noStrictRules = {
   acceptDivergentAmount: true,
@@ -20,7 +24,9 @@ const strictExpirateDateRules = {
   maxDaysToPayPastDue: 1,
 }
 
-const defaultInstruction = ' A emissão deste boleto foi solicitada e/ou intermediada pela empresa company name test - CNPJ: 18727053000174. Para confirmar a existência deste boleto consulte em pagar.me/boletos.'
+function getDefaultInstruction (companyName = 'company name test', companyDocumentNumber) {
+  return ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocumentNumber}. Para confirmar a existência deste boleto consulte em pagar.me/boletos.`
+}
 
 test('buildPayload without rules and wallet then title.rules should be null', async (t) => {
   const operationId = cuid()
@@ -124,7 +130,10 @@ test('buildPayload with the instruction field filled should return the received 
   const payload = buildPayload(boleto, operationId)
 
   let instructionsExpected = boleto.instructions
-  instructionsExpected += `${defaultInstruction}`
+  instructionsExpected += getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  )
 
   t.deepEqual(payload.title.instructions, instructionsExpected)
 })
@@ -134,7 +143,10 @@ test('buildPayload with empty instruction field should return default instructio
   const boleto = await createBoleto({ instructions: '', company_name: 'company name test' })
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload.title.instructions, defaultInstruction)
+  t.deepEqual(payload.title.instructions, getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  ))
 })
 
 test('buildPayload with null instruction field should return default instruction', async (t) => {
@@ -142,7 +154,10 @@ test('buildPayload with null instruction field should return default instruction
   const boleto = await createBoleto({ instructions: null, company_name: 'company name test' })
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload.title.instructions, defaultInstruction)
+  t.deepEqual(payload.title.instructions, getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  ))
 })
 
 test('buildPayload with undefined instruction field should return default instruction', async (t) => {
@@ -150,7 +165,10 @@ test('buildPayload with undefined instruction field should return default instru
   const boleto = await createBoleto({ instructions: undefined, company_name: 'company name test' })
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload.title.instructions, defaultInstruction)
+  t.deepEqual(payload.title.instructions, getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  ))
 })
 
 test('buildPayload complete', async (t) => {
@@ -159,7 +177,10 @@ test('buildPayload complete', async (t) => {
   const payload = buildPayload(boleto, operationId)
 
   let { instructions } = boleto
-  instructions += `${defaultInstruction}`
+  instructions += getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  )
 
   t.deepEqual(payload, {
     bankNumber: 104,
@@ -178,8 +199,15 @@ test('buildPayload complete', async (t) => {
         maxDaysToPayPastDue: 60,
       },
     },
+    payeeGuarantor: {
+      name: boleto.company_name,
+      document: {
+        type: getDocumentType(boleto.company_document_number),
+        number: boleto.company_document_number,
+      },
+    },
     recipient: {
-      name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
+      name: 'Pagar.me Pagamentos S/A',
       document: {
         type: 'CNPJ',
         number: '18727053000174',
@@ -214,6 +242,56 @@ test('buildPayload complete', async (t) => {
   })
 })
 
+test('buildPayload with payeeGuarantor fields null', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: null,
+    company_document_number: null,
+  })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.payeeGuarantor, {
+    name: '',
+    document: {
+      type: '',
+      number: '',
+    },
+  })
+})
+
+test('buildPayload with payeeGuarantor fields undefined', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: undefined,
+    company_document_number: undefined,
+  })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.payeeGuarantor, {
+    name: '',
+    document: {
+      type: '',
+      number: '',
+    },
+  })
+})
+
+test('buildPayload with payeeGuarantor fields empty', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: '',
+    company_document_number: '',
+  })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.payeeGuarantor, {
+    name: '',
+    document: {
+      type: '',
+      number: '',
+    },
+  })
+})
 
 test('translateResponseCode: with a "registered" code', (t) => {
   const axiosResponse = {
