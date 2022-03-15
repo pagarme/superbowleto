@@ -1,7 +1,29 @@
 import test from 'ava'
 import {
   formatStateCode,
+  getDocumentType,
 } from '../../../../src/providers/boleto-api-caixa/formatter'
+
+test('getDocumentType: when document is CPF', (t) => {
+  const documentNumber = '01234567890'
+  const result = getDocumentType(documentNumber)
+
+  t.is(result, 'CPF')
+})
+
+test('getDocumentType: when document is CNPJ', (t) => {
+  const documentNumber = '99000467000107'
+  const result = getDocumentType(documentNumber)
+
+  t.is(result, 'CNPJ')
+})
+
+test('getDocumentType: when document is empty', (t) => {
+  const documentNumber = ''
+  const result = getDocumentType(documentNumber)
+
+  t.is(result, '')
+})
 
 test('formatStateCode: finding state on list for payer_address', (t) => {
   const boleto = {
