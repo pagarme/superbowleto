@@ -42,12 +42,10 @@ test.after(async () => {
   })
 })
 
-test('creates a boleto (status success)', async (t) => {
+test.skip('creates a boleto (status success)', async (t) => {
   const payload = mock
 
   payload.issuer = 'boleto-api-caixa'
-  payload.interest = undefined
-  payload.fine = undefined
   payload.external_id = externalId
 
   const { body, statusCode } = await create({

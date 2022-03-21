@@ -4,6 +4,26 @@ import {
   changeIssuerWhenInterestOrFine,
 } from '../../../../src/lib/helpers/providers'
 
+const randomOperationId = 'randomOperationId'
+
+const createFakeBoletoCaixa = (customParameters) => {
+  const boleto = {
+    amount: 100,
+    issuer: 'boleto-api-caixa',
+    issuer_agency: '123',
+    issuer_account: '1234',
+    issuer_wallet: '25',
+    fine: {
+      amount: 100,
+    },
+    interest: {
+      amount: 100,
+    },
+  }
+
+  return { ...boleto, ...customParameters }
+}
+
 test('isEmptyOrNull: when is not empty or null', async (t) => {
   const interest = {
     amount: 100,
@@ -259,4 +279,70 @@ test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and i
   t.is(result.issuer_agency, '123')
   t.is(result.issuer_account, '1234')
   t.is(result.issuer_wallet, '25')
+})
+
+test.skip('changeIssuerWhenInterestOrFine: when interest is null, fine has info and is boleto-api-caixa', async (t) => {
+  const boleto = createFakeBoletoCaixa({ interest: null })
+
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
+
+  t.is(result.issuer, boleto.issuer)
+  t.is(result.issuer_agency, boleto.issuer_agency)
+  t.is(result.issuer_account, boleto.issuer_account)
+  t.is(result.issuer_wallet, boleto.issuer_wallet)
+})
+
+test.skip('changeIssuerWhenInterestOrFine: when fine is null, interest has info and is boleto-api-caixa', async (t) => {
+  const boleto = createFakeBoletoCaixa({ fine: null })
+
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
+
+  t.is(result.issuer, boleto.issuer)
+  t.is(result.issuer_agency, boleto.issuer_agency)
+  t.is(result.issuer_account, boleto.issuer_account)
+  t.is(result.issuer_wallet, boleto.issuer_wallet)
+})
+
+test('changeIssuerWhenInterestOrFine: when fine is empty', async (t) => {
+  const boleto = createFakeBoletoCaixa({ fine: {}, interest: undefined })
+
+  const result = changeIssuerWhenInterestOrFine(boleto)
+
+  t.is(result.issuer, boleto.issuer)
+  t.is(result.issuer_agency, boleto.issuer_agency)
+  t.is(result.issuer_account, boleto.issuer_account)
+  t.is(result.issuer_wallet, boleto.issuer_wallet)
+})
+
+test('changeIssuerWhenInterestOrFine: when fine is null', async (t) => {
+  const boleto = createFakeBoletoCaixa({ fine: null, interest: undefined })
+
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
+
+  t.is(result.issuer, boleto.issuer)
+  t.is(result.issuer_agency, boleto.issuer_agency)
+  t.is(result.issuer_account, boleto.issuer_account)
+  t.is(result.issuer_wallet, boleto.issuer_wallet)
+})
+
+test('changeIssuerWhenInterestOrFine: when interest is empty', async (t) => {
+  const boleto = createFakeBoletoCaixa({ interest: {}, fine: undefined })
+
+  const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
+
+  t.is(result.issuer, boleto.issuer)
+  t.is(result.issuer_agency, boleto.issuer_agency)
+  t.is(result.issuer_account, boleto.issuer_account)
+  t.is(result.issuer_wallet, boleto.issuer_wallet)
+})
+
+test('changeIssuerWhenInterestOrFine: when interest is null', async (t) => {
+  const boleto = createFakeBoletoCaixa({ interest: null, fine: undefined })
+
+  const result = changeIssuerWhenInterestOrFine(boleto, randomOperationId)
+
+  t.is(result.issuer, boleto.issuer)
+  t.is(result.issuer_agency, boleto.issuer_agency)
+  t.is(result.issuer_account, boleto.issuer_account)
+  t.is(result.issuer_wallet, boleto.issuer_wallet)
 })
