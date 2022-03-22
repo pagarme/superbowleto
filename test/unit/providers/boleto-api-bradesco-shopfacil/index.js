@@ -150,6 +150,62 @@ test('buildPayload with payer_address incomplete', async (t) => {
   })
 })
 
+test('Given boleto with payer_address.street_number as number, when buildPayload, should consider as string', async (t) => {
+  const boleto = await createBoleto({
+    payer_address: {
+      zipcode: '5555555',
+      street_number: 308,
+      complementary: '11º andar',
+      neighborhood: 'Brooklin',
+      city: 'São Paulo',
+      state: 'SP',
+      street: 'lalalalalalal',
+    },
+  })
+
+  const operationId = cuid()
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.buyer.address, {
+    street: boleto.payer_address.street,
+    number: String(boleto.payer_address.street_number),
+    complement: boleto.payer_address.complementary,
+    district: boleto.payer_address.neighborhood,
+    zipCode: boleto.payer_address.zipcode,
+    city: boleto.payer_address.city,
+    stateCode: boleto.payer_address.state,
+  })
+})
+
+test('Given boleto with recipient.street_number as number, when buildPayload, should consider as string', async (t) => {
+  const boleto = await createBoleto({
+    company_address: {
+      zipcode: '5555555',
+      street_number: 308,
+      complementary: '11º andar',
+      neighborhood: 'Brooklin',
+      city: 'São Paulo',
+      state: 'SP',
+      street: 'lalalalalalal',
+    },
+  })
+
+  const operationId = cuid()
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.recipient.address, {
+    street: boleto.company_address.street,
+    number: String(boleto.company_address.street_number),
+    complement: boleto.company_address.complementary,
+    district: boleto.company_address.neighborhood,
+    zipCode: boleto.company_address.zipcode,
+    city: boleto.company_address.city,
+    stateCode: boleto.company_address.state,
+  })
+})
+
 test('translateResponseCode: with a "registered" code', (t) => {
   const axiosResponse = {
     data: {
