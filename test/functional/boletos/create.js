@@ -124,3 +124,32 @@ test('POST /boletos with invalid issuer', async (t) => {
     ],
   })
 })
+
+test('POST /boletos with invalid expiration_date', async (t) => {
+  const maximumDateExceededForBarcodeCalculation = '02-23-2025'
+
+  const wrongExpirationDate = merge(mock, {
+    expiration_date: maximumDateExceededForBarcodeCalculation,
+  })
+
+  const { body, statusCode } = await request({
+    route: '/boletos',
+    method: 'POST',
+    data: wrongExpirationDate,
+    headers: {
+      'x-api-key': 'abc123',
+    },
+  })
+
+  t.is(statusCode, 400)
+
+  t.deepEqual(body, {
+    errors: [
+      {
+        type: 'invalid_parameter',
+        message: '"expiration_date" must be less than or equal to "Fri Feb 21 2025 00:00:00 GMT+0000 (UTC)"',
+        field: 'expiration_date',
+      },
+    ],
+  })
+})
