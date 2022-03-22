@@ -1,5 +1,7 @@
 const Joi = require('joi')
 
+const maximumDateForBarcodeCalculation = '02-22-2025'
+
 const createSchema = {
   queue_url: Joi
     .string()
@@ -7,6 +9,7 @@ const createSchema = {
 
   expiration_date: Joi
     .date()
+    .max(maximumDateForBarcodeCalculation)
     .required(),
 
   amount: Joi
