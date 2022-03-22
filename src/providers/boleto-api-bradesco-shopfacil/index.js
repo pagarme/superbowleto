@@ -77,7 +77,7 @@ const buildPayload = (boleto, operationId) => {
       },
       address: {
         street: path(['company_address', 'street'], boleto),
-        number: path(['company_address', 'street_number'], boleto),
+        number: String(path(['company_address', 'street_number'], boleto)),
         complement: path(['company_address', 'complementary'], boleto),
         zipCode: path(['company_address', 'zipcode'], boleto),
         district: path(['company_address', 'neighborhood'], boleto),
@@ -93,7 +93,7 @@ const buildPayload = (boleto, operationId) => {
       },
       address: {
         street: path(['payer_address', 'street'], boleto),
-        number: path(['payer_address', 'street_number'], boleto),
+        number: String(path(['payer_address', 'street_number'], boleto)),
         complement: path(['payer_address', 'complementary'], boleto),
         district: path(['payer_address', 'neighborhood'], boleto),
         zipCode: path(['payer_address', 'zipcode'], boleto),
