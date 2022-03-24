@@ -29,7 +29,19 @@ const formatStateCode = (boleto, from) => {
   return formatted(boleto)
 }
 
+const getDocumentType = (documentNumber) => {
+  if (!documentNumber) {
+    return ''
+  }
+  const documentLength = String(documentNumber).trim().length
+  if (documentLength === 11) {
+    return 'CPF'
+  }
+  return 'CNPJ'
+}
+
 module.exports = {
   formatDate,
   formatStateCode,
+  getDocumentType,
 }
