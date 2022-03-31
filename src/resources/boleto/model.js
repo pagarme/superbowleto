@@ -25,6 +25,8 @@ const {
 const { Boleto: NodeBoleto } = require('node-boleto')
 const { defaultCuidValue, responseObjectBuilder } = require('../../lib/database/schema')
 
+const { getPagarmeAddress } = require('../../providers/boleto-api-caixa/formatter')
+
 const barcodeBank = cond([
   [equals('development'), always('bradesco')],
   [equals('boleto-api-bradesco-shopfacil'), always('bradesco')],
@@ -98,15 +100,7 @@ const addBoletoCode = (boleto) => {
 }
 
 const validateModel = (boleto) => {
-  const defaultAddress = {
-    zipcode: '04551010',
-    street: 'Rua Fidêncio Ramos',
-    street_number: '308',
-    complementary: '9º andar, conjunto 91',
-    neighborhood: 'Vila Olímpia',
-    city: 'São Paulo',
-    state: 'SP',
-  }
+  const defaultAddress = getPagarmeAddress()
 
   const requiredAddressFields = [
     'zipcode',

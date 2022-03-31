@@ -40,8 +40,21 @@ const getDocumentType = (documentNumber) => {
   return 'CNPJ'
 }
 
+const getPagarmeAddress = () => (
+  {
+    zipcode: '04551010',
+    street: 'Rua Fidêncio Ramos',
+    street_number: '308',
+    complementary: '9º andar, conjunto 91',
+    neighborhood: 'Vila Olímpia',
+    city: 'São Paulo',
+    state: 'SP',
+  }
+)
+
 module.exports = {
   formatDate,
   formatStateCode,
   getDocumentType,
+  getPagarmeAddress,
 }
