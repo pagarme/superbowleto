@@ -281,7 +281,7 @@ test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and i
   t.is(result.issuer_wallet, '25')
 })
 
-test.skip('changeIssuerWhenInterestOrFine: when interest is null, fine has info and is boleto-api-caixa', async (t) => {
+test('changeIssuerWhenInterestOrFine: when interest is null, fine has info and is boleto-api-caixa', async (t) => {
   const boleto = createFakeBoletoCaixa({ interest: null })
 
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')
@@ -292,7 +292,7 @@ test.skip('changeIssuerWhenInterestOrFine: when interest is null, fine has info 
   t.is(result.issuer_wallet, boleto.issuer_wallet)
 })
 
-test.skip('changeIssuerWhenInterestOrFine: when fine is null, interest has info and is boleto-api-caixa', async (t) => {
+test('changeIssuerWhenInterestOrFine: when fine is null, interest has info and is boleto-api-caixa', async (t) => {
   const boleto = createFakeBoletoCaixa({ fine: null })
 
   const result = changeIssuerWhenInterestOrFine(boleto, 'randomOperationId')

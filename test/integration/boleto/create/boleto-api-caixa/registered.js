@@ -42,7 +42,7 @@ test.after(async () => {
   })
 })
 
-test.skip('creates a boleto (status success)', async (t) => {
+test('creates a boleto (status success)', async (t) => {
   const payload = mock
 
   payload.issuer = 'boleto-api-caixa'
