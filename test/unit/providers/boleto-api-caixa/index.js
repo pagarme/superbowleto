@@ -9,6 +9,10 @@ import {
   isHtml,
   getBoletoUrl,
 } from '../../../../src/providers/boleto-api-caixa'
+import {
+  getDocumentType,
+} from '../../../../src/providers/boleto-api-caixa/formatter'
+
 
 const noStrictRules = {
   acceptDivergentAmount: true,
@@ -20,7 +24,9 @@ const strictExpirateDateRules = {
   maxDaysToPayPastDue: 1,
 }
 
-const defaultInstruction = ' A emissão deste boleto foi solicitada e/ou intermediada pela empresa company name test - CNPJ: 18727053000174. Para confirmar a existência deste boleto consulte em pagar.me/boletos.'
+function getDefaultInstruction (companyName = 'company name test', companyDocumentNumber) {
+  return ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocumentNumber}. Para confirmar a existência deste boleto consulte em pagar.me/boletos.`
+}
 
 test('buildPayload without rules and wallet then title.rules should be null', async (t) => {
   const operationId = cuid()
@@ -124,7 +130,10 @@ test('buildPayload with the instruction field filled should return the received 
   const payload = buildPayload(boleto, operationId)
 
   let instructionsExpected = boleto.instructions
-  instructionsExpected += `${defaultInstruction}`
+  instructionsExpected += getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  )
 
   t.deepEqual(payload.title.instructions, instructionsExpected)
 })
@@ -134,7 +143,10 @@ test('buildPayload with empty instruction field should return default instructio
   const boleto = await createBoleto({ instructions: '', company_name: 'company name test' })
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload.title.instructions, defaultInstruction)
+  t.deepEqual(payload.title.instructions, getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  ))
 })
 
 test('buildPayload with null instruction field should return default instruction', async (t) => {
@@ -142,7 +154,10 @@ test('buildPayload with null instruction field should return default instruction
   const boleto = await createBoleto({ instructions: null, company_name: 'company name test' })
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload.title.instructions, defaultInstruction)
+  t.deepEqual(payload.title.instructions, getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  ))
 })
 
 test('buildPayload with undefined instruction field should return default instruction', async (t) => {
@@ -150,7 +165,242 @@ test('buildPayload with undefined instruction field should return default instru
   const boleto = await createBoleto({ instructions: undefined, company_name: 'company name test' })
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload.title.instructions, defaultInstruction)
+  t.deepEqual(payload.title.instructions, getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  ))
+})
+
+test('buildPayload with undefined fine should return the fine fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto()
+  delete boleto.fine
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine,
+    null
+  )
+})
+
+test('buildPayload with undefined fine and interest should return the fine and interest fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto()
+  delete boleto.fine
+  delete boleto.interest
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees,
+    null
+  )
+})
+
+test('buildPayload with empty fine should return the fine fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({ fine: {} })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine,
+    null
+  )
+})
+
+test('buildPayload with empty fine and interest should return the fine and interest fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({ fine: {}, interest: {} })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees,
+    null
+  )
+})
+
+test('buildPayload with fine per amount should return the fine fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 0
+  const boleto = await createBoleto()
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    boleto.fine.days
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    boleto.fine.amount
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with fine per percentage should return the fine fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 2.34
+  const amountInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 4
+  const boleto = await createBoleto({
+    fine: {
+      days: daysAfterExpirationDateExpected,
+      percentage: percentageOnTotalExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    amountInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with fine per percentage and amount should return the fine fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentageOnTotalExpected = 1.10
+  const amountInCentsExpected = 200
+  const daysAfterExpirationDateExpected = 1
+  const boleto = await createBoleto({
+    fine: {
+      amount: amountInCentsExpected,
+      days: daysAfterExpirationDateExpected,
+      percentage: percentageOnTotalExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.fine.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.amountInCents,
+    amountInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.fine.percentageOnTotal,
+    percentageOnTotalExpected
+  )
+})
+
+test('buildPayload with undefined interest should return the interest fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto()
+  delete boleto.interest
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest,
+    null
+  )
+})
+
+test('buildPayload with empty interest should return the interest fields with default values in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({ interest: {} })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest,
+    null
+  )
+})
+
+test('buildPayload with interest per amount should return the interest fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 0
+  const boleto = await createBoleto()
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    boleto.interest.days
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    boleto.interest.amount
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
+})
+
+test('buildPayload with interest per percentage should return the interest fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 2.34
+  const amountPerDayInCentsExpected = 0
+  const daysAfterExpirationDateExpected = 4
+  const boleto = await createBoleto({
+    interest: {
+      days: daysAfterExpirationDateExpected,
+      percentage: percentagePerMonthExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    amountPerDayInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
+})
+
+test('buildPayload with interest per percentage and amount should return the interest fields in the payload correctly', async (t) => {
+  const operationId = cuid()
+  const percentagePerMonthExpected = 1.10
+  const amountPerDayInCentsExpected = 200
+  const daysAfterExpirationDateExpected = 1
+  const boleto = await createBoleto({
+    interest: {
+      amount: amountPerDayInCentsExpected,
+      days: daysAfterExpirationDateExpected,
+      percentage: percentagePerMonthExpected,
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(
+    payload.title.fees.interest.daysAfterExpirationDate,
+    daysAfterExpirationDateExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.amountPerDayInCents,
+    amountPerDayInCentsExpected
+  )
+  t.deepEqual(
+    payload.title.fees.interest.percentagePerMonth,
+    percentagePerMonthExpected
+  )
 })
 
 test('buildPayload complete', async (t) => {
@@ -159,7 +409,10 @@ test('buildPayload complete', async (t) => {
   const payload = buildPayload(boleto, operationId)
 
   let { instructions } = boleto
-  instructions += `${defaultInstruction}`
+  instructions += getDefaultInstruction(
+    boleto.companyName,
+    boleto.company_document_number
+  )
 
   t.deepEqual(payload, {
     bankNumber: 104,
@@ -177,9 +430,28 @@ test('buildPayload complete', async (t) => {
         acceptDivergentAmount: true,
         maxDaysToPayPastDue: 60,
       },
+      fees: {
+        fine: {
+          daysAfterExpirationDate: boleto.fine.days,
+          amountInCents: boleto.fine.amount,
+          percentageOnTotal: 0,
+        },
+        interest: {
+          daysAfterExpirationDate: boleto.interest.days,
+          amountPerDayInCents: boleto.interest.amount,
+          percentagePerMonth: 0,
+        },
+      },
+    },
+    payeeGuarantor: {
+      name: boleto.company_name,
+      document: {
+        type: getDocumentType(boleto.company_document_number),
+        number: boleto.company_document_number,
+      },
     },
     recipient: {
-      name: `${boleto.company_name} | Pagar.me Pagamentos S/A`,
+      name: 'Pagar.me Pagamentos S/A',
       document: {
         type: 'CNPJ',
         number: '18727053000174',
@@ -214,6 +486,56 @@ test('buildPayload complete', async (t) => {
   })
 })
 
+test('buildPayload with payeeGuarantor fields null', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: null,
+    company_document_number: null,
+  })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.payeeGuarantor, {
+    name: '',
+    document: {
+      type: '',
+      number: '',
+    },
+  })
+})
+
+test('buildPayload with payeeGuarantor fields undefined', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: undefined,
+    company_document_number: undefined,
+  })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.payeeGuarantor, {
+    name: '',
+    document: {
+      type: '',
+      number: '',
+    },
+  })
+})
+
+test('buildPayload with payeeGuarantor fields empty', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: '',
+    company_document_number: '',
+  })
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.payeeGuarantor, {
+    name: '',
+    document: {
+      type: '',
+      number: '',
+    },
+  })
+})
 
 test('translateResponseCode: with a "registered" code', (t) => {
   const axiosResponse = {
