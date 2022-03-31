@@ -1,0 +1,29 @@
+apiVersion: backstage.io/v1alpha1
+manifestVersion: 0.1.1
+kind: Component
+metadata:
+  namespace: boleto-psp
+  name: superbowleto
+  description:  Gateway do PSP para registro online de transações do meio de pagamento de boleto
+  compliance:
+    gui: false
+    sox: none
+    pci: none
+    processPersonalData: true
+spec:
+  lifecycle: production
+  type: service
+  owner: processing.banks@pagar.me
+  monitoring:
+    platform: datadog
+    owner: processing.banks@pagar.me
+    alert_name:
+      - [Calibração] Superbowleto long time background register
+      - [superbowleto] bradesco has a high error rate on env:production
+      - [superbowleto] bradesco has a high p90 latency on env:production
+  replacing_application: none
+  infrastructure: cloud
+  pipeline:
+    url: https://app.circleci.com/pipelines/github/pagarme/superbowleto?filter=all
+    project: superbowleto
+    pipeline: superbowleto
