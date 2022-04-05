@@ -8,6 +8,7 @@ const {
   find,
   propEq,
   pipe,
+  equals,
 } = require('ramda')
 
 const { encodeBase64 } = require('../../lib/encoding')
@@ -20,6 +21,7 @@ const {
 } = require('./formatter')
 
 const config = require('../../config/providers')
+const { getPagarmeAddress } = require('../../resources/boleto/model')
 
 const {
   boleto_api_password: boletoApiPassword,
@@ -114,6 +116,30 @@ const defineInterest = (boleto) => {
   return null
 }
 
+const buyerAddressIsEqualsToPagarme = boleto =>
+  equals(boleto.payer_address, boleto.company_address)
+
+const buyerAddressIsEqualsToCompany = boleto =>
+  equals(boleto.payer_address, getPagarmeAddress())
+
+const defineBuyerAddress = (boleto) => {
+  if (
+    buyerAddressIsEqualsToCompany(boleto) ||
+    buyerAddressIsEqualsToPagarme(boleto)
+  ) {
+    return undefined
+  }
+  return {
+    street: path(['payer_address', 'street'], boleto),
+    number: String(path(['payer_address', 'street_number'], boleto)),
+    complement: path(['payer_address', 'complementary'], boleto),
+    district: path(['payer_address', 'neighborhood'], boleto),
+    zipCode: String(path(['payer_address', 'zipcode'], boleto)),
+    city: path(['payer_address', 'city'], boleto),
+    stateCode: formatStateCode(boleto, 'payer_address'),
+  }
+}
+
 const defineFees = (boleto) => {
   const fine = defineFine(boleto)
   const interest = defineInterest(boleto)
@@ -139,7 +165,6 @@ const getInstructions = (companyName, companyDocument, boleto) => {
 const buildPayload = (boleto, operationId) => {
   const formattedExpirationDate = formatDate(boleto.expiration_date)
   const formattedRecipientStateCode = formatStateCode(boleto, 'company_address')
-  const formattedBuyerStateCode = formatStateCode(boleto, 'payer_address')
   const companyName = pathOr('', ['company_name'], boleto)
   const companyDocument = pathOr('', ['company_document_number'], boleto)
 
@@ -189,15 +214,7 @@ const buildPayload = (boleto, operationId) => {
         number: String(path(['payer_document_number'], boleto)),
         type: path(['payer_document_type'], boleto).toUpperCase(),
       },
-      address: {
-        street: path(['payer_address', 'street'], boleto),
-        number: String(path(['payer_address', 'street_number'], boleto)),
-        complement: path(['payer_address', 'complementary'], boleto),
-        district: path(['payer_address', 'neighborhood'], boleto),
-        zipCode: String(path(['payer_address', 'zipcode'], boleto)),
-        city: path(['payer_address', 'city'], boleto),
-        stateCode: formattedBuyerStateCode,
-      },
+      address: defineBuyerAddress(boleto),
     },
     requestKey: operationId,
   }

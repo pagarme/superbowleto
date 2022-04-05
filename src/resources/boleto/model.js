@@ -97,8 +97,8 @@ const addBoletoCode = (boleto) => {
   })
 }
 
-const validateModel = (boleto) => {
-  const defaultAddress = {
+const getPagarmeAddress = () => (
+  {
     zipcode: '04551010',
     street: 'Rua Fidêncio Ramos',
     street_number: '308',
@@ -107,6 +107,10 @@ const validateModel = (boleto) => {
     city: 'São Paulo',
     state: 'SP',
   }
+)
+
+const validateModel = (boleto) => {
+  const defaultAddress = getPagarmeAddress()
 
   const requiredAddressFields = [
     'zipcode',
@@ -319,4 +323,5 @@ module.exports = {
   buildModelResponse,
   validateModel,
   create,
+  getPagarmeAddress,
 }

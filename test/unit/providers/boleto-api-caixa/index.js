@@ -12,6 +12,9 @@ import {
 import {
   getDocumentType,
 } from '../../../../src/providers/boleto-api-caixa/formatter'
+import {
+  getPagarmeAddress,
+} from '../../../../src/resources/boleto/model'
 
 
 const noStrictRules = {
@@ -113,15 +116,7 @@ test('buildPayload with payer_address incomplete', async (t) => {
   const boleto = await createBoleto()
   const payload = buildPayload(boleto, operationId)
 
-  t.deepEqual(payload.buyer.address, {
-    street: 'Rua Fidêncio Ramos',
-    number: '308',
-    complement: '9º andar, conjunto 91',
-    zipCode: '04551010',
-    district: 'Vila Olímpia',
-    city: 'São Paulo',
-    stateCode: 'SP',
-  })
+  t.deepEqual(payload.buyer.address, undefined)
 })
 
 test('buildPayload with the instruction field filled should return the received instruction with the default instruction', async (t) => {
@@ -405,7 +400,18 @@ test('buildPayload with interest per percentage and amount should return the int
 
 test('buildPayload complete', async (t) => {
   const operationId = cuid()
-  const boleto = await createBoleto({ company_name: 'company name test' })
+  const boleto = await createBoleto({
+    company_name: 'company name test',
+    payer_address: {
+      zipcode: '5555555',
+      street_number: '308',
+      street: 'Rua dos bancos',
+      complementary: '11º andar',
+      neighborhood: 'Brooklin',
+      city: 'São Paulo',
+      state: 'SP',
+    },
+  })
   const payload = buildPayload(boleto, operationId)
 
   let { instructions } = boleto
@@ -473,17 +479,86 @@ test('buildPayload complete', async (t) => {
         number: boleto.payer_document_number,
       },
       address: {
-        street: 'Rua Fidêncio Ramos',
+        zipCode: '5555555',
         number: '308',
-        complement: '9º andar, conjunto 91',
-        zipCode: '04551010',
-        district: 'Vila Olímpia',
+        street: 'Rua dos bancos',
+        complement: '11º andar',
+        district: 'Brooklin',
         city: 'São Paulo',
         stateCode: 'SP',
       },
     },
     requestKey: operationId,
   })
+})
+
+test('when payer_address is different than company_address and pagarme address then address should be buyer address', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: 'company name test',
+    payer_address: {
+      zipcode: '5555555',
+      street_number: '308',
+      street: 'Rua dos bancos',
+      complementary: '11º andar',
+      neighborhood: 'Brooklin',
+      city: 'São Paulo',
+      state: 'SP',
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.buyer.address, {
+    zipCode: '5555555',
+    number: '308',
+    street: 'Rua dos bancos',
+    complement: '11º andar',
+    district: 'Brooklin',
+    city: 'São Paulo',
+    stateCode: 'SP',
+  })
+})
+
+test('when payer_address is equals than company_address then buyer address should be undefined', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: 'company name test',
+    payer_address: {
+      zipcode: '5555555',
+      street_number: '308',
+      street: 'Rua dos bancos',
+      complementary: '11º andar',
+      neighborhood: 'Brooklin',
+      city: 'São Paulo',
+      state: 'SP',
+    },
+    company_address: {
+      zipcode: '5555555',
+      street_number: '308',
+      street: 'Rua dos bancos',
+      complementary: '11º andar',
+      neighborhood: 'Brooklin',
+      city: 'São Paulo',
+      state: 'SP',
+    },
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.buyer.address, undefined)
+})
+
+test('when payer_address is equals than address pagarme then buyer address should be undefined', async (t) => {
+  const operationId = cuid()
+  const boleto = await createBoleto({
+    company_name: 'company name test',
+    payer_address: getPagarmeAddress(),
+  })
+
+  const payload = buildPayload(boleto, operationId)
+
+  t.deepEqual(payload.buyer.address, undefined)
 })
 
 test('buildPayload with payeeGuarantor fields null', async (t) => {
