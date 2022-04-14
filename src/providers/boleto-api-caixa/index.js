@@ -116,10 +116,10 @@ const defineInterest = (boleto) => {
   return null
 }
 
-const buyerAddressIsEqualsToPagarme = boleto =>
+const buyerAddressIsEqualsToCompany = boleto =>
   equals(boleto.payer_address, boleto.company_address)
 
-const buyerAddressIsEqualsToCompany = boleto =>
+const buyerAddressIsEqualsToPagarme = boleto =>
   equals(boleto.payer_address, getPagarmeAddress())
 
 const defineBuyerAddress = (boleto) => {
