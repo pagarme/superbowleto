@@ -241,7 +241,7 @@ const sendRequestToBoletoApi = async (payload, headers) => {
     if (isTimeoutError(error)) {
       return buildBoletoApiErrorResponse({
         code: error.code,
-        message: `A resposta da BoletoApi excedeu o tempo limite de ${timeoutMs}ms`,
+        message: `A requisição à BoletoApi excedeu o tempo limite de ${timeoutMs}ms`,
       })
     }
 

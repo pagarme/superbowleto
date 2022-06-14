@@ -77,7 +77,7 @@ test('creates a boleto (status refused)', async (t) => {
 })
 
 test('sendRequestToBoletoApi: with a timeout error', async (t) => {
-  const timeoutMs = process.env.APP_ENV === 'prd' ? 10000 : 25000
+  const timeoutMs = 25000
   const operationId = cuid()
   const boleto = await createBoleto()
   const payload = Provider.buildPayload(boleto, operationId)
@@ -96,7 +96,7 @@ test('sendRequestToBoletoApi: with a timeout error', async (t) => {
       data: {
         errors: [{
           code: 'ECONNABORTED',
-          message: `A resposta da BoletoApi excedeu o tempo limite de ${timeoutMs}ms`,
+          message: `A requisição à BoletoApi excedeu o tempo limite de ${timeoutMs}ms`,
         }],
       },
     }
