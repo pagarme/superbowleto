@@ -14,6 +14,10 @@ function isA4XXError (error) {
   path(['response', 'status'], error) < 500)
 }
 
+function isTimeoutError (error) {
+  return (path(['code'], error)) === 'ECONNABORTED'
+}
+
 function handleError (err) {
   if (err.name === 'SequelizeUniqueConstraintError') {
     return buildFailureResponse(400, err)
@@ -37,4 +41,5 @@ function handleError (err) {
 module.exports = {
   isA4XXError,
   handleError,
+  isTimeoutError,
 }
