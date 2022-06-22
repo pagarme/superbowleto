@@ -50,7 +50,17 @@ const changeIssuerWhenInterestOrFine = (boleto, operationId) => {
   return boleto
 }
 
+const buildBoletoApiErrorResponse = ({ code, message }) => ({
+  data: {
+    errors: [{
+      code,
+      message,
+    }],
+  },
+})
+
 module.exports = {
   changeIssuerWhenInterestOrFine,
   isEmptyOrNull,
+  buildBoletoApiErrorResponse,
 }

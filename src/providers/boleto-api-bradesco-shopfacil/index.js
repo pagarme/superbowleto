@@ -11,7 +11,9 @@ const config = require('../../config/providers')
 const responseCodeMap = require('./response-codes')
 const { encodeBase64 } = require('../../lib/encoding')
 const { makeFromLogger } = require('../../lib/logger')
-const { isA4XXError } = require('../../lib/helpers/errors')
+const { getRequestTimeoutMs } = require('../../lib/http/request')
+const { isA4XXError, isTimeoutError } = require('../../lib/helpers/errors')
+const { buildBoletoApiErrorResponse } = require('../../lib/helpers/providers')
 const {
   formatDate,
   getDocumentType,
@@ -108,7 +110,7 @@ const buildPayload = (boleto, operationId) => {
 }
 
 const sendRequestToBoletoApi = async (payload, headers) => {
-  const timeoutMs = process.env.APP_ENV === 'prd' ? 50000 : 25000
+  const timeoutMs = getRequestTimeoutMs(10000)
 
   const axiosPayload = {
     data: payload,
@@ -119,10 +121,15 @@ const sendRequestToBoletoApi = async (payload, headers) => {
   }
 
   try {
-    const response = await axios.request(axiosPayload)
-
-    return response
+    return await axios.request(axiosPayload)
   } catch (error) {
+    if (isTimeoutError(error)) {
+      return buildBoletoApiErrorResponse({
+        code: error.code,
+        message: `A requisição à BoletoApi excedeu o tempo limite de ${timeoutMs}ms`,
+      })
+    }
+
     if (error && error.response && isA4XXError(error)) {
       return error.response
     }
@@ -147,8 +154,10 @@ const translateResponseCode = (axiosResponse) => {
 
   const firstError = axiosResponseData.errors[0]
   const responseCode = firstError.code
+  const isBoletoApiError = responseCode.startsWith('MP')
+  const isAxiosTimeoutError = responseCode === 'ECONNABORTED'
 
-  if (responseCode.substring(0, 2) === 'MP') {
+  if (isBoletoApiError || isAxiosTimeoutError) {
     const defaultMundipaggError = {
       message: firstError.message,
       status: 'refused',
@@ -238,4 +247,5 @@ module.exports = {
   buildPayload,
   getProvider,
   translateResponseCode,
+  sendRequestToBoletoApi,
 }

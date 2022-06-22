@@ -2,7 +2,7 @@ import test from 'ava'
 import Joi from 'joi'
 import { assert } from '../../../helpers/chai'
 import { ValidationError } from '../../../../src/lib/errors'
-import { parse } from '../../../../src/lib/http/request'
+import { parse, getRequestTimeoutMs } from '../../../../src/lib/http/request'
 
 const schema = {
   name: Joi
@@ -110,4 +110,16 @@ test('parse: with invalid schema', async (t) => {
     type: 'invalid_parameter',
     field: 'security_number',
   }, 'should have an error because `security_number` is invalid')
+})
+
+test('getRequestTimeoutMs: when environment test timeout is set', async (t) => {
+  const timeoutMs = getRequestTimeoutMs(null, 50000)
+
+  t.is(timeoutMs, 50000)
+})
+
+test('getRequestTimeoutMs: when environment test timeout is not set', async (t) => {
+  const timeoutMs = getRequestTimeoutMs()
+
+  t.is(timeoutMs, 25000)
 })

@@ -26,6 +26,11 @@ const parse = curryN(2, (
   return reject(new ValidationError({ errors }))
 }))
 
+const getRequestTimeoutMs = (timeoutMs = 10000, timeoutEnvTest = 25000) => (
+  process.env.APP_ENV === 'prd' ? timeoutMs : timeoutEnvTest
+)
+
 module.exports = {
   parse,
+  getRequestTimeoutMs,
 }

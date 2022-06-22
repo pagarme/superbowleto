@@ -30,6 +30,7 @@ const { encodeBase64 } = require('../../lib/encoding')
 const { makeFromLogger } = require('../../lib/logger')
 const responseCodeMap = require('./response-codes')
 const brazilianStates = require('../../lib/helpers/brazilian-states')
+const { getRequestTimeoutMs } = require('../../lib/http/request')
 
 const {
   api_key: apiKey,
@@ -181,7 +182,7 @@ const getProvider = ({ operationId } = defaultOptions) => {
 
     const headers = buildHeaders()
     const payload = buildPayload(boleto)
-    const timeoutMs = process.env.APP_ENV === 'prd' ? 50000 : 25000
+    const timeoutMs = getRequestTimeoutMs(10000)
 
     return Promise.resolve({
       headers,
