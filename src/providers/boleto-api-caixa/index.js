@@ -318,6 +318,16 @@ const translateResponseCode = (axiosResponse) => {
   return defaultErroredValue
 }
 
+const translateError = () => {
+  const defaultErroredValue = {
+    message: 'Register operation failed at Caixa',
+    status: 'refused',
+    issuer_response_code: 'defaultErrorCode',
+  }
+
+  return defaultErroredValue
+}
+
 const defaultOptions = {
   operationId: `req_${Date.now()}${cuid()}`,
 }
@@ -371,7 +381,8 @@ const getProvider = ({ operationId } = defaultOptions) => {
         },
       })
 
-      throw error
+      const translated = translateError()
+      return Promise.resolve(translated)
     }
   }
 
