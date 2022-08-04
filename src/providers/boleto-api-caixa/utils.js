@@ -10,7 +10,7 @@ class NotFoundParamsError extends Error {
 const defaultMessageRegisterError = 'Register operation failed at Caixa'
 const defaultIssuerCode = 'defaultErrorCode'
 
-const resolvesWhenIsSuccessInResponse = ({
+const translateResponseWithSuccess = ({
   boletoUrl, digitableLine, barcode,
 }) => {
   if (!boletoUrl) {
@@ -37,7 +37,7 @@ const resolvesWhenIsSuccessInResponse = ({
   return defaultSuccessValue
 }
 
-const resolvesWhenNotHaveErrorsInResponse =
+const translateResponseWithoutErrors =
   (
     statusCode,
     statusText = defaultMessageRegisterError
@@ -54,7 +54,7 @@ const resolvesWhenNotHaveErrorsInResponse =
     return defaultBoletoApiError
   }
 
-const resolvesWhenHaveErrorsInResponse = (axiosResponseData) => {
+const translateResponseWithErrors = (axiosResponseData) => {
   const [firstError] = axiosResponseData.errors
   const responseCode = firstError.code
 
@@ -80,7 +80,7 @@ const resolvesWhenHaveErrorsInResponse = (axiosResponseData) => {
   return defaultErrorValue
 }
 
-const resolvesDefaultTranslateError = (error) => {
+const translateDefaultError = (error) => {
   if (error instanceof NotFoundParamsError) {
     const defaultErrorValue = {
       message: error.message,
@@ -102,9 +102,9 @@ const resolvesDefaultTranslateError = (error) => {
 
 module.exports = {
   defaultMessageRegisterError,
-  resolvesWhenHaveErrorsInResponse,
-  resolvesWhenNotHaveErrorsInResponse,
-  resolvesWhenIsSuccessInResponse,
-  resolvesDefaultTranslateError,
+  translateResponseWithErrors,
+  translateResponseWithoutErrors,
+  translateResponseWithSuccess,
+  translateDefaultError,
   NotFoundParamsError,
 }

@@ -23,10 +23,10 @@ const {
 } = require('./formatter')
 const {
   defaultMessageRegisterError,
-  resolvesWhenHaveErrorsInResponse,
-  resolvesWhenNotHaveErrorsInResponse,
-  resolvesWhenIsSuccessInResponse,
-  resolvesDefaultTranslateError,
+  translateResponseWithErrors,
+  translateResponseWithoutErrors,
+  translateResponseWithSuccess,
+  translateDefaultError,
 } = require('./utils')
 const config = require('../../config/providers')
 const { getPagarmeAddress } = require('../../resources/boleto/model')
@@ -283,7 +283,7 @@ const translateResponseCode = (axiosResponse) => {
     const digitableLine = path(['digitableLine'], axiosResponseData)
     const barcode = path(['barCodeNumber'], axiosResponseData)
 
-    return resolvesWhenIsSuccessInResponse({
+    return translateResponseWithSuccess({
       barcode,
       boletoUrl,
       digitableLine,
@@ -291,10 +291,10 @@ const translateResponseCode = (axiosResponse) => {
   }
 
   if (!hasErrors) {
-    return resolvesWhenNotHaveErrorsInResponse(statusCode, statusText)
+    return translateResponseWithoutErrors(statusCode, statusText)
   }
 
-  return resolvesWhenHaveErrorsInResponse(axiosResponseData)
+  return translateResponseWithErrors(axiosResponseData)
 }
 
 const defaultOptions = {
@@ -349,7 +349,7 @@ const getProvider = ({ operationId } = defaultOptions) => {
         },
       })
 
-      const translated = resolvesDefaultTranslateError(error)
+      const translated = translateDefaultError(error)
       return Promise.resolve(translated)
     }
   }
