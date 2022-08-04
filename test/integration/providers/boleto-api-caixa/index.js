@@ -7,7 +7,7 @@ import Provider from '../../../../src/providers/boleto-api-caixa'
 
 const { register } = Provider.getProvider()
 
-test('register: when the register function not received the boleto', async (t) => {
+test('register: when boleto is null then should be returned status "refused" and default message and code', async (t) => {
   const registerResponse = await register()
 
   t.is(registerResponse.message, 'Register operation failed at Caixa')
@@ -15,7 +15,7 @@ test('register: when the register function not received the boleto', async (t) =
   t.is(registerResponse.issuer_response_code, 'defaultErrorCode')
 })
 
-test('register: when the sendRequestToBoletoApi function return a not mapped error', async (t) => {
+test('register: when BoletoApi returns a not mapped error then should be returned status "refused" and default message with code of the error', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -36,7 +36,7 @@ test('register: when the sendRequestToBoletoApi function return a not mapped err
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function return a timeout error', async (t) => {
+test('register: when BoletoApi returns a timeout error then should be returned status "refused" and timeout message with code of the error', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -61,7 +61,7 @@ test('register: when the sendRequestToBoletoApi function return a timeout error'
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function return a statusCode 40X', async (t) => {
+test('register: when BoletoApi returns a error with status code 40X then should be returned status "refused" and pass on that message', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -90,7 +90,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 40X
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function return a statusCode 50X with error', async (t) => {
+test('register: when BoletoApi returns a error with status code 50X and data then should be returned status "refused" and pass on that message', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -119,7 +119,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 50X
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function return a statusCode 50X without error', async (t) => {
+test('register: when BoletoApi returns a error with status code 50X without data then should be returned status "refused" and get message of the axios with code being http status', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -147,7 +147,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 50X
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function return success', async (t) => {
+test('register: when BoletoApi returns success then should be returned status "registered" and pass on boleto data with code 0', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -194,7 +194,7 @@ test('register: when the sendRequestToBoletoApi function return success', async 
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function not return digitableLine parameter in the boleto', async (t) => {
+test('register: when BoletoApi returns success but not return digitableLine parameter then should be returned status "refused" and personalized message with code "NOT_FOUND_PARAMS"', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -230,7 +230,7 @@ test('register: when the sendRequestToBoletoApi function not return digitableLin
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function not return barCodeNumber parameter in the boleto', async (t) => {
+test('register: when BoletoApi returns success but not return barCodeNumber parameter then should be returned status "refused" and personalized message with code "NOT_FOUND_PARAMS"', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
@@ -266,7 +266,7 @@ test('register: when the sendRequestToBoletoApi function not return barCodeNumbe
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function not return the html link parameter in the boleto', async (t) => {
+test('register: when BoletoApi returns success but not return html link parameter then should be returned status "refused" and personalized message with code "NOT_FOUND_PARAMS"', async (t) => {
   const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })

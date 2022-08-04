@@ -7,7 +7,7 @@ import {
   NotFoundParamsError,
 } from '../../../../src/providers/boleto-api-caixa/utils'
 
-test('resolvesDefaultTranslateError: when the function receive a not found params error', (t) => {
+test('resolvesDefaultTranslateError: when receive a not found params error then should be returned a status "refused" and personalized message with code "NOT_FOUND_PARAMS"', (t) => {
   const notFoundError = new NotFoundParamsError('Not found params')
 
   const result = resolvesDefaultTranslateError(notFoundError)
@@ -17,7 +17,7 @@ test('resolvesDefaultTranslateError: when the function receive a not found param
   t.is(result.issuer_response_code, 'NOT_FOUND_PARAMS')
 })
 
-test('resolvesDefaultTranslateError: when the function receive a generic error', (t) => {
+test('resolvesDefaultTranslateError: when receive a generic error then should be returned a status "refused" and default message and code', (t) => {
   const error = new Error('Error generic')
 
   const result = resolvesDefaultTranslateError(error)
@@ -27,7 +27,7 @@ test('resolvesDefaultTranslateError: when the function receive a generic error',
   t.is(result.issuer_response_code, 'defaultErrorCode')
 })
 
-test('resolvesWhenIsSuccessInResponse: with response missing barcode', (t) => {
+test('resolvesWhenIsSuccessInResponse: with response missing barcode then should return a exception with personalized message', (t) => {
   const error = t.throws(() => {
     resolvesWhenIsSuccessInResponse({
       barcode: undefined,
@@ -39,7 +39,7 @@ test('resolvesWhenIsSuccessInResponse: with response missing barcode', (t) => {
   t.is(error.message, 'código de barras do boleto não foi retornado')
 })
 
-test('resolvesWhenIsSuccessInResponse: with response missing boletoUrl', (t) => {
+test('resolvesWhenIsSuccessInResponse: with response missing boletoUrl then should return a exception with personalized message', (t) => {
   const error = t.throws(() => {
     resolvesWhenIsSuccessInResponse({
       barcode: '804284028402804820482',
@@ -51,7 +51,7 @@ test('resolvesWhenIsSuccessInResponse: with response missing boletoUrl', (t) => 
   t.is(error.message, 'URL do boleto não foi retornada')
 })
 
-test('resolvesWhenIsSuccessInResponse: with response missing digitableLine', (t) => {
+test('resolvesWhenIsSuccessInResponse: with response missing digitableLine then should return a exception with personalized message', (t) => {
   const error = t.throws(() => {
     resolvesWhenIsSuccessInResponse({
       barcode: '804284028402804820482',
@@ -64,7 +64,7 @@ test('resolvesWhenIsSuccessInResponse: with response missing digitableLine', (t)
 })
 
 
-test('resolvesWhenNotHaveErrorsInResponse: when the function receive the parameters', (t) => {
+test('resolvesWhenNotHaveErrorsInResponse: when receive the parameters then should be returned a status "refused" with them', (t) => {
   const result = resolvesWhenNotHaveErrorsInResponse(503, 'Service Unavailable')
 
   t.is(result.message, 'Service Unavailable')
@@ -72,7 +72,7 @@ test('resolvesWhenNotHaveErrorsInResponse: when the function receive the paramet
   t.is(result.issuer_response_code, '503')
 })
 
-test('resolvesWhenNotHaveErrorsInResponse: when the function not receive the parameters', (t) => {
+test('resolvesWhenNotHaveErrorsInResponse: when not receive the parameters then should be returned a status "refused" and default message error and code', (t) => {
   const result = resolvesWhenNotHaveErrorsInResponse()
 
   t.is(result.message, 'Register operation failed at Caixa')
@@ -80,7 +80,7 @@ test('resolvesWhenNotHaveErrorsInResponse: when the function not receive the par
   t.is(result.issuer_response_code, 'defaultErrorCode')
 })
 
-test('resolvesWhenHaveErrorsInResponse: when the receive a mapped error', (t) => {
+test('resolvesWhenHaveErrorsInResponse: when the receive a mapped error then should be returned a status "refused" and pass on message and code received', (t) => {
   const response = {
     errors: [{ code: 'MP500', message: 'Internal error' }],
   }
@@ -92,7 +92,7 @@ test('resolvesWhenHaveErrorsInResponse: when the receive a mapped error', (t) =>
   t.is(result.issuer_response_code, 'MP500')
 })
 
-test('resolvesWhenHaveErrorsInResponse: when the receive a not mapped error', (t) => {
+test('resolvesWhenHaveErrorsInResponse: when the receive a not mapped error then should be returned a status "refused" and default message with error', (t) => {
   const response = {
     errors: [{ code: 'NotMappedError', message: 'Register operation failed at Caixa' }],
   }
