@@ -7,7 +7,7 @@ import Provider from '../../../../src/providers/boleto-api-caixa'
 
 const { register } = Provider.getProvider()
 
-test('register: when the register function not received the billet', async (t) => {
+test('register: when the register function not received the boleto', async (t) => {
   const registerResponse = await register()
 
   t.is(registerResponse.message, 'Register operation failed at Caixa')
@@ -16,7 +16,7 @@ test('register: when the register function not received the billet', async (t) =
 })
 
 test('register: when the sendRequestToBoletoApi function return a not mapped error', async (t) => {
-  const billet = await createBoleto({
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
@@ -27,7 +27,7 @@ test('register: when the sendRequestToBoletoApi function return a not mapped err
     .stub(axios, 'request')
     .rejects(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(registerResponse.message, 'Register operation failed at Caixa')
   t.is(registerResponse.status, 'refused')
@@ -37,7 +37,7 @@ test('register: when the sendRequestToBoletoApi function return a not mapped err
 })
 
 test('register: when the sendRequestToBoletoApi function return a timeout error', async (t) => {
-  const billet = await createBoleto({
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
@@ -49,7 +49,7 @@ test('register: when the sendRequestToBoletoApi function return a timeout error'
     .stub(axios, 'request')
     .rejects(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(
     registerResponse.message,
@@ -62,7 +62,7 @@ test('register: when the sendRequestToBoletoApi function return a timeout error'
 })
 
 test('register: when the sendRequestToBoletoApi function return a statusCode 40X', async (t) => {
-  const billet = await createBoleto({
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
@@ -78,7 +78,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 40X
     .stub(axios, 'request')
     .rejects(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(
     registerResponse.message,
@@ -91,7 +91,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 40X
 })
 
 test('register: when the sendRequestToBoletoApi function return a statusCode 50X with error', async (t) => {
-  const billet = await createBoleto({
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
@@ -107,7 +107,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 50X
     .stub(axios, 'request')
     .rejects(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(
     registerResponse.message,
@@ -120,7 +120,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 50X
 })
 
 test('register: when the sendRequestToBoletoApi function return a statusCode 50X without error', async (t) => {
-  const billet = await createBoleto({
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
@@ -135,7 +135,7 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 50X
     .stub(axios, 'request')
     .rejects(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(
     registerResponse.message,
@@ -148,15 +148,15 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 50X
 })
 
 test('register: when the sendRequestToBoletoApi function return success', async (t) => {
-  const billet = await createBoleto({
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
     status: 200,
     data: {
-      id: billet.id,
-      digitableLine: billet.digitable_line,
-      barCodeNumber: billet.barcode,
+      id: boleto.id,
+      digitableLine: boleto.digitable_line,
+      barCodeNumber: boleto.barcode,
       links: [{
         href: 'https://test-html.com',
         rel: 'html',
@@ -174,7 +174,7 @@ test('register: when the sendRequestToBoletoApi function return success', async 
     .stub(axios, 'request')
     .resolves(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(registerResponse.status, 'registered')
   t.is(registerResponse.issuer_response_code, '0')
@@ -186,24 +186,24 @@ test('register: when the sendRequestToBoletoApi function return success', async 
       status: 'registered',
       issuer_response_code: '0',
       boleto_url: 'https://test-html.com',
-      digitable_line: billet.digitable_line,
-      barcode: billet.barcode,
+      digitable_line: boleto.digitable_line,
+      barcode: boleto.barcode,
     }
   )
 
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function not return digitableLine parameter in the billet', async (t) => {
-  const billet = await createBoleto({
+test('register: when the sendRequestToBoletoApi function not return digitableLine parameter in the boleto', async (t) => {
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
     status: 200,
     data: {
-      id: billet.id,
+      id: boleto.id,
       digitableLine: undefined,
-      barCodeNumber: billet.barcode,
+      barCodeNumber: boleto.barcode,
       links: [{
         href: 'https://test-html.com',
         rel: 'html',
@@ -221,7 +221,7 @@ test('register: when the sendRequestToBoletoApi function not return digitableLin
     .stub(axios, 'request')
     .resolves(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(registerResponse.message, 'linha digitável do boleto não foi retornada')
   t.is(registerResponse.status, 'refused')
@@ -230,15 +230,15 @@ test('register: when the sendRequestToBoletoApi function not return digitableLin
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function not return barCodeNumber parameter in the billet', async (t) => {
-  const billet = await createBoleto({
+test('register: when the sendRequestToBoletoApi function not return barCodeNumber parameter in the boleto', async (t) => {
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
     status: 200,
     data: {
-      id: billet.id,
-      digitableLine: billet.digitable_line,
+      id: boleto.id,
+      digitableLine: boleto.digitable_line,
       barCodeNumber: undefined,
       links: [{
         href: 'https://test-html.com',
@@ -257,7 +257,7 @@ test('register: when the sendRequestToBoletoApi function not return barCodeNumbe
     .stub(axios, 'request')
     .resolves(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(registerResponse.message, 'código de barras do boleto não foi retornado')
   t.is(registerResponse.status, 'refused')
@@ -266,15 +266,15 @@ test('register: when the sendRequestToBoletoApi function not return barCodeNumbe
   axiosRequestStub.restore()
 })
 
-test('register: when the sendRequestToBoletoApi function not return the html link parameter in the billet', async (t) => {
-  const billet = await createBoleto({
+test('register: when the sendRequestToBoletoApi function not return the html link parameter in the boleto', async (t) => {
+  const boleto = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
     status: 200,
     data: {
-      id: billet.id,
-      digitableLine: billet.digitable_line,
+      id: boleto.id,
+      digitableLine: boleto.digitable_line,
       barCodeNumber: undefined,
       links: [{
         href: 'https://test-pdf.com',
@@ -288,7 +288,7 @@ test('register: when the sendRequestToBoletoApi function not return the html lin
     .stub(axios, 'request')
     .resolves(expectedAxiosError)
 
-  const registerResponse = await register(billet)
+  const registerResponse = await register(boleto)
 
   t.is(registerResponse.message, 'URL do boleto não foi retornada')
   t.is(registerResponse.status, 'refused')
