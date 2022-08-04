@@ -614,6 +614,7 @@ test('buildPayload with payeeGuarantor fields empty', async (t) => {
 
 test('translateResponseCode: with a "registered" code', (t) => {
   const axiosResponse = {
+    status: 200,
     data: {
       id: '37279202382',
       digitableLine: '98139178390283012831893193103293',
@@ -641,6 +642,7 @@ test('translateResponseCode: with a "registered" code', (t) => {
 
 test('translateResponseCode: registered with empty errors', (t) => {
   const axiosResponse = {
+    status: 200,
     data: {
       id: '37279202382',
       digitableLine: '98139178390283012831893193103293',
@@ -714,6 +716,7 @@ test('translateResponseCode: with a "MP" error', (t) => {
 
 test('translateResponseCode: with response missing html link', (t) => {
   const axiosResponse = {
+    status: 200,
     data: {
       id: '37279202382',
       digitableLine: '98139178390283012831893193103293',
@@ -731,11 +734,12 @@ test('translateResponseCode: with response missing html link', (t) => {
     translateResponseCode(axiosResponse)
   })
 
-  t.is(error.message, 'URL do boleto não existe')
+  t.is(error.message, 'URL do boleto não foi retornada')
 })
 
 test('translateResponseCode: with response missing digitable line', (t) => {
   const axiosResponse = {
+    status: 200,
     data: {
       id: '37279202382',
       barCodeNumber: '804284028402804820482',
@@ -752,11 +756,12 @@ test('translateResponseCode: with response missing digitable line', (t) => {
     translateResponseCode(axiosResponse)
   })
 
-  t.is(error.message, 'linha digitável do boleto não existe')
+  t.is(error.message, 'linha digitável do boleto não foi retornada')
 })
 
 test('translateResponseCode: with response missing barcode', (t) => {
   const axiosResponse = {
+    status: 200,
     data: {
       id: '37279202382',
       digitableLine: '98139178390283012831893193103293',
@@ -773,7 +778,7 @@ test('translateResponseCode: with response missing barcode', (t) => {
     translateResponseCode(axiosResponse)
   })
 
-  t.is(error.message, 'código de barras do boleto não existe')
+  t.is(error.message, 'código de barras do boleto não foi retornado')
 })
 
 test('buildHeaders', (t) => {

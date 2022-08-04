@@ -138,10 +138,20 @@ test('sendRequestToBoletoApi: with a not mapped error', async (t) => {
   })
 
   const requestStub = sinon.stub(axios, 'request').rejects(expectedAxiosError)
-  const error =
-    await t.throws(Provider.sendRequestToBoletoApi(payload, headers))
 
-  t.is(error.code, expectedAxiosError.code)
+  const result = await Provider.sendRequestToBoletoApi(payload, headers)
+
+  t.deepEqual(
+    result,
+    {
+      data: {
+        errors: [{
+          code: 'NotMappedError',
+          message: 'Register operation failed at Caixa',
+        }],
+      },
+    }
+  )
 
   requestStub.restore()
 })

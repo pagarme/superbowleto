@@ -31,7 +31,7 @@ test('register: when the sendRequestToBoletoApi function return a not mapped err
 
   t.is(registerResponse.message, 'Register operation failed at Caixa')
   t.is(registerResponse.status, 'refused')
-  t.is(registerResponse.issuer_response_code, 'defaultErrorCode')
+  t.is(registerResponse.issuer_response_code, expectedAxiosError.code)
 
   axiosRequestStub.restore()
 })
@@ -90,11 +90,69 @@ test('register: when the sendRequestToBoletoApi function return a statusCode 40X
   axiosRequestStub.restore()
 })
 
+test('register: when the sendRequestToBoletoApi function return a statusCode 50X with error', async (t) => {
+  const billet = await createBoleto({
+    issuer: 'boleto-api-caixa',
+  })
+  const expectedAxiosError = {
+    response: {
+      status: 500,
+      data: {
+        errors: [{ code: 'MP500', message: 'Internal error' }],
+      },
+    },
+  }
+
+  const axiosRequestStub = sinon
+    .stub(axios, 'request')
+    .rejects(expectedAxiosError)
+
+  const registerResponse = await register(billet)
+
+  t.is(
+    registerResponse.message,
+    'Internal error'
+  )
+  t.is(registerResponse.status, 'refused')
+  t.is(registerResponse.issuer_response_code, 'MP500')
+
+  axiosRequestStub.restore()
+})
+
+test('register: when the sendRequestToBoletoApi function return a statusCode 50X without error', async (t) => {
+  const billet = await createBoleto({
+    issuer: 'boleto-api-caixa',
+  })
+  const expectedAxiosError = {
+    response: {
+      status: 503,
+      statusText: 'Service Unavailable',
+      data: undefined,
+    },
+  }
+
+  const axiosRequestStub = sinon
+    .stub(axios, 'request')
+    .rejects(expectedAxiosError)
+
+  const registerResponse = await register(billet)
+
+  t.is(
+    registerResponse.message,
+    'Service Unavailable'
+  )
+  t.is(registerResponse.status, 'refused')
+  t.is(registerResponse.issuer_response_code, '503')
+
+  axiosRequestStub.restore()
+})
+
 test('register: when the sendRequestToBoletoApi function return success', async (t) => {
   const billet = await createBoleto({
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
+    status: 200,
     data: {
       id: billet.id,
       digitableLine: billet.digitable_line,
@@ -141,6 +199,7 @@ test('register: when the sendRequestToBoletoApi function not return digitableLin
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
+    status: 200,
     data: {
       id: billet.id,
       digitableLine: undefined,
@@ -164,9 +223,9 @@ test('register: when the sendRequestToBoletoApi function not return digitableLin
 
   const registerResponse = await register(billet)
 
-  t.is(registerResponse.message, 'Register operation failed at Caixa')
+  t.is(registerResponse.message, 'linha digitável do boleto não foi retornada')
   t.is(registerResponse.status, 'refused')
-  t.is(registerResponse.issuer_response_code, 'defaultErrorCode')
+  t.is(registerResponse.issuer_response_code, 'NOT_FOUND_PARAMS')
 
   axiosRequestStub.restore()
 })
@@ -176,6 +235,7 @@ test('register: when the sendRequestToBoletoApi function not return barCodeNumbe
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
+    status: 200,
     data: {
       id: billet.id,
       digitableLine: billet.digitable_line,
@@ -199,9 +259,9 @@ test('register: when the sendRequestToBoletoApi function not return barCodeNumbe
 
   const registerResponse = await register(billet)
 
-  t.is(registerResponse.message, 'Register operation failed at Caixa')
+  t.is(registerResponse.message, 'código de barras do boleto não foi retornado')
   t.is(registerResponse.status, 'refused')
-  t.is(registerResponse.issuer_response_code, 'defaultErrorCode')
+  t.is(registerResponse.issuer_response_code, 'NOT_FOUND_PARAMS')
 
   axiosRequestStub.restore()
 })
@@ -211,6 +271,7 @@ test('register: when the sendRequestToBoletoApi function not return the html lin
     issuer: 'boleto-api-caixa',
   })
   const expectedAxiosError = {
+    status: 200,
     data: {
       id: billet.id,
       digitableLine: billet.digitable_line,
@@ -229,9 +290,9 @@ test('register: when the sendRequestToBoletoApi function not return the html lin
 
   const registerResponse = await register(billet)
 
-  t.is(registerResponse.message, 'Register operation failed at Caixa')
+  t.is(registerResponse.message, 'URL do boleto não foi retornada')
   t.is(registerResponse.status, 'refused')
-  t.is(registerResponse.issuer_response_code, 'defaultErrorCode')
+  t.is(registerResponse.issuer_response_code, 'NOT_FOUND_PARAMS')
 
   axiosRequestStub.restore()
 })
