@@ -27,7 +27,7 @@ const {
   translateResponseWithoutErrors,
   translateResponseWithSuccess,
   translateDefaultError,
-} = require('./utils')
+} = require('./translate-utils')
 const config = require('../../config/providers')
 const { getPagarmeAddress } = require('../../resources/boleto/model')
 

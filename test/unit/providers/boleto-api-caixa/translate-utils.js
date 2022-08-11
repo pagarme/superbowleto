@@ -5,7 +5,7 @@ import {
   translateResponseWithSuccess,
   translateDefaultError,
   NotFoundParamsError,
-} from '../../../../src/providers/boleto-api-caixa/utils'
+} from '../../../../src/providers/boleto-api-caixa/translate-utils'
 
 test('translateDefaultError: when receive a not found params error then should be returned a status "refused" and personalized message with code "NOT_FOUND_PARAMS"', (t) => {
   const notFoundError = new NotFoundParamsError('Not found params')
