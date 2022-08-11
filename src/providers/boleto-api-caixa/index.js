@@ -14,14 +14,20 @@ const {
 const { encodeBase64 } = require('../../lib/encoding')
 const { makeFromLogger } = require('../../lib/logger')
 const { getRequestTimeoutMs } = require('../../lib/http/request')
-const { isA4XXError, isTimeoutError } = require('../../lib/helpers/errors')
+const { isTimeoutError } = require('../../lib/helpers/errors')
 const { buildBoletoApiErrorResponse } = require('../../lib/helpers/providers')
 const {
   formatDate,
   getDocumentType,
   formatStateCode,
 } = require('./formatter')
-
+const {
+  defaultMessageRegisterError,
+  translateResponseWithErrors,
+  translateResponseWithoutErrors,
+  translateResponseWithSuccess,
+  translateDefaultError,
+} = require('./translate-utils')
 const config = require('../../config/providers')
 const { getPagarmeAddress } = require('../../resources/boleto/model')
 
@@ -245,11 +251,14 @@ const sendRequestToBoletoApi = async (payload, headers) => {
       })
     }
 
-    if (error && error.response && isA4XXError(error)) {
+    if (error && error.response) {
       return error.response
     }
 
-    throw error
+    return buildBoletoApiErrorResponse({
+      code: error.code,
+      message: defaultMessageRegisterError,
+    })
   }
 }
 
@@ -262,60 +271,30 @@ const getBoletoUrl = pipe(
 )
 
 const translateResponseCode = (axiosResponse) => {
+  const statusCode = path(['status'], axiosResponse)
+  const statusText = path(['statusText'], axiosResponse)
   const axiosResponseData = path(['data'], axiosResponse)
   const hasErrors = path(['errors', 'length'], axiosResponseData)
 
-  if (!hasErrors) {
+  const isStatusSuccess = statusCode >= 200 && statusCode < 300
+
+  if (!hasErrors && isStatusSuccess) {
     const boletoUrl = getBoletoUrl(axiosResponseData)
     const digitableLine = path(['digitableLine'], axiosResponseData)
     const barcode = path(['barCodeNumber'], axiosResponseData)
 
-    if (!boletoUrl) {
-      throw new Error('URL do boleto não existe')
-    }
-
-    if (!digitableLine) {
-      throw new Error('linha digitável do boleto não existe')
-    }
-
-    if (!barcode) {
-      throw new Error('código de barras do boleto não existe')
-    }
-
-    const defaultSuccessValue = {
-      message: 'REGISTRO EFETUADO COM SUCESSO',
-      status: 'registered',
-      issuer_response_code: '0',
-      boleto_url: boletoUrl,
-      digitable_line: digitableLine,
+    return translateResponseWithSuccess({
       barcode,
-    }
-
-    return defaultSuccessValue
+      boletoUrl,
+      digitableLine,
+    })
   }
 
-  const firstError = axiosResponseData.errors[0]
-  const responseCode = firstError.code
-  const isBoletoApiError = responseCode.startsWith('MP')
-  const isAxiosTimeoutError = responseCode === 'ECONNABORTED'
-
-  if (isBoletoApiError || isAxiosTimeoutError) {
-    const defaultBoletoApiError = {
-      message: firstError.message,
-      status: 'refused',
-      issuer_response_code: responseCode,
-    }
-
-    return defaultBoletoApiError
+  if (!hasErrors) {
+    return translateResponseWithoutErrors(statusCode, statusText)
   }
 
-  const defaultErroredValue = {
-    message: 'Register operation failed at Caixa',
-    status: 'refused',
-    issuer_response_code: 'defaultErrorCode',
-  }
-
-  return defaultErroredValue
+  return translateResponseWithErrors(axiosResponseData)
 }
 
 const defaultOptions = {
@@ -347,7 +326,6 @@ const getProvider = ({ operationId } = defaultOptions) => {
       })
 
       const response = await sendRequestToBoletoApi(payload, headers)
-
       const translatedResponse = translateResponseCode(response)
 
       logger.info({
@@ -371,7 +349,8 @@ const getProvider = ({ operationId } = defaultOptions) => {
         },
       })
 
-      throw error
+      const translated = translateDefaultError(error)
+      return Promise.resolve(translated)
     }
   }
 
