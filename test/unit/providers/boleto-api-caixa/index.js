@@ -28,7 +28,7 @@ const strictExpirateDateRules = {
 }
 
 function getDefaultInstruction (companyName = 'company name test', companyDocumentNumber) {
-  return ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocumentNumber}. Para confirmar a existência deste boleto consulte em pagar.me/boletos.`
+  return ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocumentNumber}. Para confirmar a existência deste boleto consulte em pagar.me/boletos`
 }
 
 test('buildPayload without rules and wallet then title.rules should be null', async (t) => {

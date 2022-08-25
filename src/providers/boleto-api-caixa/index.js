@@ -165,7 +165,7 @@ const defineFees = (boleto) => {
 const getInstructions = (companyName, companyDocument, boleto) => {
   let instructions = path(['instructions'], boleto) || ''
 
-  instructions += ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocument}. Para confirmar a existência deste boleto consulte em pagar.me/boletos.`
+  instructions += ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocument}. Para confirmar a existência deste boleto consulte em pagar.me/boletos`
 
   return instructions
 }
