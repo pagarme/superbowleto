@@ -64,7 +64,7 @@ const noStrictRules = {
 
 const strictExpirateDateRules = {
   acceptDivergentAmount: false,
-  maxDaysToPayPastDue: 1,
+  maxDaysToPayPastDue: 0,
 }
 
 const defineRules = (boleto) => {
