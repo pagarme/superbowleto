@@ -165,8 +165,9 @@ const defineFees = (boleto) => {
 const getInstructions = (companyName, companyDocument, boleto) => {
   let instructions = path(['instructions'], boleto) || ''
 
-  instructions += ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - CNPJ: ${companyDocument}. Para confirmar a existência deste boleto consulte em pagar.me/boletos`
-
+  instructions += ` A emissão deste boleto foi solicitada e/ou intermediada pela empresa ${companyName} - ` +
+  `CNPJ: ${companyDocument}. Para confirmar a existência deste boleto consulte em pagar.me/boletos`
+  
   return instructions
 }
 
@@ -178,7 +179,7 @@ const buildPayload = (boleto, operationId) => {
 
   const instructions = getInstructions(companyName, companyDocument, boleto)
 
-  const payload = {
+  return {
     bankNumber: caixaBankCode,
     agreement: {
       agreementNumber,
@@ -226,8 +227,6 @@ const buildPayload = (boleto, operationId) => {
     },
     requestKey: operationId,
   }
-
-  return payload
 }
 
 const sendRequestToBoletoApi = async (payload, headers) => {
