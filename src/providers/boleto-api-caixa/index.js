@@ -231,7 +231,7 @@ const buildPayload = (boleto, operationId) => {
 }
 
 const sendRequestToBoletoApi = async (payload, headers) => {
-  const timeoutMs = getRequestTimeoutMs(10000)
+  const timeoutMs = getRequestTimeoutMs(20000)
 
   const axiosPayload = {
     data: payload,
