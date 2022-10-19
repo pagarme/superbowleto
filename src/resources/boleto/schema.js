@@ -1,6 +1,8 @@
 const Joi = require('joi')
 
 const maximumDateForBarcodeCalculation = '02-22-2025'
+// eslint-disable-next-line
+const specialCharactersReplacement = /[^\x00-\xFF]/g
 
 const createSchema = {
   queue_url: Joi
@@ -141,6 +143,7 @@ const createSchema = {
     .string()
     .allow(null)
     .allow('')
+    .when('issuer', { is: 'bradesco', then: Joi.string().normalize('NFKC').replace(specialCharactersReplacement, '') })
     .when('register', { is: true, then: Joi.required().disallow(null).disallow('') }),
 
   payer_document_type: Joi
