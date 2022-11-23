@@ -10,10 +10,6 @@ teardown:
 	@docker-compose down -v --rmi local
 .PHONY: teardown
 
-lint:
-	@docker-compose run lint
-.PHONY: lint
-
 test-ci: start-yopa migrate
 	@docker-compose run --entrypoint="npm run test-ci" test --abort-on-container-exit
 .PHONY: test-ci
@@ -56,8 +52,3 @@ superbowleto-web:
 superbowleto-worker:
 	@docker-compose up superbowleto-worker
 .PHONY: superbowleto-worker
-
-sonar:
-	sed -i 's/\/superbowleto\/src\//src\//g' coverage/lcov.info
-	@docker run -ti -v $(shell pwd):/usr/src pagarme/sonar-scanner -Dsonar.branch.name=${BRANCH}
-.PHONY: sonar

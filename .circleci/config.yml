@@ -16,53 +16,8 @@ _run:
       curl -sSL -o /tmp/ecs-deploy.tar.gz https://github.com/silinternational/ecs-deploy/archive/3.10.0.tar.gz && tar xvfz /tmp/ecs-deploy.tar.gz -C /tmp && sudo cp /tmp/ecs-deploy-3.10.0/ecs-deploy ~/.local/bin/ecs-deploy
       pip install --upgrade "pip>=9.0,<=20.3.4"
       pip install awscli --upgrade --user
-  pull_sonar_image: &pull_sonar_image
-    name: Pull Docker sonar-scanner image
-    command: |
-      echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-      docker pull pagarme/sonar-scanner
 
 jobs:
-  test:
-    machine:
-      image: << pipeline.parameters.machine_image >>
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - checkout
-      - run:
-          name: Build docker-compose containers
-          command: docker-compose build
-      - run:
-          name: Run linter
-          command: make lint
-      - run:
-          name: Run tests
-          command: make test-ci
-      - store_test_results:
-          path: ./reports
-      - store_artifacts:
-          path: ./reports
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - ./
-  sonar:
-    machine:
-      image: << pipeline.parameters.machine_image >>
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run: *pull_sonar_image
-      - run:
-          name: Superbowleto Analysis
-          command: make sonar BRANCH=$CIRCLE_BRANCH
   build_image:
     working_directory: ~/superbowleto
     machine:
@@ -207,20 +162,7 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-    - test:
-        filters:
-          tags:
-            only: /^v.*/
-    - sonar:
-        context: dockerhub
-        requires:
-          - test
-        filters:
-          tags:
-            only: /^v.*/
     - build_image:
-        requires:
-          - sonar
         filters:
           branches:
             ignore: /.*/
