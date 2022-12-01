@@ -147,7 +147,7 @@ test('POST /boletos with invalid expiration_date', async (t) => {
     errors: [
       {
         type: 'invalid_parameter',
-        message: '"expiration_date" must be less than or equal to "Sat Feb 22 2025 00:00:00 GMT+0000 (UTC)"',
+        message: '"expiration_date" must be less than or equal to "Sat Feb 22 2025 23:59:59 GMT+0000 (UTC)"',
         field: 'expiration_date',
       },
     ],

@@ -38,7 +38,7 @@ function createExpectedObject (date = '2024-02-23 00:00:00') {
 function expirationDateErrorFactory () {
   return new InvalidParameterError({
     type: 'invalid_parameter',
-    message: '"expiration_date" must be less than or equal to "Sat Feb 22 2025 00:00:00 GMT+0000 (UTC)"',
+    message: '"expiration_date" must be less than or equal to "Sat Feb 22 2025 23:59:59 GMT+0000 (UTC)"',
     field: 'expiration_date',
   })
 }
@@ -69,8 +69,15 @@ test('Expiration date limit - when issuer is boleto-api-bradesco-shopfacil and e
 })
 
 test('Expiration date limit - when issuer is boleto-api-caixa and expiration-date greater than 2025-02-22, should not return erros', async (t) => {
-  const mockedSchema = createMockedSchema()
+  const mockedSchema = createMockedSchema('2025-02-23')
   mockedSchema.issuer = 'boleto-api-caixa'
+
+  await t.notThrows(async () => parse(createSchema, mockedSchema))
+})
+
+test('Expiration date limit - when issuer is development and expiration-date greater than 2025-02-22, should not return erros', async (t) => {
+  const mockedSchema = createMockedSchema('2025-02-23')
+  mockedSchema.issuer = 'development'
 
   await t.notThrows(async () => parse(createSchema, mockedSchema))
 })

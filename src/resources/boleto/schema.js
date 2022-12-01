@@ -1,6 +1,6 @@
 const Joi = require('joi')
 
-const maximumDateForBarcodeCalculation = '02-22-2025'
+const maximumDateForBarcodeCalculation = '2025-02-22T23:59:59.000Z'
 // eslint-disable-next-line
 const specialCharactersReplacement = /[^\x00-\xFF]/g
 
@@ -10,7 +10,8 @@ const createSchema = {
     .required(),
 
   expiration_date: Joi
-    .when('issuer', { is: 'boleto-api-caixa', then: Joi.date(), otherwise: Joi.date().max(maximumDateForBarcodeCalculation) })
+    .date()
+    .when('issuer', { is: ['boleto-api-bradesco-shopfacil', 'bradesco'], then: Joi.date().max(maximumDateForBarcodeCalculation) })
     .required(),
 
   amount: Joi
