@@ -10,8 +10,7 @@ const createSchema = {
     .required(),
 
   expiration_date: Joi
-    .date()
-    .max(maximumDateForBarcodeCalculation)
+    .when('issuer', { is: 'boleto-api-caixa', then: Joi.date(), otherwise: Joi.date().max(maximumDateForBarcodeCalculation) })
     .required(),
 
   amount: Joi
