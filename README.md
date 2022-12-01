@@ -3,6 +3,17 @@
 # superbowleto
 
 [![Build Status](https://travis-ci.org/pagarme/superbowleto.svg?branch=master)](https://travis-ci.org/pagarme/superbowleto)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=alert_status&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=security_rating&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=reliability_rating&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=bugs&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=sqale_rating&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=vulnerabilities&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=code_smells&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=ncloc&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=coverage&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=duplicated_lines_density&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=pagarme-superbowleto&metric=sqale_index&token=d099a5e52b20b74b423a1504653b3795a42df4b9)](https://sonarcloud.io/summary/new_code?id=pagarme-superbowleto)
 
 :football: A microservice to issue, register and manage boletos
 
@@ -11,6 +22,7 @@
 - [Technology](#technology)
 - [Developing](#developing)
   - [First Install](#first-install)
+  - [Running the server](#running-the-server)
   - [Running tests](#running-tests)
   - [Installing new dependencies](#installing-new-dependencies)
 - [Testing](#testing)
