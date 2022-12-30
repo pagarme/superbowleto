@@ -1,0 +1,113 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: superbowleto
+  title: Superbowleto
+  description: Sistema Responsável pela emissão de boletos no contexto do PSP
+  namespace: pagarme
+  links:
+    - url: "https://github.com/pagarme/superbowleto/blob/master/README.md"
+      title: Documentação técnica
+      icon: dashboard
+  annotations:
+    github.com/project-slug: pagarme/superbowleto
+    pagar.me/ci: github-actions
+    pagar.me/cd: circleci
+    stone.co/sox: "true"
+    stone.co/pii: "true"
+spec:
+  type: backend
+  owner: pagarme/processing-banks
+  lifecycle: production
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: superbowleto-server
+  title: Superbowleto-server
+  description: Servidor responsável por receber requests http
+  namespace: pagarme
+  annotations:
+    github.com/project-slug: pagarme/superbowleto
+    pagar.me/ci: github-actions
+    pagar.me/cd: circleci
+    stone.co/sox: "true"
+    stone.co/pii: "true"
+spec:
+  type: backend
+  lifecycle: production
+  owner: pagarme/processing-banks
+  system: pagarme/superbowleto
+  dependsOn:
+    - resource:pagarme/live-superbowleto
+    - resource:mundipagg/boleto-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: superbowleto-worker
+  title: Superbowleto-worker
+  description: Worker responsável por receber mensagens do SQS para retentativa de emissão
+  namespace: pagarme
+  annotations:
+    github.com/project-slug: pagarme/superbowleto
+    pagar.me/ci: github-actions
+    pagar.me/cd: circleci
+    stone.co/sox: "true"
+    stone.co/pii: "true"
+spec:
+  type: worker
+  lifecycle: production
+  owner: pagarme/processing-banks
+  system: pagarme/superbowleto
+  dependsOn:
+    - resource:pagarme/live-superbowleto
+    - resource:pagarme/superbowleto-unregistered-boletos
+    - resource:mundipagg/boleto-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: live-superbowleto
+  title: Superbowleto Database
+  description: Banco de dados da superbowleto
+  namespace: pagarme
+  annotations:
+    stone.co/sox: "true"
+    stone.co/pii: "true"
+spec:
+  type: database
+  owner: pagarme/processing-banks
+  system: pagarme/superbowleto
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name:  superbowleto-unregistered-boletos
+  title: Superbowleto Unregistered Boletos
+  description: Fila SQS de Boletos Não Registrados
+  namespace: pagarme
+  annotations:
+    github.com/project-slug: pagarme/superbowleto
+    stone.co/sox: "true"
+    stone.co/pii: "true"
+spec:
+  type: queue
+  owner: pagarme/processing-banks
+  system: pagarme/superbowleto
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name:  superbowleto
+  title: Superbowleto
+  description: Repositório da superbowleto no Github
+  namespace: pagarme
+  annotations:
+    github.com/project-slug: pagarme/superbowleto
+    stone.co/sox: "true"
+    stone.co/pii: "true"
+spec:
+  type: repository
+  owner: pagarme/processing-banks
+  system: pagarme/superbowleto
