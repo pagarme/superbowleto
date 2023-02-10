@@ -1,0 +1,42 @@
+name: Build and Deploy STG
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: stg
+    outputs:
+      image: ${{ steps.build_image.outputs.name }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials (staging)
+        id: login_aws_credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          mask-aws-account-id: 'no'
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      
+      - name: Build, tag, and push image to Amazon ECR (using short sha)
+        id: build_image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: superbowleto-stg
+          DOCKER_BUILDKIT: 1
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::7} --build-arg DD_VERSION=${GITHUB_SHA::7} .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::7}
+          echo "name=$ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "name=$ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::7}"  
