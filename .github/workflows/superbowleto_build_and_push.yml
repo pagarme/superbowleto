@@ -1,0 +1,46 @@
+name: ECS Build and Push
+
+on:
+  workflow_call:
+    outputs:
+      image:
+        value: ${{ jobs.build-handler.outputs.image }}
+      tag: 
+        value: ${{ jobs.generate-tag.outputs.tag }}
+
+    inputs: 
+      ENVIRONMENT:
+        required: true
+        type: string
+      PROJECT_NAME:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  generate-tag:
+    runs-on: small-runner
+    steps:
+      - name: Get Github Release tag
+        id: tag
+        run: |
+          echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF_NAME}"
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+
+  build-handler:
+    needs: generate-tag
+    uses: pagarme/github-actions-workflows/.github/workflows/build-push-ecr.yml@main
+    with:
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+      IMAGE_TAG: ${{ inputs.IMAGE_TAG }}
+      STATIC_TAG: "latest"
+      ECR_REPOSITORY: ${{ inputs.PROJECT_NAME }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
