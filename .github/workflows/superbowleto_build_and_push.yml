@@ -28,7 +28,8 @@ on:
 
 jobs:
   generate-tag:
-    runs-on: small-runner
+    # Como o repositório é publico não é possível utilizar uma máquina self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Get Github Release tag
         id: tag
@@ -38,44 +39,15 @@ jobs:
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
 
-  build_handler:
-    runs-on: small-runner
+  build-handler:
     needs: generate-tag
-    environment: ${{ inputs.ENVIRONMENT }}
-    
-    outputs:
-      image: ${{ steps.build_image.outputs.image }}
-      static: ${{ steps.build_image.outputs.static_image }}
-    
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-          mask-aws-account-id: "no"
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push image to Amazon ECR (using short sha)
-        id: build_image
-        env:
-          IMAGE_TAG: ${{ needs.jobs.generate-tag.outputs.tag }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          DOCKER_BUILDKIT: 1
-        run: |
-          [ -z ${{ inputs.IMAGE_TAG }} ] && IMAGE_TAG=${GITHUB_SHA::7} || IMAGE_TAG=${{ inputs.IMAGE_TAG }}
-          [ -z ${{ inputs.TARGET }} ] && TARGET_PARAM="" || TARGET_PARAM="--target ${{ inputs.TARGET }}"
-          [ -z ${{ inputs.STATIC_TAG }} ] && STATIC="" || STATIC="-t $ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:${{ inputs.STATIC_TAG }}" 
-          docker build -t $ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:$IMAGE_TAG $STATIC -f ${{ inputs.DOCKERFILE }} --build-arg DD_VERSION=$IMAGE_TAG $TARGET_PARAM .
-          docker push $ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }} --all-tags
-          echo "image=$ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "static_image=$ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:${{ inputs.STATIC_TAG }}" >> $GITHUB_OUTPUT
+    uses: pagarme/github-actions-workflows/.github/workflows/build-push-ecr.yml@main
+    with:
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+      STATIC_TAG: "latest"
+      ECR_REPOSITORY: ${{ inputs.PROJECT_NAME }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
