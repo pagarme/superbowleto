@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/superbowleto_build_and_push.yml
     with:
       ENVIRONMENT: stg
-      PROJECT_NAME: superbowleto-stg
+      ECR_REPOSITORY: superbowleto-stg
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
