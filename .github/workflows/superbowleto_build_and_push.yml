@@ -78,7 +78,7 @@ jobs:
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
 
-  build_handler:
+  build-handler:
     runs-on: ubuntu-latest
     needs: generate-tag
     environment: ${{ inputs.ENVIRONMENT }}
@@ -118,5 +118,7 @@ jobs:
           docker push $ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }} --all-tags
           echo "image=$ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "static_image=$ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:${{ inputs.STATIC_TAG }}" >> $GITHUB_OUTPUT
+          echo $TAG
+          echo ${{ needs.jobs.generate-tag.outputs.tag }}
 
 
