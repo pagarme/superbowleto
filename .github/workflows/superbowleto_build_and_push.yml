@@ -75,10 +75,8 @@ jobs:
         run: |
           echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
           echo "tag=${GITHUB_REF_NAME}"
-    outputs:
-      tag: ${{ steps.tag.outputs.tag }}
 
-  build_handler:
+  build-handler:
     runs-on: ubuntu-latest
     needs: generate-tag
     environment: ${{ inputs.ENVIRONMENT }}
@@ -106,12 +104,11 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR (using short sha)
         id: build_image
         env:
-          TAG: ${{ needs.jobs.generate-tag.outputs.tag }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           DOCKER_BUILDKIT: 1
         run: |
           cd ${{ inputs.WORK_DIR }}
-          [ -z ${{ inputs.IMAGE_TAG }} ] && IMAGE_TAG=${GITHUB_SHA::7} || IMAGE_TAG=$TAG
+          [ -z ${{ inputs.IMAGE_TAG }} ] && IMAGE_TAG=${GITHUB_SHA::7} || IMAGE_TAG=${{ needs.jobs.generate-tag.outputs.tag }}
           [ -z ${{ inputs.TARGET }} ] && TARGET_PARAM="" || TARGET_PARAM="--target ${{ inputs.TARGET }}"
           [ -z ${{ inputs.STATIC_TAG }} ] && STATIC="" || STATIC="-t $ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:${{ inputs.STATIC_TAG }}" 
           docker build -t $ECR_REGISTRY/${{ inputs.ECR_REPOSITORY }}:$IMAGE_TAG $STATIC -f ${{ inputs.DOCKERFILE }} --build-arg DD_VERSION=$IMAGE_TAG $TARGET_PARAM .
