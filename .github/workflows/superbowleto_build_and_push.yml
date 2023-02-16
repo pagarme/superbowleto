@@ -78,7 +78,7 @@ jobs:
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
 
-  build_handler:
+  build-handler:
     runs-on: ubuntu-latest
     needs: generate-tag
     environment: ${{ inputs.ENVIRONMENT }}

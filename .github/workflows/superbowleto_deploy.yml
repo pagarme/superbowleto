@@ -1,0 +1,62 @@
+name: ECS Deploy
+
+on:
+  workflow_call:
+    
+    inputs: 
+      ENVIRONMENT:
+        required: true
+        type: string
+      APP_NAME:
+        required: true
+        type: string
+      CLUSTER_NAME:
+        required: true
+        type: string
+      IMAGE:
+        required: true
+        type: string
+      TAG:
+        required: true
+        type: string
+    
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  deploy_handler:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          mask-aws-account-id: no
+    
+      - name: Retrieve task definition
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ inputs.APP_NAME }} --query taskDefinition > task-definition.json
+
+      - name: Render Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ inputs.APP_NAME }}
+          image: ${{ inputs.IMAGE }}
+          environment-variables: "DD_VERSION=${{ inputs.TAG }}"
+      
+      - name: Deploy to Amazon ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ inputs.APP_NAME }}
+          cluster: ${{ inputs.CLUSTER_NAME }}
+          wait-for-service-stability: true
