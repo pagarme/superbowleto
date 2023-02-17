@@ -1,0 +1,35 @@
+name: Build and Deploy PRD
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
+jobs:
+  build-prd:
+    uses: ./.github/workflows/superbowleto_build_and_push.yml
+    with:
+      ENVIRONMENT: prd
+      ECR_REPOSITORY: superbowleto-prd
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy-prd:
+    needs: build-prd
+    uses: ./.github/workflows/superbowleto_deploy.yml
+ 
+    strategy:
+      matrix:
+        app: [superbowleto-s-prd, superbowleto-w-prd]
+
+    with:
+      ENVIRONMENT: prd
+      APP_NAME: ${{ matrix.app }}
+      CLUSTER_NAME: "cluster-prd"
+      IMAGE: ${{ needs.build-prd.outputs.image }}
+      TAG: ${{ needs.build-prd.outputs.tag }}
+
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
