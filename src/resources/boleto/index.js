@@ -75,6 +75,7 @@ const create = (req, res) => {
   }
 
   logger.info({ status: 'started', metadata: { body: req.body } })
+  logger.info({ status: 'started', metadata: { body: req.body } })
 
   return Promise.resolve(req.body)
     .then(parse(createSchema))
