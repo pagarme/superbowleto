@@ -1,0 +1,35 @@
+name: Build and Deploy STG
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+
+
+jobs:
+  build-stg:
+    uses: ./.github/workflows/superbowleto_build_and_push.yml
+    with:
+      ENVIRONMENT: stg
+      ECR_REPOSITORY: superbowleto-stg
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy-stg:
+    needs: build-stg
+    uses: ./.github/workflows/superbowleto_deploy.yml
+ 
+    strategy:
+      matrix:
+        app: [superbowleto-s-stg, superbowleto-w-stg]
+
+    with:
+      ENVIRONMENT: stg
+      APP_NAME: ${{ matrix.app }}
+      CLUSTER_NAME: "cluster-stg"
+      IMAGE: ${{ needs.build-stg.outputs.image }}
+      TAG: ${{ needs.build-stg.outputs.tag }}
+
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -1,0 +1,35 @@
+name: Build and Deploy SDX
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
+jobs:
+  build-sdx:
+    uses: ./.github/workflows/superbowleto_build_and_push.yml
+    with:
+      ENVIRONMENT: sdx
+      ECR_REPOSITORY: superbowleto-sdx
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy-sdx:
+    needs: build-sdx
+    uses: ./.github/workflows/superbowleto_deploy.yml
+ 
+    strategy:
+      matrix:
+        app: [superbowleto-s-sdx, superbowleto-w-sdx]
+
+    with:
+      ENVIRONMENT: sdx
+      APP_NAME: ${{ matrix.app }}
+      CLUSTER_NAME: "cluster-sdx"
+      IMAGE: ${{ needs.build-sdx.outputs.image }}
+      TAG: ${{ needs.build-sdx.outputs.tag }}
+
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
