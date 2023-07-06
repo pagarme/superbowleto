@@ -20,7 +20,6 @@ const {
 const app = express()
 const allRoutesExceptHealthCheck = /^\/(?!_health_check(\/|$)).*$/i
 
-
 app.use(bodyParser.json())
 
 app.disable('x-powered-by')
@@ -39,9 +38,5 @@ app.patch('/configurations/:id', updateConfig)
 app.get('/configurations/:external_id', showConfig)
 
 app.all('*', defaultResourceHandler)
-
-app.headersTimeout = 65 * 1000
-app.keepAliveTimeout = 61 * 1000
-app.timeout = 60 * 1000
 
 module.exports = app
