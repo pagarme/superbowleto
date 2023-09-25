@@ -56,7 +56,7 @@ spec:
   system: superbowleto
   dependsOn:
     - resource:live-superbowleto
-    - resource:boleto-api
+    - resource:pagarme-gateway/boleto-api
 
 ---
 apiVersion: backstage.io/v1alpha1
@@ -96,7 +96,7 @@ spec:
   dependsOn:
     - resource:live-superbowleto
     - resource:superbowleto-unregistered-boletos
-    - resource:boleto-api
+    - resource:pagarme-gateway/boleto-api
 
 ---
 apiVersion: backstage.io/v1alpha1
