@@ -18,6 +18,7 @@ metadata:
 spec:
   owner: pagarme/processing-banks
   lifecycle: production
+
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
@@ -52,10 +53,11 @@ spec:
   type: service
   lifecycle: production
   owner: pagarme/processing-banks
-  system: pagarme/superbowleto
+  system: superbowleto
   dependsOn:
-    - resource:pagarme/live-superbowleto
-    - resource:mundipagg/boleto-api
+    - resource:live-superbowleto
+    - resource:boleto-api
+
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
@@ -90,11 +92,12 @@ spec:
   type: service
   lifecycle: production
   owner: pagarme/processing-banks
-  system: pagarme/superbowleto
+  system: superbowleto
   dependsOn:
-    - resource:pagarme/live-superbowleto
-    - resource:pagarme/superbowleto-unregistered-boletos
-    - resource:mundipagg/boleto-api
+    - resource:live-superbowleto
+    - resource:superbowleto-unregistered-boletos
+    - resource:boleto-api
+
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
@@ -111,7 +114,7 @@ metadata:
 spec:
   type: database
   owner: pagarme/processing-banks
-  system: pagarme/superbowleto
+  system: superbowleto
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
@@ -127,7 +130,7 @@ metadata:
 spec:
   type: queue
   owner: pagarme/processing-banks
-  system: pagarme/superbowleto
+  system: superbowleto
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
@@ -143,4 +146,4 @@ metadata:
 spec:
   type: repository
   owner: pagarme/processing-banks
-  system: pagarme/superbowleto
+  system: superbowleto
