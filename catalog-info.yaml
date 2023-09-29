@@ -35,6 +35,8 @@ metadata:
     stone.co/pii: "true"
     legacy.stone.tech/prod-date: "2023-09-25"
     stone.tech/cloud-accounts: aws/pagarme
+    grafana/dashboard-selector: DORA
+    oculus.stone.tech/configured: "true"
   labels:
     legacy.stone.tech/internal-user-auth-base: not-applicable
     legacy.stone.tech/access-request-type: service-now-pagarme
