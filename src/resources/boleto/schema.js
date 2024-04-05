@@ -1,17 +1,11 @@
 const Joi = require('joi')
 
-const maximumDateForBarcodeCalculation = '2025-02-22T23:59:59.000Z'
 // eslint-disable-next-line
 const specialCharactersReplacement = /[^\x00-\xFF]/g
 
 const createSchema = {
   queue_url: Joi
     .string()
-    .required(),
-
-  expiration_date: Joi
-    .date()
-    .when('issuer', { is: ['boleto-api-bradesco-shopfacil', 'bradesco'], then: Joi.date().max(maximumDateForBarcodeCalculation) })
     .required(),
 
   amount: Joi
