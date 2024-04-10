@@ -45,7 +45,7 @@
     "moment-timezone": "0.5.26",
     "newrelic": "4.11.0",
     "dd-trace": "0.14.0",
-    "node-boleto": "2.1.1",
+    "node-boleto": "2.2.2",
     "nodecredstash": "1.1.0",
     "pg": "7.7.1",
     "ramda": "0.23.0",

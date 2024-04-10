@@ -8,6 +8,10 @@ const createSchema = {
     .string()
     .required(),
 
+  expiration_date: Joi
+    .date()
+    .required(),
+
   amount: Joi
     .number()
     .integer()

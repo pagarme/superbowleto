@@ -132,7 +132,7 @@ test('POST /boletos with invalid expiration_date', async (t) => {
     expiration_date: maximumDateExceededForBarcodeCalculation,
   })
 
-  const { body, statusCode } = await request({
+  const { statusCode } = await request({
     route: '/boletos',
     method: 'POST',
     data: wrongExpirationDate,
@@ -141,15 +141,5 @@ test('POST /boletos with invalid expiration_date', async (t) => {
     },
   })
 
-  t.is(statusCode, 400)
-
-  t.deepEqual(body, {
-    errors: [
-      {
-        type: 'invalid_parameter',
-        message: '"expiration_date" must be less than or equal to "Sat Feb 22 2025 23:59:59 GMT+0000 (UTC)"',
-        field: 'expiration_date',
-      },
-    ],
-  })
+  t.is(statusCode, 201)
 })

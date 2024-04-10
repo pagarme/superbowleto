@@ -75,7 +75,7 @@ jobs:
         sed -i 's/\/superbowleto\/src\//src\//g' coverage/lcov.info
     
     - name: Run Sonar
-      uses: sonarsource/sonarcloud-github-action@v1.8
+      uses: sonarsource/sonarcloud-github-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
