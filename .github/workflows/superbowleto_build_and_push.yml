@@ -92,6 +92,23 @@ jobs:
         uses: actions/checkout@v3
         
       - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        id: configure-ecr
+        with:
+          aws-access-key-id: ${{ secrets.DOCKER_IMAGES_AWS_PULL_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOCKER_IMAGES_AWS_PULL_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          mask-aws-account-id: "no"
+
+      - name: Login no Elastic Container Registry / ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Instalar Docker Compose Standalone
+        run: |
+          docker pull 697525377503.dkr.ecr.us-east-1.amazonaws.com/pay-docker-base-images:pagarme-node8.9
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
