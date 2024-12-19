@@ -1,7 +1,7 @@
 {
   "name": "superbowleto",
   "version": "1.0.0",
-  "description": "A simple microservice to issue, register and manage boletos",
+  "description": "A simple microservice to issue, register and manage boletos.",
   "main": "index.js",
   "private": true,
   "scripts": {
