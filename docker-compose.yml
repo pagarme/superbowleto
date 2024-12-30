@@ -15,21 +15,11 @@ services:
       retries: 5
 
   yopa:
-    image: pagarme/yopa:latest
-    command: java -Xms64m -Xmx256m -jar uberjar.jar -c /tmp/yopa-in/config.yml -o /tmp/dev-env-aws-regions-override.xml
+    image: 697525377503.dkr.ecr.us-east-1.amazonaws.com/pay-docker-base-images:pagarme-yopa
     ports:
       - 47195
     volumes:
       - ./yopa-config.yml:/tmp/yopa-in/config.yml:ro
-    healthcheck:
-      test: [
-        "CMD-SHELL",
-        "curl -f 'http://localhost:47195?Action=GetQueueUrl&QueueName=test'",
-        "&&",
-        "curl -f 'http://localhost:47195?Action=GetQueueUrl&QueueName=boletos-to-register'",
-      ]
-      interval: 5s
-      retries: 5
 
   test:
     build: .
@@ -41,8 +31,6 @@ services:
       - /superbowleto/node_modules
     depends_on:
       postgres:
-        condition: service_healthy
-      yopa:
         condition: service_healthy
       superbowleto-web:
         condition: service_started

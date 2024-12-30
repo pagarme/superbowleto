@@ -37,11 +37,23 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
+    - name: Instalar Docker Compose Standalone
+      run: |
+        sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      id: configure-ecr
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        aws-access-key-id: ${{ secrets.DOCKER_IMAGES_AWS_PULL_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.DOCKER_IMAGES_AWS_PULL_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        mask-aws-account-id: "no"
+
+    - name: Login no Elastic Container Registry / ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
     - name: Run tests
       run: make test-ci
